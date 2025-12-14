@@ -1,6 +1,12 @@
-# Digital Menu Generator
+# MenuCraft - Digital Menu Generator
+
+**Tagline:** "Digital Menus Made Simple"
 
 A lightweight, optimized Next.js application for creating beautiful digital restaurant menus with QR code generation.
+
+> **Version:** 1.0.0 (MVP)
+> **Status:** Active Development
+> **License:** MIT
 
 ## Features
 
@@ -188,9 +194,48 @@ This project can be deployed to:
 - [ ] Online ordering integration
 - [ ] Custom domain support
 
+## 📚 Documentation
+
+**Comprehensive guides for team collaboration:**
+
+- [**docs/FRONTEND_GUIDE.md**](./docs/FRONTEND_GUIDE.md) - UI/UX development guide, design system, AI prompts
+- [**docs/PROJECT_VISION.md**](./docs/PROJECT_VISION.md) - Business model, feature roadmap, revenue strategy
+- [**docs/VERSIONING_STRATEGY.md**](./docs/VERSIONING_STRATEGY.md) - Git workflow, branching, commit conventions
+- [**docs/COLLABORATION_GUIDE.md**](./docs/COLLABORATION_GUIDE.md) - Team workflow, code review process
+- [**docs/README.md**](./docs/README.md) - Documentation hub with quick navigation
+
+**For Contributors:**
+- [**.github/PULL_REQUEST_TEMPLATE.md**](./.github/PULL_REQUEST_TEMPLATE.md) - PR template with checklist
+
 ## Contributing
 
-This is a test-phase project. Feel free to fork and customize for your needs.
+We welcome contributions! Please follow these steps:
+
+1. Read [COLLABORATION_GUIDE.md](./docs/COLLABORATION_GUIDE.md)
+2. Check [PROJECT_VISION.md](./docs/PROJECT_VISION.md) for planned features
+3. Follow [VERSIONING_STRATEGY.md](./docs/VERSIONING_STRATEGY.md) for Git workflow
+4. Use [FRONTEND_GUIDE.md](./docs/FRONTEND_GUIDE.md) for code conventions
+5. Submit PRs using the provided template
+
+## Team Workflow
+
+### For New Features
+
+```bash
+# 1. Create feature branch
+git checkout -b feature/FEAT-001-description
+
+# 2. Implement following FRONTEND_GUIDE.md
+# ... code ...
+
+# 3. Commit with convention
+git commit -m "feat(builder): add feature (#FEAT-001)"
+
+# 4. Push and create PR
+git push origin feature/FEAT-001-description
+```
+
+See [VERSIONING_STRATEGY.md](./docs/VERSIONING_STRATEGY.md) for complete workflow.
 
 ## License
 
@@ -198,4 +243,6 @@ MIT License - feel free to use this project for commercial or personal use.
 
 ## Support
 
-For questions or issues, please check the code comments or create an issue in the repository.
+- **Documentation:** Check [docs/](./docs/) folder
+- **Issues:** Create a GitHub issue
+- **Questions:** Open a GitHub Discussion
