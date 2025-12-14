@@ -8,8 +8,8 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Digital Menu Generator - Create Beautiful Restaurant Menus",
-  description: "Create professional digital menus with QR codes. Choose from beautiful templates, customize colors, and share instantly with your customers.",
+  title: "MenuCraft - Digital Menu Generator for Restaurants",
+  description: "Create beautiful digital menus in minutes. Professional menu builder with QR codes, custom templates, and real-time updates. No coding required.",
 };
 
 export default function RootLayout({
@@ -18,7 +18,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" className="scroll-smooth">
       <body className={`${inter.variable} antialiased`}>
         {children}
       </body>

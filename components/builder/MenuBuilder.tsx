@@ -148,16 +148,16 @@ export const MenuBuilder: React.FC<MenuBuilderProps> = ({
   return (
     <div className="max-w-5xl mx-auto px-6 space-y-6">
       {/* Restaurant Info */}
-      <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-8">
+      <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-8">
         <div className="flex items-center gap-3 mb-6">
-          <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center shadow-sm">
+          <div className="w-12 h-12 rounded-lg bg-gray-900 flex items-center justify-center">
             <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
             </svg>
           </div>
           <div>
-            <h2 className="text-2xl font-bold text-[#292524]">Restaurant Information</h2>
-            <p className="text-sm text-[#57534e]">Basic details about your business</p>
+            <h2 className="text-2xl font-bold text-gray-900">Restaurant Information</h2>
+            <p className="text-sm text-gray-600">Basic details about your business</p>
           </div>
         </div>
 
@@ -178,7 +178,7 @@ export const MenuBuilder: React.FC<MenuBuilderProps> = ({
           />
 
           <div>
-            <label className="block text-sm font-medium text-[#44403c] mb-2">
+            <label className="block text-sm font-medium text-gray-700 mb-2">
               Restaurant Logo
             </label>
             <div className="flex items-center gap-4">
@@ -186,15 +186,15 @@ export const MenuBuilder: React.FC<MenuBuilderProps> = ({
                 <img
                   src={menu.customization.logoImage}
                   alt="Logo"
-                  className="h-16 w-16 object-contain rounded-xl border-2 border-emerald-200"
+                  className="h-16 w-16 object-contain rounded-lg border-2 border-gray-200"
                 />
               )}
               <label className="flex-1 cursor-pointer">
-                <div className="border-2 border-dashed border-emerald-300 rounded-xl p-4 hover:border-emerald-500 hover:bg-emerald-50/50 transition-all text-center">
-                  <svg className="w-6 h-6 mx-auto mb-2 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 hover:border-gray-400 hover:bg-gray-50 transition-all text-center">
+                  <svg className="w-6 h-6 mx-auto mb-2 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
                   </svg>
-                  <span className="text-sm text-emerald-700 font-medium">Click to upload logo</span>
+                  <span className="text-sm text-gray-700 font-medium">Click to upload logo</span>
                   <input
                     type="file"
                     accept="image/*"
@@ -212,23 +212,23 @@ export const MenuBuilder: React.FC<MenuBuilderProps> = ({
       </div>
 
       {/* Customization */}
-      <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-8">
+      <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-8">
         <div className="flex items-center gap-3 mb-6">
-          <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center shadow-sm">
+          <div className="w-12 h-12 rounded-lg bg-gray-900 flex items-center justify-center">
             <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01" />
             </svg>
           </div>
           <div>
-            <h2 className="text-2xl font-bold text-[#292524]">Design & Colors</h2>
-            <p className="text-sm text-[#57534e]">Customize your brand appearance</p>
+            <h2 className="text-2xl font-bold text-gray-900">Design & Colors</h2>
+            <p className="text-sm text-gray-600">Customize your brand appearance</p>
           </div>
         </div>
 
         <div className="space-y-6">
           <div className="grid md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-[#44403c] mb-2">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
                 Primary Color
               </label>
               <div className="flex gap-3 items-center">
@@ -251,7 +251,7 @@ export const MenuBuilder: React.FC<MenuBuilderProps> = ({
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-[#44403c] mb-2">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
                 Secondary Color
               </label>
               <div className="flex gap-3 items-center">
@@ -274,8 +274,8 @@ export const MenuBuilder: React.FC<MenuBuilderProps> = ({
             </div>
           </div>
 
-          <div className="bg-emerald-50/50 rounded-xl p-5 border border-emerald-200/50">
-            <p className="text-sm font-medium text-gray-800 mb-4">Display Options</p>
+          <div className="bg-gray-50 rounded-lg p-5 border border-gray-200">
+            <p className="text-sm font-medium text-gray-900 mb-4">Display Options</p>
             <div className="flex flex-wrap gap-4">
               <label className="flex items-center gap-3 cursor-pointer group">
                 <input
@@ -284,9 +284,9 @@ export const MenuBuilder: React.FC<MenuBuilderProps> = ({
                   onChange={(e) =>
                     updateCustomization({ showPrices: e.target.checked })
                   }
-                  className="w-5 h-5 text-emerald-600 rounded border-emerald-300 focus:ring-emerald-500"
+                  className="w-5 h-5 text-gray-900 rounded border-gray-300 focus:ring-gray-500"
                 />
-                <span className="text-sm text-gray-600 group-hover:text-emerald-700">Show Prices</span>
+                <span className="text-sm text-gray-600 group-hover:text-gray-900">Show Prices</span>
               </label>
 
               <label className="flex items-center gap-3 cursor-pointer group">
@@ -296,9 +296,9 @@ export const MenuBuilder: React.FC<MenuBuilderProps> = ({
                   onChange={(e) =>
                     updateCustomization({ showDescriptions: e.target.checked })
                   }
-                  className="w-5 h-5 text-emerald-600 rounded border-emerald-300 focus:ring-emerald-500"
+                  className="w-5 h-5 text-gray-900 rounded border-gray-300 focus:ring-gray-500"
                 />
-                <span className="text-sm text-gray-600 group-hover:text-emerald-700">Show Descriptions</span>
+                <span className="text-sm text-gray-600 group-hover:text-gray-900">Show Descriptions</span>
               </label>
 
               <label className="flex items-center gap-3 cursor-pointer group">
@@ -308,9 +308,9 @@ export const MenuBuilder: React.FC<MenuBuilderProps> = ({
                   onChange={(e) =>
                     updateCustomization({ showImages: e.target.checked })
                   }
-                  className="w-5 h-5 text-emerald-600 rounded border-emerald-300 focus:ring-emerald-500"
+                  className="w-5 h-5 text-gray-900 rounded border-gray-300 focus:ring-gray-500"
                 />
-                <span className="text-sm text-gray-600 group-hover:text-emerald-700">Show Images</span>
+                <span className="text-sm text-gray-600 group-hover:text-gray-900">Show Images</span>
               </label>
             </div>
           </div>
@@ -321,8 +321,8 @@ export const MenuBuilder: React.FC<MenuBuilderProps> = ({
       <div className="space-y-6">
         <div className="flex justify-between items-center">
           <div>
-            <h2 className="text-2xl font-bold text-[#292524]">Menu Sections</h2>
-            <p className="text-sm text-[#57534e]">Organize your menu into categories</p>
+            <h2 className="text-2xl font-bold text-gray-900">Menu Sections</h2>
+            <p className="text-sm text-gray-600">Organize your menu into categories</p>
           </div>
           <Button onClick={addSection}>
             <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -333,12 +333,12 @@ export const MenuBuilder: React.FC<MenuBuilderProps> = ({
         </div>
 
         {menu.sections.length === 0 && (
-          <div className="bg-white rounded-2xl shadow-sm border-2 border-dashed border-emerald-300 p-12 text-center">
-            <svg className="w-16 h-16 mx-auto mb-4 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <div className="bg-white rounded-xl shadow-sm border-2 border-dashed border-gray-300 p-12 text-center">
+            <svg className="w-16 h-16 mx-auto mb-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 13h6m-3-3v6m5 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
             </svg>
-            <h3 className="text-lg font-semibold text-[#292524] mb-2">No sections yet</h3>
-            <p className="text-[#57534e] mb-6">Create your first menu section to get started</p>
+            <h3 className="text-lg font-semibold text-gray-900 mb-2">No sections yet</h3>
+            <p className="text-gray-600 mb-6">Create your first menu section to get started</p>
             <Button onClick={addSection}>Create First Section</Button>
           </div>
         )}
@@ -346,7 +346,7 @@ export const MenuBuilder: React.FC<MenuBuilderProps> = ({
         {menu.sections.map((section, sectionIndex) => (
           <div
             key={section.id}
-            className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 hover:border-emerald-300 transition-all"
+            className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:border-gray-300 transition-all"
           >
             <div className="flex justify-between items-start gap-4 mb-6">
               <div className="flex-1 space-y-4">
@@ -385,7 +385,7 @@ export const MenuBuilder: React.FC<MenuBuilderProps> = ({
             {/* Items */}
             <div className="border-t border-gray-200 pt-6">
               <div className="flex justify-between items-center mb-4">
-                <h3 className="font-semibold text-[#292524]">Menu Items</h3>
+                <h3 className="font-semibold text-gray-900">Menu Items</h3>
                 <Button size="sm" variant="secondary" onClick={() => addItem(section.id)}>
                   + Add Item
                 </Button>
@@ -395,7 +395,7 @@ export const MenuBuilder: React.FC<MenuBuilderProps> = ({
                 {section.items.map((item) => (
                   <div
                     key={item.id}
-                    className="bg-emerald-50/30 rounded-xl p-5 border border-emerald-100"
+                    className="bg-gray-50 rounded-lg p-5 border border-gray-200"
                   >
                     <div className="grid md:grid-cols-2 gap-4 mb-4">
                       <Input
@@ -452,7 +452,7 @@ export const MenuBuilder: React.FC<MenuBuilderProps> = ({
 
                     <div className="flex items-end justify-between gap-4">
                       <div className="flex-1">
-                        <label className="block text-sm font-medium text-[#44403c] mb-2">
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
                           Item Photo (Optional)
                         </label>
                         <div className="flex items-center gap-3">
@@ -460,12 +460,12 @@ export const MenuBuilder: React.FC<MenuBuilderProps> = ({
                             <img
                               src={item.image}
                               alt={item.name}
-                              className="h-16 w-16 object-cover rounded-lg border-2 border-emerald-200"
+                              className="h-16 w-16 object-cover rounded-lg border-2 border-gray-200"
                             />
                           )}
                           <label className="cursor-pointer flex-1">
-                            <div className="border-2 border-dashed border-emerald-300 rounded-xl px-4 py-2.5 hover:border-emerald-500 hover:bg-white transition-all text-center">
-                              <span className="text-sm text-emerald-700">
+                            <div className="border-2 border-dashed border-gray-300 rounded-lg px-4 py-2.5 hover:border-gray-400 hover:bg-white transition-all text-center">
+                              <span className="text-sm text-gray-700">
                                 {item.image ? 'Change photo' : 'Upload photo'}
                               </span>
                               <input
@@ -494,7 +494,7 @@ export const MenuBuilder: React.FC<MenuBuilderProps> = ({
                                 available: e.target.checked,
                               })
                             }
-                            className="w-4 h-4 text-emerald-600 rounded border-emerald-300"
+                            className="w-4 h-4 text-gray-900 rounded border-gray-300"
                           />
                           <span className="text-sm text-gray-600">Available</span>
                         </label>
@@ -515,7 +515,7 @@ export const MenuBuilder: React.FC<MenuBuilderProps> = ({
                 ))}
 
                 {section.items.length === 0 && (
-                  <div className="text-center py-8 text-[#78716c]">
+                  <div className="text-center py-8 text-gray-500">
                     <p className="mb-3">No items in this section yet</p>
                     <Button size="sm" variant="outline" onClick={() => addItem(section.id)}>
                       Add First Item
@@ -529,7 +529,7 @@ export const MenuBuilder: React.FC<MenuBuilderProps> = ({
       </div>
 
       {/* Save Actions */}
-      <div className="sticky bottom-6 bg-white rounded-2xl shadow-lg border border-gray-200 p-4">
+      <div className="sticky bottom-6 bg-white rounded-xl shadow-md border border-gray-200 p-4">
         <div className="flex gap-4 justify-end">
           <Button variant="outline" onClick={() => onPreview?.(menu)}>
             👁️ Preview Menu

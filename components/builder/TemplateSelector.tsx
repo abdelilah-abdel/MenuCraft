@@ -18,8 +18,8 @@ export const TemplateSelector: React.FC<TemplateSelectorProps> = ({
   return (
     <div className="space-y-6">
       <div>
-        <h3 className="text-3xl font-bold text-[#292524] mb-2">Choose Your Template</h3>
-        <p className="text-[#57534e]">Select a design that matches your restaurant's style</p>
+        <h3 className="text-3xl font-bold text-gray-900 mb-2">Choose Your Template</h3>
+        <p className="text-gray-600">Select a design that matches your restaurant's style</p>
       </div>
 
       <div className="grid md:grid-cols-3 gap-6">
@@ -31,15 +31,15 @@ export const TemplateSelector: React.FC<TemplateSelectorProps> = ({
             <button
               key={template}
               onClick={() => onSelect(template)}
-              className={`group relative p-6 rounded-2xl border-2 transition-all text-left hover-lift ${
+              className={`group relative p-6 rounded-xl border-2 transition-all text-left hover-lift ${
                 isSelected
-                  ? 'border-emerald-600 bg-gradient-to-br from-emerald-50 to-teal-50 shadow-md'
-                  : 'border-gray-200 bg-white hover:border-emerald-400 shadow-sm'
+                  ? 'border-gray-900 bg-gray-50 shadow-md'
+                  : 'border-gray-200 bg-white hover:border-gray-400 shadow-sm'
               }`}
             >
               {/* Selected Badge */}
               {isSelected && (
-                <div className="absolute -top-3 -right-3 w-10 h-10 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-xl flex items-center justify-center shadow-lg">
+                <div className="absolute -top-3 -right-3 w-10 h-10 bg-gray-900 rounded-lg flex items-center justify-center shadow-lg">
                   <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
                   </svg>
@@ -50,22 +50,22 @@ export const TemplateSelector: React.FC<TemplateSelectorProps> = ({
               <div className="flex items-start justify-between mb-4">
                 <div>
                   <h4 className={`text-xl font-bold mb-1 transition-colors ${
-                    isSelected ? 'text-emerald-700' : 'text-gray-900 group-hover:text-emerald-600'
+                    isSelected ? 'text-gray-900' : 'text-gray-900 group-hover:text-gray-700'
                   }`}>
                     {info.name}
                   </h4>
                   <span className={`inline-block text-xs font-medium px-3 py-1 rounded-full border ${
                     isSelected
-                      ? 'bg-emerald-600 text-white border-emerald-600'
-                      : 'bg-emerald-50 text-emerald-700 border-emerald-200'
+                      ? 'bg-gray-900 text-white border-gray-900'
+                      : 'bg-gray-100 text-gray-700 border-gray-300'
                   }`}>
                     {template}
                   </span>
                 </div>
               </div>
 
-              <p className="text-sm text-[#57534e] mb-3 leading-relaxed">{info.description}</p>
-              <p className="text-xs text-[#78716c] mb-5">{info.preview}</p>
+              <p className="text-sm text-gray-600 mb-3 leading-relaxed">{info.description}</p>
+              <p className="text-xs text-gray-500 mb-5">{info.preview}</p>
 
               {/* Visual Preview */}
               <div className={`rounded-xl p-4 transition-all ${
@@ -78,12 +78,12 @@ export const TemplateSelector: React.FC<TemplateSelectorProps> = ({
                     <div className="h-px bg-[#e7e5e4] w-full my-3"></div>
                     <div className="space-y-2">
                       <div className="flex justify-between items-center">
-                        <div className="h-1.5 bg-[#292524] w-1/3 rounded"></div>
-                        <div className="h-1.5 bg-emerald-600 w-1/6 rounded"></div>
+                        <div className="h-1.5 bg-gray-900 w-1/3 rounded"></div>
+                        <div className="h-1.5 bg-gray-600 w-1/6 rounded"></div>
                       </div>
                       <div className="flex justify-between items-center">
-                        <div className="h-1.5 bg-[#292524] w-2/5 rounded"></div>
-                        <div className="h-1.5 bg-emerald-600 w-1/6 rounded"></div>
+                        <div className="h-1.5 bg-gray-900 w-2/5 rounded"></div>
+                        <div className="h-1.5 bg-gray-600 w-1/6 rounded"></div>
                       </div>
                     </div>
                   </div>
@@ -117,11 +117,11 @@ export const TemplateSelector: React.FC<TemplateSelectorProps> = ({
               {/* Select Button */}
               <div className="mt-5">
                 {isSelected ? (
-                  <div className="text-center text-sm font-medium text-emerald-700 py-2">
+                  <div className="text-center text-sm font-medium text-gray-900 py-2">
                     Currently Selected
                   </div>
                 ) : (
-                  <div className="text-center text-sm font-medium text-gray-600 group-hover:text-emerald-600 py-2 transition-colors">
+                  <div className="text-center text-sm font-medium text-gray-600 group-hover:text-gray-900 py-2 transition-colors">
                     Click to Select
                   </div>
                 )}
@@ -131,16 +131,16 @@ export const TemplateSelector: React.FC<TemplateSelectorProps> = ({
         })}
       </div>
 
-      <div className="bg-gradient-to-br from-emerald-50 to-teal-50 rounded-2xl p-6 border border-emerald-200">
+      <div className="bg-gray-50 rounded-xl p-6 border border-gray-200">
         <div className="flex gap-4">
-          <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center flex-shrink-0 shadow-sm">
+          <div className="w-12 h-12 rounded-lg bg-gray-900 flex items-center justify-center flex-shrink-0">
             <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
           </div>
           <div>
-            <h4 className="font-semibold text-[#292524] mb-1">Tip: Try them all!</h4>
-            <p className="text-sm text-[#57534e] leading-relaxed">
+            <h4 className="font-semibold text-gray-900 mb-1">Tip: Try them all!</h4>
+            <p className="text-sm text-gray-600 leading-relaxed">
               You can switch between templates anytime. Click the Preview tab to see how your menu looks with each design.
             </p>
           </div>

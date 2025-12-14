@@ -50,30 +50,30 @@ export const QRCodeDisplay: React.FC<QRCodeDisplayProps> = ({
 
   if (loading) {
     return (
-      <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-12">
+      <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-12">
         <div className="flex flex-col items-center justify-center">
-          <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center mb-4 animate-pulse shadow-lg">
+          <div className="w-16 h-16 rounded-xl bg-gray-900 flex items-center justify-center mb-4 animate-pulse">
             <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z" />
             </svg>
           </div>
-          <p className="text-[#57534e] font-medium">Generating your QR code...</p>
+          <p className="text-gray-600 font-medium">Generating your QR code...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+    <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
       {/* Header */}
-      <div className="bg-gradient-to-br from-emerald-600 to-teal-600 px-8 py-6 text-white shadow-md">
+      <div className="bg-gray-900 px-8 py-6 text-white">
         <div className="flex items-center gap-3 mb-2">
           <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z" />
           </svg>
           <div>
             <h3 className="text-2xl font-bold">Your QR Code is Ready</h3>
-            <p className="text-emerald-50 text-sm">Download and share with your customers</p>
+            <p className="text-gray-300 text-sm">Download and share with your customers</p>
           </div>
         </div>
       </div>
@@ -83,13 +83,13 @@ export const QRCodeDisplay: React.FC<QRCodeDisplayProps> = ({
           <div className="space-y-6">
             {/* QR Code Display */}
             <div className="flex justify-center">
-              <div className="bg-gradient-to-br from-emerald-50 to-white p-6 rounded-2xl border-2 border-emerald-200 inline-block shadow-sm">
-                <img src={qrCode} alt="Menu QR Code" className="w-72 h-72 rounded-xl" />
+              <div className="bg-gray-50 p-6 rounded-xl border-2 border-gray-200 inline-block shadow-sm">
+                <img src={qrCode} alt="Menu QR Code" className="w-72 h-72 rounded-lg" />
               </div>
             </div>
 
             {/* Shareable Link */}
-            <div className="bg-emerald-50/50 rounded-xl p-5 border border-emerald-200/50">
+            <div className="bg-gray-50 rounded-lg p-5 border border-gray-200">
               <label className="block text-sm font-medium text-gray-800 mb-2">
                 📱 Shareable Link
               </label>
@@ -174,8 +174,8 @@ export const QRCodeDisplay: React.FC<QRCodeDisplayProps> = ({
                   desc: 'Perfect viewing on any smartphone'
                 }
               ].map((tip, index) => (
-                <div key={index} className="flex gap-3 items-start p-4 bg-emerald-50/40 rounded-xl border border-emerald-100">
-                  <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center text-white flex-shrink-0 shadow-sm">
+                <div key={index} className="flex gap-3 items-start p-4 bg-gray-50 rounded-lg border border-gray-200">
+                  <div className="w-10 h-10 rounded-lg bg-gray-900 flex items-center justify-center text-white flex-shrink-0">
                     {tip.icon}
                   </div>
                   <div>

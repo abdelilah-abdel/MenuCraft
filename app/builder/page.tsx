@@ -67,37 +67,32 @@ function BuilderContent() {
   ] as const;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-emerald-50/30 to-gray-50">
+    <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <header className="bg-white/80 border-b border-gray-200 sticky top-0 z-50 shadow-sm backdrop-blur-md">
-        <div className="max-w-7xl mx-auto px-6 py-4">
+      <header className="bg-white border-b border-gray-200 sticky top-0 z-50 shadow-sm">
+        <div className="max-w-7xl mx-auto px-6 lg:px-12 py-4">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
             {/* Left: Logo & Menu Name */}
             <div className="flex items-center gap-4">
-              <Link href="/">
-                <Button variant="ghost" size="sm" className="!px-3">
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+              <Link href="/" className="flex items-center space-x-2 group">
+                <div className="w-8 h-8 bg-gray-900 rounded flex items-center justify-center transition-transform group-hover:scale-105">
+                  <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                   </svg>
-                </Button>
+                </div>
+                <span className="text-lg font-semibold text-gray-900">MenuCraft</span>
               </Link>
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center shadow-sm">
-                  <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-                  </svg>
-                </div>
-                <div>
-                  <h1 className="font-bold text-[#292524]">{menu.restaurantName}</h1>
-                  <p className="text-xs text-[#78716c]">Menu Builder</p>
-                </div>
+              <div className="h-6 w-px bg-gray-300"></div>
+              <div>
+                <h1 className="font-semibold text-gray-900">{menu.restaurantName}</h1>
+                <p className="text-xs text-gray-500">Menu Builder</p>
               </div>
             </div>
 
             {/* Right: Actions */}
             <div className="flex items-center gap-3 flex-wrap">
               {isSaved && (
-                <span className="flex items-center gap-1.5 text-sm text-emerald-700 font-medium px-3 py-1.5 bg-emerald-100 rounded-lg">
+                <span className="flex items-center gap-1.5 text-sm text-gray-700 font-medium px-3 py-1.5 bg-gray-100 rounded-lg">
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                   </svg>
@@ -130,8 +125,8 @@ function BuilderContent() {
                 onClick={() => setActiveTab(tab.id as typeof activeTab)}
                 className={`px-6 py-3 font-medium transition-all border-b-2 whitespace-nowrap ${
                   activeTab === tab.id
-                    ? 'border-emerald-600 text-emerald-600 bg-emerald-50/50'
-                    : 'border-transparent text-gray-600 hover:text-emerald-600 hover:bg-emerald-50/30'
+                    ? 'border-gray-900 text-gray-900 bg-gray-50'
+                    : 'border-transparent text-gray-600 hover:text-gray-900 hover:bg-gray-50'
                 }`}
               >
                 <span className="mr-2">{tab.icon}</span>
@@ -143,7 +138,7 @@ function BuilderContent() {
       </header>
 
       {/* Content */}
-      <main className="py-8">
+      <main className="py-8 px-6 lg:px-12">
         {activeTab === 'build' && (
           <div className="animate-fade-in">
             <MenuBuilder
@@ -158,8 +153,8 @@ function BuilderContent() {
         )}
 
         {activeTab === 'template' && (
-          <div className="max-w-5xl mx-auto px-6 animate-fade-in">
-            <div className="bg-white rounded-2xl shadow-soft border border-[#e7e5e4] p-8">
+          <div className="max-w-5xl mx-auto px-6 lg:px-12 animate-fade-in">
+            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-8">
               <TemplateSelector
                 selectedTemplate={menu.template}
                 onSelect={handleTemplateChange}
@@ -169,17 +164,17 @@ function BuilderContent() {
         )}
 
         {activeTab === 'preview' && (
-          <div className="max-w-6xl mx-auto px-6 animate-fade-in">
-            <div className="mb-6 bg-white border border-gray-200 rounded-2xl p-6 shadow-sm">
+          <div className="max-w-6xl mx-auto px-6 lg:px-12 animate-fade-in">
+            <div className="mb-6 bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center shadow-sm">
+                <div className="w-10 h-10 rounded-lg bg-gray-900 flex items-center justify-center">
                   <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>
                 </div>
                 <div>
-                  <p className="font-semibold text-[#292524]">Preview Mode</p>
-                  <p className="text-sm text-[#57534e]">
+                  <p className="font-semibold text-gray-900">Preview Mode</p>
+                  <p className="text-sm text-gray-600">
                     This is how your menu will appear to customers. Switch templates to see different styles.
                   </p>
                 </div>
@@ -190,22 +185,22 @@ function BuilderContent() {
         )}
 
         {activeTab === 'qr' && (
-          <div className="max-w-4xl mx-auto px-6 space-y-6 animate-fade-in">
+          <div className="max-w-4xl mx-auto px-6 lg:px-12 space-y-6 animate-fade-in">
             <QRCodeDisplay
               menuId={menu.id}
               primaryColor={menu.customization.primaryColor}
             />
 
-            <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-8">
+            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-8">
               <div className="flex items-start gap-4 mb-6">
-                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center flex-shrink-0 shadow-sm">
+                <div className="w-12 h-12 rounded-lg bg-gray-900 flex items-center justify-center flex-shrink-0">
                   <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
                   </svg>
                 </div>
                 <div>
-                  <h3 className="text-2xl font-bold text-[#292524] mb-2">How to Use Your QR Code</h3>
-                  <p className="text-[#57534e]">Follow these simple steps to share your menu</p>
+                  <h3 className="text-2xl font-bold text-gray-900 mb-2">How to Use Your QR Code</h3>
+                  <p className="text-gray-600">Follow these simple steps to share your menu</p>
                 </div>
               </div>
 
@@ -217,7 +212,7 @@ function BuilderContent() {
                   'Update your menu anytime - the QR code stays the same!'
                 ].map((step, index) => (
                   <div key={index} className="flex gap-4 items-start">
-                    <div className="w-8 h-8 rounded-lg bg-emerald-100 flex items-center justify-center flex-shrink-0 font-semibold text-emerald-700">
+                    <div className="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center flex-shrink-0 font-semibold text-gray-900">
                       {index + 1}
                     </div>
                     <p className="text-gray-600 pt-1">{step}</p>
@@ -235,14 +230,14 @@ function BuilderContent() {
 export default function BuilderPage() {
   return (
     <Suspense fallback={
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 via-emerald-50/30 to-gray-50">
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <div className="text-center">
-          <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center mx-auto mb-4 animate-pulse shadow-lg">
+          <div className="w-16 h-16 rounded-xl bg-gray-900 flex items-center justify-center mx-auto mb-4 animate-pulse">
             <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
             </svg>
           </div>
-          <p className="text-[#57534e] font-medium">Loading Builder...</p>
+          <p className="text-gray-600 font-medium">Loading Builder...</p>
         </div>
       </div>
     }>
