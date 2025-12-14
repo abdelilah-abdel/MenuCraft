@@ -146,55 +146,64 @@ export const MenuBuilder: React.FC<MenuBuilderProps> = ({
   };
 
   return (
-    <div className="max-w-5xl mx-auto px-6 space-y-6">
-      {/* Restaurant Info */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-8">
-        <div className="flex items-center gap-3 mb-6">
-          <div className="w-12 h-12 rounded-lg bg-gray-900 flex items-center justify-center">
-            <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-            </svg>
-          </div>
-          <div>
-            <h2 className="text-2xl font-bold text-gray-900">Restaurant Information</h2>
-            <p className="text-sm text-gray-600">Basic details about your business</p>
+    <div className="space-y-6">
+      {/* Step 1: Basic Information */}
+      <div className="bg-menu-cream-50 border border-menu-charcoal-200/60 shadow-menu">
+        <div className="bg-menu-cream-200 border-b border-menu-charcoal-200/60 px-6 py-4">
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 bg-menu-gold-600 text-white flex items-center justify-center font-bold">
+              1
+            </div>
+            <div>
+              <h2 className="text-lg font-bold text-menu-charcoal-900 uppercase tracking-wide">Basic Information</h2>
+              <p className="text-xs text-menu-charcoal-600">Start by adding your restaurant details</p>
+            </div>
           </div>
         </div>
 
-        <div className="space-y-5">
+        <div className="p-6 space-y-5 bg-menu-cream-100">
           <Input
-            label="Restaurant Name"
+            label="Restaurant Name *"
             value={menu.restaurantName}
             onChange={(e) => updateMenu({ restaurantName: e.target.value })}
-            placeholder="Your Restaurant Name"
+            placeholder="e.g., La Bella Italia"
           />
 
           <Textarea
-            label="Description"
+            label="Restaurant Description"
             value={menu.description || ''}
             onChange={(e) => updateMenu({ description: e.target.value })}
-            placeholder="Tell customers about your restaurant..."
+            placeholder="Brief description of your restaurant (optional)"
             rows={3}
           />
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Restaurant Logo
+            <label className="block text-xs font-semibold text-menu-charcoal-700 uppercase tracking-wider mb-2">
+              Restaurant Logo (Optional)
             </label>
             <div className="flex items-center gap-4">
               {menu.customization.logoImage && (
-                <img
-                  src={menu.customization.logoImage}
-                  alt="Logo"
-                  className="h-16 w-16 object-contain rounded-lg border-2 border-gray-200"
-                />
+                <div className="relative">
+                  <img
+                    src={menu.customization.logoImage}
+                    alt="Logo"
+                    className="h-20 w-20 object-contain border border-menu-charcoal-200/60"
+                  />
+                  <button
+                    onClick={() => updateCustomization({ logoImage: '' })}
+                    className="absolute -top-2 -right-2 w-6 h-6 bg-red-600 text-white rounded-full flex items-center justify-center text-xs hover:bg-red-700"
+                  >
+                    ×
+                  </button>
+                </div>
               )}
               <label className="flex-1 cursor-pointer">
-                <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 hover:border-gray-400 hover:bg-gray-50 transition-all text-center">
-                  <svg className="w-6 h-6 mx-auto mb-2 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div className="border border-dashed border-menu-charcoal-300/60 p-6 hover:border-menu-gold-500 hover:bg-white transition-all text-center bg-menu-cream-200">
+                  <svg className="w-8 h-8 mx-auto mb-2 text-menu-charcoal-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
                   </svg>
-                  <span className="text-sm text-gray-700 font-medium">Click to upload logo</span>
+                  <span className="text-sm text-menu-charcoal-700 font-semibold">Upload Logo</span>
+                  <p className="text-xs text-menu-charcoal-500 mt-1">PNG, JPG up to 5MB</p>
                   <input
                     type="file"
                     accept="image/*"
@@ -211,191 +220,225 @@ export const MenuBuilder: React.FC<MenuBuilderProps> = ({
         </div>
       </div>
 
-      {/* Customization */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-8">
-        <div className="flex items-center gap-3 mb-6">
-          <div className="w-12 h-12 rounded-lg bg-gray-900 flex items-center justify-center">
-            <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01" />
-            </svg>
-          </div>
-          <div>
-            <h2 className="text-2xl font-bold text-gray-900">Design & Colors</h2>
-            <p className="text-sm text-gray-600">Customize your brand appearance</p>
+      {/* Step 2: Display Settings */}
+      <div className="bg-menu-cream-50 border border-menu-charcoal-200/60 shadow-menu">
+        <div className="bg-menu-cream-200 border-b border-menu-charcoal-200/60 px-6 py-4">
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 bg-menu-gold-600 text-white flex items-center justify-center font-bold">
+              2
+            </div>
+            <div>
+              <h2 className="text-lg font-bold text-menu-charcoal-900 uppercase tracking-wide">Display Settings</h2>
+              <p className="text-xs text-menu-charcoal-600">Control what appears on your menu</p>
+            </div>
           </div>
         </div>
 
-        <div className="space-y-6">
-          <div className="grid md:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Primary Color
-              </label>
-              <div className="flex gap-3 items-center">
-                <input
-                  type="color"
-                  value={menu.customization.primaryColor}
-                  onChange={(e) =>
-                    updateCustomization({ primaryColor: e.target.value })
-                  }
-                  className="h-12 w-20 rounded-xl cursor-pointer border-2 border-gray-200"
-                />
-                <Input
-                  value={menu.customization.primaryColor}
-                  onChange={(e) =>
-                    updateCustomization({ primaryColor: e.target.value })
-                  }
-                  className="flex-1"
-                />
-              </div>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Secondary Color
-              </label>
-              <div className="flex gap-3 items-center">
-                <input
-                  type="color"
-                  value={menu.customization.secondaryColor}
-                  onChange={(e) =>
-                    updateCustomization({ secondaryColor: e.target.value })
-                  }
-                  className="h-12 w-20 rounded-xl cursor-pointer border-2 border-gray-200"
-                />
-                <Input
-                  value={menu.customization.secondaryColor}
-                  onChange={(e) =>
-                    updateCustomization({ secondaryColor: e.target.value })
-                  }
-                  className="flex-1"
-                />
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-gray-50 rounded-lg p-5 border border-gray-200">
-            <p className="text-sm font-medium text-gray-900 mb-4">Display Options</p>
-            <div className="flex flex-wrap gap-4">
-              <label className="flex items-center gap-3 cursor-pointer group">
+        <div className="p-6 space-y-5 bg-menu-cream-100">
+          <div className="bg-menu-cream-200 border border-menu-charcoal-200/60 p-5 rounded-sm">
+            <p className="text-xs font-bold text-menu-charcoal-700 uppercase tracking-wider mb-4">What to Display</p>
+            <div className="space-y-3">
+              <label className="flex items-center gap-3 cursor-pointer p-3 hover:bg-menu-cream-50 transition-colors rounded-sm">
                 <input
                   type="checkbox"
                   checked={menu.customization.showPrices}
                   onChange={(e) =>
                     updateCustomization({ showPrices: e.target.checked })
                   }
-                  className="w-5 h-5 text-gray-900 rounded border-gray-300 focus:ring-gray-500"
+                  className="w-5 h-5 text-menu-gold-600 rounded border border-menu-charcoal-300/60 focus:ring-2 focus:ring-menu-gold-500"
                 />
-                <span className="text-sm text-gray-600 group-hover:text-gray-900">Show Prices</span>
+                <div>
+                  <span className="text-sm font-semibold text-menu-charcoal-900 block">Show Prices</span>
+                  <span className="text-xs text-menu-charcoal-600">Display item prices on the menu</span>
+                </div>
               </label>
 
-              <label className="flex items-center gap-3 cursor-pointer group">
+              <label className="flex items-center gap-3 cursor-pointer p-3 hover:bg-menu-cream-50 transition-colors rounded-sm">
                 <input
                   type="checkbox"
                   checked={menu.customization.showDescriptions}
                   onChange={(e) =>
                     updateCustomization({ showDescriptions: e.target.checked })
                   }
-                  className="w-5 h-5 text-gray-900 rounded border-gray-300 focus:ring-gray-500"
+                  className="w-5 h-5 text-menu-gold-600 rounded border border-menu-charcoal-300/60 focus:ring-2 focus:ring-menu-gold-500"
                 />
-                <span className="text-sm text-gray-600 group-hover:text-gray-900">Show Descriptions</span>
+                <div>
+                  <span className="text-sm font-semibold text-menu-charcoal-900 block">Show Descriptions</span>
+                  <span className="text-xs text-menu-charcoal-600">Display item descriptions</span>
+                </div>
               </label>
 
-              <label className="flex items-center gap-3 cursor-pointer group">
+              <label className="flex items-center gap-3 cursor-pointer p-3 hover:bg-menu-cream-50 transition-colors rounded-sm">
                 <input
                   type="checkbox"
                   checked={menu.customization.showImages}
                   onChange={(e) =>
                     updateCustomization({ showImages: e.target.checked })
                   }
-                  className="w-5 h-5 text-gray-900 rounded border-gray-300 focus:ring-gray-500"
+                  className="w-5 h-5 text-menu-gold-600 rounded border border-menu-charcoal-300/60 focus:ring-2 focus:ring-menu-gold-500"
                 />
-                <span className="text-sm text-gray-600 group-hover:text-gray-900">Show Images</span>
+                <div>
+                  <span className="text-sm font-semibold text-menu-charcoal-900 block">Show Images</span>
+                  <span className="text-xs text-menu-charcoal-600">Display item photos</span>
+                </div>
               </label>
+            </div>
+          </div>
+
+          <div className="grid md:grid-cols-2 gap-5">
+            <div>
+              <label className="block text-xs font-semibold text-menu-charcoal-700 uppercase tracking-wider mb-2">
+                Primary Color
+              </label>
+              <div className="flex gap-3 items-stretch">
+                <input
+                  type="color"
+                  value={menu.customization.primaryColor}
+                  onChange={(e) =>
+                    updateCustomization({ primaryColor: e.target.value })
+                  }
+                  className="h-auto w-16 cursor-pointer border border-menu-charcoal-200/60 rounded-sm"
+                />
+                <Input
+                  value={menu.customization.primaryColor}
+                  onChange={(e) =>
+                    updateCustomization({ primaryColor: e.target.value })
+                  }
+                  className="flex-1"
+                  placeholder="#000000"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-xs font-semibold text-menu-charcoal-700 uppercase tracking-wider mb-2">
+                Secondary Color
+              </label>
+              <div className="flex gap-3 items-stretch">
+                <input
+                  type="color"
+                  value={menu.customization.secondaryColor}
+                  onChange={(e) =>
+                    updateCustomization({ secondaryColor: e.target.value })
+                  }
+                  className="h-auto w-16 cursor-pointer border border-menu-charcoal-200/60 rounded-sm"
+                />
+                <Input
+                  value={menu.customization.secondaryColor}
+                  onChange={(e) =>
+                    updateCustomization({ secondaryColor: e.target.value })
+                  }
+                  className="flex-1"
+                  placeholder="#000000"
+                />
+              </div>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Menu Sections */}
-      <div className="space-y-6">
-        <div className="flex justify-between items-center">
-          <div>
-            <h2 className="text-2xl font-bold text-gray-900">Menu Sections</h2>
-            <p className="text-sm text-gray-600">Organize your menu into categories</p>
+      {/* Step 3: Menu Sections & Items */}
+      <div className="bg-menu-cream-50 border border-menu-charcoal-200/60 shadow-menu">
+        <div className="bg-menu-cream-200 border-b border-menu-charcoal-200/60 px-6 py-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 bg-menu-gold-600 text-white flex items-center justify-center font-bold">
+                3
+              </div>
+              <div>
+                <h2 className="text-lg font-bold text-menu-charcoal-900 uppercase tracking-wide">Menu Sections & Items</h2>
+                <p className="text-xs text-menu-charcoal-600">Add your menu categories and dishes</p>
+              </div>
+            </div>
+            <Button onClick={addSection} variant="gold" size="sm">
+              <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+              </svg>
+              Add Section
+            </Button>
           </div>
-          <Button onClick={addSection}>
-            <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-            </svg>
-            Add Section
-          </Button>
         </div>
 
-        {menu.sections.length === 0 && (
-          <div className="bg-white rounded-xl shadow-sm border-2 border-dashed border-gray-300 p-12 text-center">
-            <svg className="w-16 h-16 mx-auto mb-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 13h6m-3-3v6m5 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-            </svg>
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">No sections yet</h3>
-            <p className="text-gray-600 mb-6">Create your first menu section to get started</p>
-            <Button onClick={addSection}>Create First Section</Button>
-          </div>
-        )}
+        <div className="p-6 bg-menu-cream-100">
+          {menu.sections.length === 0 && (
+            <div className="border border-dashed border-menu-charcoal-300/60 bg-menu-cream-200 p-12 text-center rounded-sm">
+              <svg className="w-16 h-16 mx-auto mb-4 text-menu-gold-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 13h6m-3-3v6m5 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
+              <h3 className="text-lg font-bold text-menu-charcoal-900 mb-2 uppercase tracking-wide">No Sections Yet</h3>
+              <p className="text-sm text-menu-charcoal-600 mb-6">Create your first menu section (e.g., Appetizers, Main Courses, Desserts)</p>
+              <Button onClick={addSection} variant="gold">
+                <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                </svg>
+                Create First Section
+              </Button>
+            </div>
+          )}
+
+          <div className="space-y-4">
 
         {menu.sections.map((section, sectionIndex) => (
           <div
             key={section.id}
-            className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:border-gray-300 transition-all"
+            className="bg-white border border-menu-charcoal-200/60 shadow-menu rounded-sm"
           >
-            <div className="flex justify-between items-start gap-4 mb-6">
-              <div className="flex-1 space-y-4">
-                <Input
-                  label={`Section ${sectionIndex + 1} Name`}
-                  value={section.name}
-                  onChange={(e) =>
-                    updateSection(section.id, { name: e.target.value })
-                  }
-                  placeholder="e.g., Appetizers, Main Course"
-                />
-
-                <Textarea
-                  label="Section Description (Optional)"
-                  value={section.description || ''}
-                  onChange={(e) =>
-                    updateSection(section.id, { description: e.target.value })
-                  }
-                  placeholder="Describe this section..."
-                  rows={2}
-                />
+            <div className="bg-menu-cream-100 border-b border-menu-charcoal-200/60 px-5 py-3 flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <span className="w-7 h-7 bg-menu-charcoal-700 text-white flex items-center justify-center text-sm font-bold">
+                  {sectionIndex + 1}
+                </span>
+                <span className="text-sm font-bold text-menu-charcoal-900 uppercase tracking-wide">Section {sectionIndex + 1}</span>
               </div>
-
-              <Button
-                variant="ghost"
-                size="sm"
+              <button
                 onClick={() => deleteSection(section.id)}
-                className="!text-red-600 hover:!bg-red-50"
+                className="text-red-600 hover:bg-red-50 p-2 transition-colors"
+                title="Delete Section"
               >
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                 </svg>
-              </Button>
+              </button>
+            </div>
+
+            <div className="p-5 space-y-4 bg-menu-cream-50">
+              <Input
+                label={`Section Name *`}
+                value={section.name}
+                onChange={(e) =>
+                  updateSection(section.id, { name: e.target.value })
+                }
+                placeholder="e.g., Appetizers, Main Courses, Desserts"
+              />
+
+              <Textarea
+                label="Section Description (Optional)"
+                value={section.description || ''}
+                onChange={(e) =>
+                  updateSection(section.id, { description: e.target.value })
+                }
+                placeholder="Optional description for this section..."
+                rows={2}
+              />
             </div>
 
             {/* Items */}
-            <div className="border-t border-gray-200 pt-6">
-              <div className="flex justify-between items-center mb-4">
-                <h3 className="font-semibold text-gray-900">Menu Items</h3>
+            <div className="border-t border-menu-charcoal-200/60 bg-white p-5">
+              <div className="flex justify-between items-center mb-5">
+                <h3 className="text-sm font-bold text-menu-charcoal-900 uppercase tracking-wider">Items in this Section</h3>
                 <Button size="sm" variant="secondary" onClick={() => addItem(section.id)}>
-                  + Add Item
+                  <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                  </svg>
+                  Add Item
                 </Button>
               </div>
 
-              <div className="space-y-4">
+              <div className="space-y-3">
                 {section.items.map((item) => (
                   <div
                     key={item.id}
-                    className="bg-gray-50 rounded-lg p-5 border border-gray-200"
+                    className="bg-menu-cream-50 p-4 border border-menu-charcoal-200/60 rounded-sm"
                   >
                     <div className="grid md:grid-cols-2 gap-4 mb-4">
                       <Input
@@ -452,7 +495,7 @@ export const MenuBuilder: React.FC<MenuBuilderProps> = ({
 
                     <div className="flex items-end justify-between gap-4">
                       <div className="flex-1">
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                        <label className="block text-sm font-medium text-menu-charcoal-700 uppercase tracking-wide mb-2">
                           Item Photo (Optional)
                         </label>
                         <div className="flex items-center gap-3">
@@ -460,12 +503,12 @@ export const MenuBuilder: React.FC<MenuBuilderProps> = ({
                             <img
                               src={item.image}
                               alt={item.name}
-                              className="h-16 w-16 object-cover rounded-lg border-2 border-gray-200"
+                              className="h-16 w-16 object-cover border-menu border-menu-charcoal-200"
                             />
                           )}
                           <label className="cursor-pointer flex-1">
-                            <div className="border-2 border-dashed border-gray-300 rounded-lg px-4 py-2.5 hover:border-gray-400 hover:bg-white transition-all text-center">
-                              <span className="text-sm text-gray-700">
+                            <div className="border border-dashed border-menu-charcoal-300/60 px-4 py-2.5 hover:border-menu-gold-500 hover:bg-white transition-all text-center rounded-sm bg-menu-cream-100">
+                              <span className="text-sm text-menu-charcoal-700 uppercase tracking-wide">
                                 {item.image ? 'Change photo' : 'Upload photo'}
                               </span>
                               <input
@@ -494,9 +537,9 @@ export const MenuBuilder: React.FC<MenuBuilderProps> = ({
                                 available: e.target.checked,
                               })
                             }
-                            className="w-4 h-4 text-gray-900 rounded border-gray-300"
+                            className="w-4 h-4 text-menu-gold-600 border-menu-charcoal-300"
                           />
-                          <span className="text-sm text-gray-600">Available</span>
+                          <span className="text-sm text-menu-charcoal-600 uppercase tracking-wide">Available</span>
                         </label>
 
                         <Button
@@ -515,9 +558,15 @@ export const MenuBuilder: React.FC<MenuBuilderProps> = ({
                 ))}
 
                 {section.items.length === 0 && (
-                  <div className="text-center py-8 text-gray-500">
-                    <p className="mb-3">No items in this section yet</p>
-                    <Button size="sm" variant="outline" onClick={() => addItem(section.id)}>
+                  <div className="text-center py-10 border border-dashed border-menu-charcoal-300/60 bg-menu-cream-100 rounded-sm">
+                    <svg className="w-12 h-12 mx-auto mb-3 text-menu-charcoal-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                    </svg>
+                    <p className="mb-4 text-sm font-semibold text-menu-charcoal-700">No Items Yet</p>
+                    <Button size="sm" variant="gold" onClick={() => addItem(section.id)}>
+                      <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                      </svg>
                       Add First Item
                     </Button>
                   </div>
@@ -526,16 +575,25 @@ export const MenuBuilder: React.FC<MenuBuilderProps> = ({
             </div>
           </div>
         ))}
+          </div>
+        </div>
       </div>
 
       {/* Save Actions */}
-      <div className="sticky bottom-6 bg-white rounded-xl shadow-md border border-gray-200 p-4">
+      <div className="sticky bottom-6 bg-menu-cream-50 border border-menu-charcoal-200/60 shadow-menu-lg p-4 rounded-sm">
         <div className="flex gap-4 justify-end">
           <Button variant="outline" onClick={() => onPreview?.(menu)}>
-            👁️ Preview Menu
+            <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+            </svg>
+            Preview Menu
           </Button>
-          <Button onClick={handleSave} className="min-w-[160px]">
-            💾 Save Menu
+          <Button onClick={handleSave} variant="primary" className="min-w-[160px]">
+            <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" />
+            </svg>
+            Save Menu
           </Button>
         </div>
       </div>

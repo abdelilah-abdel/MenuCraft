@@ -1,5 +1,29 @@
 @import "tailwindcss";
 
+/* ============================================
+   MODERN RESTAURANT MENU - THEME SYSTEM
+   Minimal | Elegant | Menu-Inspired
+   ============================================ */
+
+:root {
+  /* Modern Menu Color System */
+  --color-cream: #F7F3EB; /* Parchment background */
+  --color-cream-dark: #F0EAE0;
+  --color-cream-light: #FEFDFB;
+
+  --color-charcoal: #2D2D2D; /* Primary text */
+  --color-charcoal-light: #4A4A4A;
+  --color-charcoal-dark: #1F1F1F;
+
+  --color-gold: #D4AF37; /* Elegant accent */
+  --color-gold-light: #F0D166;
+  --color-gold-dark: #C19A2E;
+
+  /* Menu aesthetics */
+  --menu-border: 1.5px;
+  --menu-spacing: 2rem;
+}
+
 html {
   scroll-behavior: smooth;
 }
@@ -14,68 +38,232 @@ body {
   font-family: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  background: var(--color-cream);
+  color: var(--color-charcoal);
 }
-
 
 a {
   color: inherit;
   text-decoration: none;
 }
 
-/* Custom scrollbar - Minimal */
+/* ============================================
+   CUSTOM SCROLLBAR - Elegant Menu Style
+   ============================================ */
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #f9fafb;
+  background: var(--color-cream-dark);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #9ca3af;
+  background: var(--color-gold);
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #6b7280;
+  background: var(--color-gold-dark);
 }
 
-/* Focus states - Neutral */
+/* ============================================
+   FOCUS & SELECTION - Menu Colors
+   ============================================ */
 *:focus-visible {
-  outline: 2px solid #111827;
+  outline: 2px solid var(--color-gold);
   outline-offset: 2px;
 }
 
-/* Selection */
 ::selection {
-  background-color: #e5e7eb;
-  color: #111827;
+  background-color: var(--color-gold-light);
+  color: var(--color-charcoal-dark);
 }
 
-/* Responsive images and media */
-img,
-video,
-canvas {
-  max-width: 100%;
-  height: auto;
+/* ============================================
+   MENU-STYLE DIVIDERS
+   ============================================ */
+
+.menu-divider {
+  position: relative;
+  margin: var(--menu-spacing) 0;
 }
 
-/* Better responsive spacing */
-@media (max-width: 640px) {
-  section.py-24 {
-    padding-top: 3rem !important;
-    padding-bottom: 3rem !important;
-  }
-  
-  section.py-20 {
-    padding-top: 2.5rem !important;
-    padding-bottom: 2.5rem !important;
-  }
+.menu-divider::before {
+  content: '';
+  display: block;
+  width: 100%;
+  height: var(--menu-border);
+  background: linear-gradient(90deg,
+    transparent 0%,
+    var(--color-gold) 20%,
+    var(--color-gold) 80%,
+    transparent 100%
+  );
+  opacity: 0.3;
 }
 
+.menu-divider-center::before {
+  width: 120px;
+  margin: 0 auto;
+}
 
-/* Animations */
+.menu-divider-dots {
+  text-align: center;
+  color: var(--color-gold);
+  font-size: 1.5rem;
+  letter-spacing: 0.5rem;
+  opacity: 0.5;
+}
+
+.menu-divider-dots::before {
+  content: '• • •';
+}
+
+/* ============================================
+   MENU SECTION HEADERS
+   ============================================ */
+
+.menu-section-header {
+  text-align: center;
+  position: relative;
+  padding: 1.5rem 0;
+}
+
+.menu-section-header::before,
+.menu-section-header::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  width: 60px;
+  height: 1px;
+  background: var(--color-gold);
+  opacity: 0.4;
+}
+
+.menu-section-header::before {
+  left: 0;
+}
+
+.menu-section-header::after {
+  right: 0;
+}
+
+/* ============================================
+   MENU CARD / PAPER STYLE
+   ============================================ */
+
+.menu-card {
+  background: #FEFDFB;
+  border: var(--menu-border) solid rgba(45, 45, 45, 0.1);
+  box-shadow: 0 2px 8px 0 rgba(0, 0, 0, 0.08);
+  transition: all 0.3s ease;
+}
+
+.menu-card:hover {
+  box-shadow: 0 4px 16px 0 rgba(0, 0, 0, 0.12);
+  border-color: rgba(212, 175, 55, 0.3);
+}
+
+.menu-card-bordered {
+  border-top: 3px solid var(--color-gold);
+  border-bottom: 3px solid var(--color-gold);
+  border-left: var(--menu-border) solid rgba(45, 45, 45, 0.1);
+  border-right: var(--menu-border) solid rgba(45, 45, 45, 0.1);
+}
+
+/* ============================================
+   TYPOGRAPHY - Menu Style
+   ============================================ */
+
+h1, h2, h3, h4, h5, h6, p {
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+.menu-title {
+  font-family: Georgia, serif;
+  font-weight: 400;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--color-charcoal-dark);
+}
+
+.menu-subtitle {
+  font-family: Georgia, serif;
+  font-style: italic;
+  color: var(--color-charcoal-light);
+  font-weight: 300;
+}
+
+.menu-price {
+  font-family: Georgia, serif;
+  color: var(--color-gold);
+  font-weight: 500;
+}
+
+.menu-description {
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: var(--color-charcoal-light);
+}
+
+/* ============================================
+   MENU ITEM LAYOUTS
+   ============================================ */
+
+.menu-item {
+  padding: 1.5rem 0;
+  border-bottom: 1px solid rgba(45, 45, 45, 0.08);
+  transition: background 0.2s ease;
+}
+
+.menu-item:last-child {
+  border-bottom: none;
+}
+
+.menu-item:hover {
+  background: rgba(212, 175, 55, 0.03);
+}
+
+.menu-item-name {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 0.5rem;
+}
+
+.menu-item-name::after {
+  content: '';
+  flex: 1;
+  min-width: 1rem;
+  margin: 0 0.75rem;
+  border-bottom: 1px dotted rgba(45, 45, 45, 0.2);
+}
+
+/* ============================================
+   ORNAMENTAL ELEMENTS
+   ============================================ */
+
+.menu-ornament {
+  text-align: center;
+  color: var(--color-gold);
+  opacity: 0.6;
+  font-size: 1.25rem;
+  margin: 2rem 0;
+}
+
+.menu-ornament::before,
+.menu-ornament::after {
+  content: '❖';
+  margin: 0 1rem;
+}
+
+/* ============================================
+   ANIMATIONS - Subtle & Elegant
+   ============================================ */
+
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -98,6 +286,17 @@ canvas {
   }
 }
 
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 .animate-fade-in {
   animation: fadeIn 0.5s ease-out;
 }
@@ -106,54 +305,118 @@ canvas {
   animation: slideIn 0.5s ease-out;
 }
 
-/* Modern shadows */
-.shadow-soft {
-  box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+.animate-fade-in-up {
+  animation: fadeInUp 0.6s ease-out;
 }
 
-.shadow-medium {
-  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+/* ============================================
+   BUTTONS - Menu Style
+   ============================================ */
+
+.btn-menu {
+  font-family: var(--font-inter), sans-serif;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  font-size: 0.875rem;
+  padding: 0.75rem 2rem;
+  border: var(--menu-border) solid var(--color-charcoal);
+  background: transparent;
+  color: var(--color-charcoal);
+  transition: all 0.3s ease;
+  cursor: pointer;
 }
 
-.shadow-strong {
-  box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+.btn-menu:hover {
+  background: var(--color-charcoal);
+  color: var(--color-cream-light);
 }
 
-/* Hover lift effect */
+.btn-menu-primary {
+  background: var(--color-charcoal);
+  color: var(--color-cream-light);
+  border-color: var(--color-charcoal);
+}
+
+.btn-menu-primary:hover {
+  background: var(--color-charcoal-dark);
+  border-color: var(--color-charcoal-dark);
+}
+
+.btn-menu-gold {
+  border-color: var(--color-gold);
+  color: var(--color-gold);
+}
+
+.btn-menu-gold:hover {
+  background: var(--color-gold);
+  color: var(--color-charcoal-dark);
+}
+
+/* ============================================
+   HOVER EFFECTS - Subtle
+   ============================================ */
+
 .hover-lift {
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  transition: all 0.3s ease;
 }
 
 .hover-lift:hover {
   transform: translateY(-2px);
-  box-shadow: 0 12px 24px -4px rgb(0 0 0 / 0.12), 0 8px 16px -8px rgb(0 0 0 / 0.08);
+  box-shadow: 0 4px 16px 0 rgba(0, 0, 0, 0.12);
 }
 
-/* Text gradient - Neutral */
-.text-gradient {
-  background: linear-gradient(to right, #111827, #4b5563);
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
+/* ============================================
+   RESPONSIVE UTILITIES
+   ============================================ */
+
+img,
+video,
+canvas {
+  max-width: 100%;
+  height: auto;
 }
 
-/* Editorial spacing */
-.editorial-spacing {
-  letter-spacing: -0.02em;
+@media (max-width: 640px) {
+  section.py-24 {
+    padding-top: 3rem !important;
+    padding-bottom: 3rem !important;
+  }
+
+  section.py-20 {
+    padding-top: 2.5rem !important;
+    padding-bottom: 2.5rem !important;
+  }
+
+  :root {
+    --menu-spacing: 1.5rem;
+  }
 }
 
-/* Clean shadows for cards */
-.card-shadow {
-  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+/* ============================================
+   PAPER TEXTURE (Subtle)
+   ============================================ */
+
+.menu-paper-texture {
+  position: relative;
+  background:
+    linear-gradient(90deg, rgba(0, 0, 0, 0.01) 1px, transparent 1px),
+    linear-gradient(rgba(0, 0, 0, 0.01) 1px, transparent 1px);
+  background-size: 20px 20px;
 }
 
-.card-shadow-hover {
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+/* ============================================
+   UTILITY CLASSES
+   ============================================ */
+
+.text-balance {
+  text-wrap: balance;
 }
 
+.letter-spacing-wide {
+  letter-spacing: 0.1em;
+}
 
-/* Prevent text overflow */
-h1, h2, h3, h4, h5, h6, p {
-  word-wrap: break-word;
-  overflow-wrap: break-word;
+.letter-spacing-wider {
+  letter-spacing: 0.15em;
 }
