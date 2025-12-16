@@ -19,6 +19,7 @@ Welcome to the MenuCraft documentation! This folder contains all the guides and 
 | Document | Purpose | When to Read |
 |----------|---------|--------------|
 | [**PROJECT_VISION.md**](./PROJECT_VISION.md) | Business model, revenue streams, feature roadmap, and success metrics | **For strategic planning** |
+| [**TEMPLATE_LIBRARY_STRATEGY.md**](./TEMPLATE_LIBRARY_STRATEGY.md) | Contextual template library vision, AI variation engine, marketplace strategy | **For template system planning** |
 
 ### For Contributors
 
@@ -137,6 +138,29 @@ Welcome to the MenuCraft documentation! This folder contains all the guides and 
 
 ---
 
+### TEMPLATE_LIBRARY_STRATEGY.md
+
+**What's Inside:**
+- 5 different approaches analyzed (Hybrid AI, Pure AI, Community, Procedural, Contextual)
+- Recommended multi-phase strategy (V1.5 → V3.5)
+- Technical architecture (database schema, APIs, algorithms)
+- Implementation roadmap (month-by-month breakdown)
+- Revenue opportunities (+$331K/year)
+- Smart contextual suggestions (events, seasons, holidays)
+- Community marketplace design
+- 50 base templates → 10,000+ variations plan
+
+**Use This When:**
+- Planning template system features
+- Designing AI variation engine
+- Building contextual suggestion algorithm
+- Setting up community marketplace
+- Making template-related product decisions
+- Estimating template development costs
+- Understanding template revenue potential
+
+---
+
 ## 🎯 Common Scenarios
 
 ### "I want to add drag-and-drop"
@@ -173,6 +197,15 @@ Welcome to the MenuCraft documentation! This folder contains all the guides and 
 4. If approved, add to PROJECT_VISION.md with Feature ID
 5. Implement per workflow above
 
+### "I want to work on the template library"
+
+1. Read **TEMPLATE_LIBRARY_STRATEGY.md** → Understand the multi-phase approach
+2. Check which phase we're in (V1.5, V2.0, V3.0, etc.)
+3. Find the relevant Feature ID (FEAT-011, FEAT-012, FEAT-013, or FEAT-014)
+4. Follow implementation roadmap for that phase
+5. Create branch: `feature/FEAT-XXX-description`
+6. Build according to technical architecture specs
+
 ---
 
 ## 🔄 Document Maintenance
@@ -185,6 +218,7 @@ Welcome to the MenuCraft documentation! This folder contains all the guides and 
 | PROJECT_VISION.md | New features planned, business model changes |
 | VERSIONING_STRATEGY.md | Workflow changes, new branch types |
 | COLLABORATION_GUIDE.md | Team process changes, new tools |
+| TEMPLATE_LIBRARY_STRATEGY.md | New template approaches, marketplace updates, revenue model changes |
 
 ### Who Can Update
 
@@ -227,6 +261,7 @@ Welcome to the MenuCraft documentation! This folder contains all the guides and 
 - **Git workflow** → Check VERSIONING_STRATEGY.md
 - **Team process** → Check COLLABORATION_GUIDE.md
 - **Product roadmap** → Check PROJECT_VISION.md
+- **Template library** → Check TEMPLATE_LIBRARY_STRATEGY.md
 - **Still stuck?** → Ask in GitHub Discussions
 
 ### Found an Error in Docs?
@@ -239,13 +274,14 @@ Welcome to the MenuCraft documentation! This folder contains all the guides and 
 
 ## 📊 Documentation Metrics
 
-**Last Updated:** 2025-12-14
+**Last Updated:** 2025-12-15
 
 **Completeness:**
 - ✅ Frontend Guide (100%)
 - ✅ Project Vision (100%)
 - ✅ Versioning Strategy (100%)
 - ✅ Collaboration Guide (100%)
+- ✅ Template Library Strategy (100%)
 - ✅ PR Template (100%)
 
 **Next Additions:**
