@@ -17,6 +17,7 @@ A lightweight, optimized Next.js application for creating beautiful digital rest
 - **Image Upload**: Support for menu item and restaurant logo images (base64 for now, easily migrated to cloud storage)
 - **Export/Import**: Save menus as JSON for backup and sharing
 - **Shareable Links**: Each menu gets a unique URL accessible via QR code
+- **Owner Accounts**: Owners sign in to maintain one restaurant workspace and menu
 - **Responsive Design**: Works perfectly on all devices
 - **No External UI Libraries**: Lightweight and fast, using only Tailwind CSS
 
@@ -53,6 +54,12 @@ npm run dev
 ```
 
 4. Open [http://localhost:3000](http://localhost:3000) in your browser
+
+### Owner Accounts
+
+Create an account at `/sign-up` and return to it at `/sign-in` whenever the owner session ends. In local development, account records and the generated session secret are stored under `.menucraft-data/`, which is excluded from Git. Set `MENUCRAFT_DATA_DIR` to use a different persistent local directory.
+
+Production deployments must set `MENUCRAFT_SESSION_SECRET` to a secret with at least 32 characters. The current account store uses the server filesystem, so it requires protected persistent storage and is intended for a single application instance. Use shared account and menu persistence before deploying multiple instances or an ephemeral serverless runtime.
 
 ## Project Structure
 

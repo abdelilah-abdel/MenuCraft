@@ -31,6 +31,7 @@ export interface MenuCustomization {
 
 export interface Menu {
   id: string;
+  ownerId?: string;
   restaurantName: string;
   description?: string;
   sections: MenuSection[];

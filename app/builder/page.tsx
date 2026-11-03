@@ -17,25 +17,47 @@ function BuilderContent() {
   const searchParams = useSearchParams();
   const menuId = searchParams.get('id');
 
-  const [menu, setMenu] = useState<Menu>(() => {
-    if (menuId) {
-      const existingMenu = MenuService.getMenuById(menuId);
-      return existingMenu || MenuService.createDefaultMenu();
-    }
-    return MenuService.createDefaultMenu();
-  });
+  const [menu, setMenu] = useState<Menu>(() => MenuService.createDefaultMenu());
 
   const [viewMode, setViewMode] = useState<ViewMode>('edit');
   const [showPreviewModal, setShowPreviewModal] = useState(false);
   const [isSaved, setIsSaved] = useState(false);
+  const [isLoadingWorkspace, setIsLoadingWorkspace] = useState(true);
+  const [workspaceError, setWorkspaceError] = useState('');
 
   useEffect(() => {
-    if (menuId) {
-      const existingMenu = MenuService.getMenuById(menuId);
-      if (existingMenu) {
-        setMenu(existingMenu);
+    let isMounted = true;
+
+    async function loadOwnerWorkspace() {
+      try {
+        const response = await fetch('/api/auth/session', { cache: 'no-store' });
+        const result = await response.json() as { owner?: { id: string } | null };
+        if (!response.ok || !result.owner) {
+          window.location.assign('/sign-in?next=%2Fbuilder');
+          return;
+        }
+
+        const ownerMenus = MenuService.getMenusForOwner(result.owner.id);
+        const currentMenu = menuId
+          ? ownerMenus.find((savedMenu) => savedMenu.id === menuId)
+          : ownerMenus[0];
+
+        if (isMounted) {
+          setMenu(currentMenu || ownerMenus[0] || MenuService.createDefaultMenu(result.owner.id));
+          setIsLoadingWorkspace(false);
+        }
+      } catch {
+        if (isMounted) {
+          setWorkspaceError('Unable to load your workspace. Please refresh and try again.');
+          setIsLoadingWorkspace(false);
+        }
       }
     }
+
+    void loadOwnerWorkspace();
+    return () => {
+      isMounted = false;
+    };
   }, [menuId]);
 
   const handleSave = (updatedMenu: Menu) => {
@@ -60,6 +82,32 @@ function BuilderContent() {
     document.body.removeChild(link);
     URL.revokeObjectURL(url);
   };
+
+  if (isLoadingWorkspace || workspaceError) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-menu-cream-200 px-6">
+        <div className="text-center max-w-md">
+          {workspaceError ? (
+            <>
+              <p role="alert" className="text-menu-charcoal-700">{workspaceError}</p>
+              <button
+                type="button"
+                onClick={() => window.location.reload()}
+                className="mt-4 text-sm font-semibold text-menu-gold-700 underline underline-offset-2"
+              >
+                Try again
+              </button>
+            </>
+          ) : (
+            <>
+              <div className="menu-ornament mb-6 animate-pulse"></div>
+              <p className="font-serif text-xl text-menu-charcoal-700">Loading your workspace…</p>
+            </>
+          )}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-menu-cream-200 flex flex-col">

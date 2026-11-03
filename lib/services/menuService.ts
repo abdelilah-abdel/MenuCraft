@@ -4,11 +4,29 @@ const STORAGE_KEY = 'digital-menus';
 const VERSION = '1.0.0';
 
 export class MenuService {
+  private static writeMenus(menus: Menu[]): void {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(menus));
+  }
+
   // Save menu to localStorage (for now)
-  static saveMenu(menu: Menu): void {
+  static saveMenu(menu: Menu): Menu {
+    if (!menu.ownerId) {
+      throw new Error('An owner must be signed in to save a menu.');
+    }
+
     try {
       const menus = this.getAllMenus();
-      const existingIndex = menus.findIndex(m => m.id === menu.id);
+      const ownedMenu = menus.find((existingMenu) => existingMenu.ownerId === menu.ownerId);
+      if (ownedMenu && ownedMenu.id !== menu.id) {
+        menu = { ...menu, id: ownedMenu.id, createdAt: ownedMenu.createdAt };
+      }
+
+      const menuWithId = menus.find((existingMenu) => existingMenu.id === menu.id);
+      if (menuWithId?.ownerId && menuWithId.ownerId !== menu.ownerId) {
+        throw new Error('This menu belongs to another owner.');
+      }
+
+      const existingIndex = menus.findIndex((existingMenu) => existingMenu.id === menu.id);
 
       menu.updatedAt = new Date().toISOString();
 
@@ -19,10 +37,11 @@ export class MenuService {
         menus.push(menu);
       }
 
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(menus));
+      this.writeMenus(menus);
+      return menu;
     } catch (error) {
       console.error('Failed to save menu:', error);
-      throw new Error('Failed to save menu');
+      throw error instanceof Error ? error : new Error('Failed to save menu');
     }
   }
 
@@ -43,12 +62,30 @@ export class MenuService {
     return menus.find(m => m.id === id) || null;
   }
 
+  // Each owner maintains one menu. Claim one unowned legacy menu when they first sign in.
+  static getMenusForOwner(ownerId: string): Menu[] {
+    const menus = this.getAllMenus();
+    const ownedMenu = menus.find((menu) => menu.ownerId === ownerId);
+    if (ownedMenu) return [ownedMenu];
+
+    const legacyMenu = menus.find((menu) => !menu.ownerId);
+    if (!legacyMenu) return [];
+
+    const claimedMenu = { ...legacyMenu, ownerId };
+    this.writeMenus(menus.map((menu) => menu.id === legacyMenu.id ? claimedMenu : menu));
+    return [claimedMenu];
+  }
+
+  static getMenuForOwner(ownerId: string, menuId: string): Menu | null {
+    return this.getMenusForOwner(ownerId).find((menu) => menu.id === menuId) || null;
+  }
+
   // Delete menu
   static deleteMenu(id: string): void {
     try {
       const menus = this.getAllMenus();
       const filtered = menus.filter(m => m.id !== id);
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(filtered));
+      this.writeMenus(filtered);
     } catch (error) {
       console.error('Failed to delete menu:', error);
       throw new Error('Failed to delete menu');
@@ -89,9 +126,10 @@ export class MenuService {
   }
 
   // Create default menu
-  static createDefaultMenu(): Menu {
+  static createDefaultMenu(ownerId?: string): Menu {
     return {
       id: this.generateId(),
+      ownerId,
       restaurantName: 'My Restaurant',
       description: 'Welcome to our restaurant',
       sections: [],

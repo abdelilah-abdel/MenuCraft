@@ -8,16 +8,34 @@ import { Button } from '@/components/ui/Button';
 
 export default function Home() {
   const [menus, setMenus] = useState<Menu[]>([]);
+  const [owner, setOwner] = useState<{ id: string; email: string } | null>(null);
 
   useEffect(() => {
-    setMenus(MenuService.getAllMenus());
+    let isMounted = true;
+
+    async function loadOwnerWorkspace() {
+      try {
+        const response = await fetch('/api/auth/session', { cache: 'no-store' });
+        const result = await response.json() as { owner?: { id: string; email: string } | null };
+        if (!isMounted || !response.ok || !result.owner) return;
+
+        setOwner(result.owner);
+        setMenus(MenuService.getMenusForOwner(result.owner.id));
+      } catch {
+        // Keep the public landing page available when session lookup fails.
+      }
+    }
+
+    void loadOwnerWorkspace();
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
-  const handleDeleteMenu = (menuId: string) => {
-    if (confirm('Are you sure you want to delete this menu?')) {
-      MenuService.deleteMenu(menuId);
-      setMenus(MenuService.getAllMenus());
-    }
+  const handleSignOut = async () => {
+    await fetch('/api/auth/logout', { method: 'POST' });
+    setOwner(null);
+    setMenus([]);
   };
 
   return (
@@ -40,22 +58,41 @@ export default function Home() {
               <a href="#features" className="text-menu-charcoal-700 hover:text-menu-gold-600 transition-colors text-sm uppercase tracking-wider">
                 Features
               </a>
-              {menus.length > 0 && (
+              {owner && menus.length > 0 && (
                 <a href="#your-menus" className="text-menu-charcoal-700 hover:text-menu-gold-600 transition-colors text-sm uppercase tracking-wider">
-                  Your Menus
+                  Your Menu
                 </a>
               )}
-              <Link href="/builder">
-                <Button variant="primary" size="sm">
-                  Get Started
-                </Button>
-              </Link>
+              {owner ? (
+                <>
+                  <span className="text-xs text-menu-charcoal-500">{owner.email}</span>
+                  <button
+                    type="button"
+                    onClick={handleSignOut}
+                    className="text-menu-charcoal-700 hover:text-menu-gold-600 transition-colors text-sm uppercase tracking-wider"
+                  >
+                    Sign out
+                  </button>
+                  <Link href="/builder">
+                    <Button variant="primary" size="sm">Manage Menu</Button>
+                  </Link>
+                </>
+              ) : (
+                <>
+                  <Link href="/sign-in" className="text-menu-charcoal-700 hover:text-menu-gold-600 transition-colors text-sm uppercase tracking-wider">
+                    Sign in
+                  </Link>
+                  <Link href="/sign-up">
+                    <Button variant="primary" size="sm">Create Account</Button>
+                  </Link>
+                </>
+              )}
             </div>
 
             {/* Mobile */}
-            <Link href="/builder" className="md:hidden">
+            <Link href={owner ? '/builder' : '/sign-up'} className="md:hidden">
               <Button variant="primary" size="sm">
-                Start
+                {owner ? 'Your Menu' : 'Get Started'}
               </Button>
             </Link>
           </div>
@@ -82,9 +119,9 @@ export default function Home() {
 
           {/* CTA Buttons */}
           <div className="flex flex-wrap justify-center gap-4 mb-12">
-            <Link href="/builder">
+            <Link href={owner ? '/builder' : '/sign-up'}>
               <Button variant="primary" size="lg">
-                Create Your Menu
+                {owner ? 'Maintain Your Menu' : 'Create Your Menu'}
               </Button>
             </Link>
             <Button variant="secondary" size="lg">
@@ -214,23 +251,18 @@ export default function Home() {
       </section>
 
       {/* Your Menus Section */}
-      {menus.length > 0 && (
+      {owner && menus.length > 0 && (
         <section id="your-menus" className="py-20 px-6 lg:px-12 bg-menu-cream-100">
           <div className="max-w-6xl mx-auto">
             <div className="flex flex-col md:flex-row justify-between items-center mb-12">
               <div className="text-center md:text-left mb-6 md:mb-0">
-                <h2 className="text-4xl font-serif menu-title text-menu-charcoal-900 mb-2">Your Menus</h2>
-                <p className="menu-description">Manage your digital menus</p>
+                <h2 className="text-4xl font-serif menu-title text-menu-charcoal-900 mb-2">Your Menu</h2>
+                <p className="menu-description">One restaurant workspace, one menu to maintain.</p>
               </div>
-              <Link href="/builder">
-                <Button variant="gold" size="md">
-                  + New Menu
-                </Button>
-              </Link>
             </div>
 
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {menus.map((menu) => (
+              {menus.slice(0, 1).map((menu) => (
                 <div
                   key={menu.id}
                   className="menu-card p-6 hover-lift"
@@ -259,14 +291,6 @@ export default function Home() {
                         Edit
                       </Button>
                     </Link>
-                    <button
-                      onClick={() => handleDeleteMenu(menu.id)}
-                      className="px-3 py-2 text-menu-charcoal-400 hover:text-red-600 hover:bg-red-50 transition-colors border-menu border-menu-charcoal-200"
-                    >
-                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                      </svg>
-                    </button>
                   </div>
                 </div>
               ))}
@@ -288,9 +312,9 @@ export default function Home() {
             Join modern restaurants creating beautiful digital menus
           </p>
 
-          <Link href="/builder">
+          <Link href={owner ? '/builder' : '/sign-up'}>
             <Button variant="gold" size="lg">
-              Get Started Free
+              {owner ? 'Maintain Your Menu' : 'Create Your Menu'}
             </Button>
           </Link>
         </div>

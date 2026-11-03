@@ -141,8 +141,9 @@ export const MenuBuilder: React.FC<MenuBuilderProps> = ({
   };
 
   const handleSave = () => {
-    MenuService.saveMenu(menu);
-    onSave?.(menu);
+    const savedMenu = MenuService.saveMenu(menu);
+    setMenu(savedMenu);
+    onSave?.(savedMenu);
   };
 
   return (
