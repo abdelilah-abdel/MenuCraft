@@ -37,13 +37,10 @@ function BuilderContent() {
           return;
         }
 
-        const ownerMenus = MenuService.getMenusForOwner(result.owner.id);
-        const currentMenu = menuId
-          ? ownerMenus.find((savedMenu) => savedMenu.id === menuId)
-          : ownerMenus[0];
+        const currentMenu = await MenuService.loadOwnerMenu(result.owner.id);
 
         if (isMounted) {
-          setMenu(currentMenu || ownerMenus[0] || MenuService.createDefaultMenu(result.owner.id));
+          setMenu(currentMenu || MenuService.createDefaultMenu(result.owner.id));
           setIsLoadingWorkspace(false);
         }
       } catch {

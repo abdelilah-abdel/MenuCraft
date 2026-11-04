@@ -22,6 +22,8 @@ export const MenuBuilder: React.FC<MenuBuilderProps> = ({
     initialMenu || MenuService.createDefaultMenu()
   );
   const [uploading, setUploading] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+  const [saveError, setSaveError] = useState('');
 
   const updateMenu = (updates: Partial<Menu>) => {
     setMenu((prev) => ({ ...prev, ...updates }));
@@ -140,10 +142,18 @@ export const MenuBuilder: React.FC<MenuBuilderProps> = ({
     }
   };
 
-  const handleSave = () => {
-    const savedMenu = MenuService.saveMenu(menu);
-    setMenu(savedMenu);
-    onSave?.(savedMenu);
+  const handleSave = async () => {
+    setIsSaving(true);
+    setSaveError('');
+    try {
+      const savedMenu = await MenuService.saveMenu(menu);
+      setMenu(savedMenu);
+      onSave?.(savedMenu);
+    } catch (error) {
+      setSaveError(error instanceof Error ? error.message : 'Unable to save your menu right now.');
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   return (
@@ -582,6 +592,7 @@ export const MenuBuilder: React.FC<MenuBuilderProps> = ({
 
       {/* Save Actions */}
       <div className="sticky bottom-6 bg-menu-cream-50 border border-menu-charcoal-200/60 shadow-menu-lg p-4 rounded-sm">
+        {saveError && <p role="alert" className="mb-3 text-sm text-red-700">{saveError}</p>}
         <div className="flex gap-4 justify-end">
           <Button variant="outline" onClick={() => onPreview?.(menu)}>
             <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -590,11 +601,11 @@ export const MenuBuilder: React.FC<MenuBuilderProps> = ({
             </svg>
             Preview Menu
           </Button>
-          <Button onClick={handleSave} variant="primary" className="min-w-[160px]">
+          <Button onClick={handleSave} variant="primary" className="min-w-[160px]" disabled={isSaving}>
             <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" />
             </svg>
-            Save Menu
+            {isSaving ? 'Saving…' : 'Save Menu'}
           </Button>
         </div>
       </div>

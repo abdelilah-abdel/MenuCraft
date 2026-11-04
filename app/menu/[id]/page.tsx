@@ -13,9 +13,9 @@ export default function MenuPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const loadMenu = () => {
+    const loadMenu = async () => {
       try {
-        const foundMenu = MenuService.getMenuById(menuId);
+        const foundMenu = await MenuService.getMenuById(menuId);
         setMenu(foundMenu);
       } catch (error) {
         console.error('Failed to load menu:', error);
@@ -24,7 +24,7 @@ export default function MenuPage() {
       }
     };
 
-    loadMenu();
+    void loadMenu();
   }, [menuId]);
 
   if (loading) {

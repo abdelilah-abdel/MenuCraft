@@ -27,7 +27,7 @@ A lightweight, optimized Next.js application for creating beautiful digital rest
 - **Language**: TypeScript
 - **Styling**: Tailwind CSS
 - **QR Codes**: qrcode library
-- **Data Storage**: LocalStorage (browser-based, no database needed for testing)
+- **Data Storage**: Owner accounts and menus are stored on the application server for a single persistent app instance
 
 ## Getting Started
 
@@ -57,9 +57,9 @@ npm run dev
 
 ### Owner Accounts
 
-Create an account at `/sign-up` and return to it at `/sign-in` whenever the owner session ends. In local development, account records and the generated session secret are stored under `.menucraft-data/`, which is excluded from Git. Set `MENUCRAFT_DATA_DIR` to use a different persistent local directory.
+Create an account at `/sign-up` and return to it at `/sign-in` whenever the owner session ends. In local development, account records, menus, and the generated session secret are stored under `.menucraft-data/`, which is excluded from Git. Set `MENUCRAFT_DATA_DIR` to use a different persistent data directory.
 
-Production deployments must set `MENUCRAFT_SESSION_SECRET` to a secret with at least 32 characters. The current account store uses the server filesystem, so it requires protected persistent storage and is intended for a single application instance. Use shared account and menu persistence before deploying multiple instances or an ephemeral serverless runtime.
+Production deployments must set `MENUCRAFT_SESSION_SECRET` to a secret with at least 32 characters. The account and menu stores use the server filesystem, so they require protected persistent storage and are intended for a single application instance. Use shared account and menu persistence before deploying multiple instances or an ephemeral serverless runtime.
 
 ## Project Structure
 
@@ -131,12 +131,13 @@ NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET=your_preset
 
 ### Data Storage
 
-Currently using browser `localStorage` for simplicity. To migrate to a database:
+Owner menus are stored on the application server in `.menucraft-data/menus.json` by default. Existing menus saved in browser localStorage are migrated when their owner first opens the builder.
 
-1. Update `lib/services/menuService.ts`
-2. Replace localStorage calls with API calls to your backend
-3. Implement API routes in `app/api/` directory
-4. Add database connection (e.g., Prisma, MongoDB, Supabase)
+To replace the file store with a database:
+
+1. Replace the file-backed implementation in `lib/server/menuStore.ts`
+2. Keep the owner and public menu API routes as the application boundary
+3. Configure shared durable storage for the deployed application
 
 ## Templates
 

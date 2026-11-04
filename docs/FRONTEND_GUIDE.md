@@ -28,7 +28,7 @@ React: 19.2.1
 TypeScript: 5.x
 Styling: Tailwind CSS 4.x
 State: React Hooks (Context API for future)
-Storage: localStorage (V1), Database (V2+)
+Storage: Server-side JSON for owner menus (legacy localStorage migration); shared database/storage for multi-instance deployments
 ```
 
 ### Directory Structure

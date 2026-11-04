@@ -8,41 +8,32 @@ export class MenuService {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(menus));
   }
 
-  // Save menu to localStorage (for now)
-  static saveMenu(menu: Menu): Menu {
-    if (!menu.ownerId) {
-      throw new Error('An owner must be signed in to save a menu.');
+  static async getOwnerMenu(): Promise<Menu | null> {
+    const response = await fetch('/api/menus/current', { cache: 'no-store' });
+    if (!response.ok) throw new Error('Unable to load your saved menu.');
+    const result = await response.json() as { menu?: Menu | null };
+    return result.menu || null;
+  }
+
+  static async loadOwnerMenu(ownerId: string): Promise<Menu | null> {
+    const savedMenu = await this.getOwnerMenu();
+    if (savedMenu) return savedMenu;
+
+    const legacyMenu = this.getMenusForOwner(ownerId)[0];
+    return legacyMenu ? this.saveMenu(legacyMenu) : null;
+  }
+
+  static async saveMenu(menu: Menu): Promise<Menu> {
+    const response = await fetch('/api/menus/current', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(menu),
+    });
+    const result = await response.json() as { menu?: Menu; error?: string };
+    if (!response.ok || !result.menu) {
+      throw new Error(result.error || 'Unable to save your menu right now.');
     }
-
-    try {
-      const menus = this.getAllMenus();
-      const ownedMenu = menus.find((existingMenu) => existingMenu.ownerId === menu.ownerId);
-      if (ownedMenu && ownedMenu.id !== menu.id) {
-        menu = { ...menu, id: ownedMenu.id, createdAt: ownedMenu.createdAt };
-      }
-
-      const menuWithId = menus.find((existingMenu) => existingMenu.id === menu.id);
-      if (menuWithId?.ownerId && menuWithId.ownerId !== menu.ownerId) {
-        throw new Error('This menu belongs to another owner.');
-      }
-
-      const existingIndex = menus.findIndex((existingMenu) => existingMenu.id === menu.id);
-
-      menu.updatedAt = new Date().toISOString();
-
-      if (existingIndex >= 0) {
-        menus[existingIndex] = menu;
-      } else {
-        menu.createdAt = new Date().toISOString();
-        menus.push(menu);
-      }
-
-      this.writeMenus(menus);
-      return menu;
-    } catch (error) {
-      console.error('Failed to save menu:', error);
-      throw error instanceof Error ? error : new Error('Failed to save menu');
-    }
+    return result.menu;
   }
 
   // Get all menus
@@ -57,9 +48,12 @@ export class MenuService {
   }
 
   // Get menu by ID
-  static getMenuById(id: string): Menu | null {
-    const menus = this.getAllMenus();
-    return menus.find(m => m.id === id) || null;
+  static async getMenuById(id: string): Promise<Menu | null> {
+    const response = await fetch(`/api/menus/${encodeURIComponent(id)}`, { cache: 'no-store' });
+    if (response.status === 404) return null;
+    const result = await response.json() as { menu?: Menu; error?: string };
+    if (!response.ok) throw new Error(result.error || 'Unable to load this menu.');
+    return result.menu || null;
   }
 
   // Each owner maintains one menu. Claim one unowned legacy menu when they first sign in.

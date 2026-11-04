@@ -20,7 +20,8 @@ export default function Home() {
         if (!isMounted || !response.ok || !result.owner) return;
 
         setOwner(result.owner);
-        setMenus(MenuService.getMenusForOwner(result.owner.id));
+        const menu = await MenuService.loadOwnerMenu(result.owner.id);
+        if (isMounted) setMenus(menu ? [menu] : []);
       } catch {
         // Keep the public landing page available when session lookup fails.
       }

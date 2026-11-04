@@ -77,7 +77,7 @@ after(async () => {
   }
 });
 
-test('owner can create an account, recover a session by signing in, and keep diner menus public', async () => {
+test('owner menu changes persist across sign-out, device sign-in, and the public link', async () => {
   const anonymousBuilder = await fetch(`${appUrl}/builder`, { redirect: 'manual' });
   assert.equal(anonymousBuilder.status, 307);
   assert.match(anonymousBuilder.headers.get('location') || '', /\/sign-in/);
@@ -85,6 +85,8 @@ test('owner can create an account, recover a session by signing in, and keep din
   const publicMenu = await fetch(`${appUrl}/menu/shared-menu-id`);
   assert.equal(publicMenu.status, 200);
   assert.match(publicMenu.headers.get('content-type') || '', /text\/html/);
+  const anonymousOwnerMenu = await fetch(`${appUrl}/api/menus/current`);
+  assert.equal(anonymousOwnerMenu.status, 401);
 
   const signUp = await fetch(`${appUrl}/api/auth/register`, {
     method: 'POST',
@@ -117,6 +119,64 @@ test('owner can create an account, recover a session by signing in, and keep din
   });
   assert.equal(duplicateAccount.status, 409);
 
+  const menuSave = await fetch(`${appUrl}/api/menus/current`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', Cookie: sessionCookie },
+    body: JSON.stringify({
+      id: 'menu-from-owner-device',
+      restaurantName: 'Atlas Kitchen',
+      description: 'Seasonal Moroccan plates',
+      sections: [{
+        id: 'section-lunch',
+        name: 'Lunch',
+        description: 'Served daily',
+        order: 0,
+        items: [{
+          id: 'item-tagine',
+          name: 'Vegetable tagine',
+          description: 'Slow cooked with preserved lemon',
+          price: 72,
+          currency: 'MAD',
+          tags: ['vegetarian', 'popular'],
+          available: false,
+        }],
+      }],
+      template: 'modern',
+      customization: {
+        primaryColor: '#123456',
+        secondaryColor: '#654321',
+        fontFamily: 'Georgia, serif',
+        logoImage: 'data:image/png;base64,ZmFrZQ==',
+        showPrices: true,
+        showDescriptions: true,
+        showImages: false,
+      },
+    }),
+  });
+  assert.equal(menuSave.status, 200);
+  const firstSave = (await menuSave.json()).menu;
+  assert.equal(firstSave.ownerId, signedUp.owner.id);
+  assert.equal(firstSave.restaurantName, 'Atlas Kitchen');
+  assert.equal(firstSave.description, 'Seasonal Moroccan plates');
+  assert.equal(firstSave.sections[0].name, 'Lunch');
+  assert.equal(firstSave.sections[0].description, 'Served daily');
+  assert.equal(firstSave.sections[0].items[0].name, 'Vegetable tagine');
+  assert.equal(firstSave.sections[0].items[0].currency, 'MAD');
+  assert.equal(firstSave.sections[0].items[0].price, 72);
+  assert.deepEqual(firstSave.sections[0].items[0].tags, ['vegetarian', 'popular']);
+  assert.equal(firstSave.sections[0].items[0].available, false);
+  assert.equal(firstSave.template, 'modern');
+  assert.equal(firstSave.customization.primaryColor, '#123456');
+
+  const dinerMenu = await fetch(`${appUrl}/api/menus/${firstSave.id}`);
+  assert.equal(dinerMenu.status, 200);
+  assert.match(dinerMenu.headers.get('cache-control') || '', /no-store/i);
+  const publishedMenu = (await dinerMenu.json()).menu;
+  assert.equal(publishedMenu.restaurantName, 'Atlas Kitchen');
+  assert.equal('ownerId' in publishedMenu, false);
+  const dinerPage = await fetch(`${appUrl}/menu/${firstSave.id}`);
+  assert.equal(dinerPage.status, 200);
+
   const logout = await fetch(`${appUrl}/api/auth/logout`, {
     method: 'POST',
     headers: { Cookie: sessionCookie },
@@ -138,6 +198,35 @@ test('owner can create an account, recover a session by signing in, and keep din
     headers: { Cookie: signInCookie },
   });
   assert.equal((await restoredSession.json()).owner.id, signedUp.owner.id);
+
+  const secondDeviceMenu = await fetch(`${appUrl}/api/menus/current`, {
+    headers: { Cookie: signInCookie },
+  });
+  assert.equal(secondDeviceMenu.status, 200);
+  const restoredMenu = (await secondDeviceMenu.json()).menu;
+  assert.deepEqual(restoredMenu, firstSave);
+  assert.equal(restoredMenu.id, firstSave.id);
+  assert.equal(restoredMenu.restaurantName, 'Atlas Kitchen');
+  assert.equal(restoredMenu.sections[0].items[0].available, false);
+  assert.equal(restoredMenu.customization.logoImage, 'data:image/png;base64,ZmFrZQ==');
+
+  const laterSave = await fetch(`${appUrl}/api/menus/current`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', Cookie: signInCookie },
+    body: JSON.stringify({
+      ...restoredMenu,
+      id: 'stale-menu-id-from-another-device',
+      restaurantName: 'Atlas Kitchen Updated',
+    }),
+  });
+  assert.equal(laterSave.status, 200);
+  const updatedMenu = (await laterSave.json()).menu;
+  assert.equal(updatedMenu.id, firstSave.id);
+  assert.equal(updatedMenu.restaurantName, 'Atlas Kitchen Updated');
+
+  const updatedPublicMenu = await fetch(`${appUrl}/api/menus/${firstSave.id}`);
+  assert.equal(updatedPublicMenu.status, 200);
+  assert.equal((await updatedPublicMenu.json()).menu.restaurantName, 'Atlas Kitchen Updated');
 
   const badPassword = await fetch(`${appUrl}/api/auth/login`, {
     method: 'POST',
