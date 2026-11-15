@@ -61,7 +61,15 @@ Create an account at `/sign-up` and return to it at `/sign-in` whenever the owne
 
 Production deployments must set `MENUCRAFT_SESSION_SECRET` to a secret with at least 32 characters. The account and menu stores use the server filesystem, so they require protected persistent storage and are intended for a single application instance. Use shared account and menu persistence before deploying multiple instances or an ephemeral serverless runtime.
 
+### AI Description Suggestions
+
+AI descriptions are optional. Configure `MENU_AI_API_KEY` and `MENU_AI_MODEL` on the server to enable them. MenuCraft calls an OpenAI-compatible Chat Completions endpoint; set `MENU_AI_BASE_URL` to change the provider base (default: `https://api.openai.com/v1`) or set `MENU_AI_CHAT_COMPLETIONS_URL` to provide the full endpoint. Keep the API key server-side. Without the required configuration, the editor shows a setup message when an owner requests a suggestion.
+
+Each request contains only the selected dish name, owner-entered facts, and the menu's Original Language. The owner reviews the returned draft and applies it explicitly; MenuCraft does not change the existing description automatically.
+
 ## Project Structure
+
+MenuCraft runs as a Next.js application. The separate `dacli` project is used for project and agent workflow; it is not part of the web app's runtime.
 
 ```
 digital-menu-generator/

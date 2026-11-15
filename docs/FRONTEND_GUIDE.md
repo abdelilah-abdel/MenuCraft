@@ -200,9 +200,16 @@ All UI components follow FlowCV-inspired design:
 ```
 Feature-based: MenuBuilder, MenuPreview
 UI Components: Input, Button, Card
-Template Components: ClassicTemplate, ModernTemplate
+Template Components: ClassicTemplate, ModernTemplate, MinimalTemplate,
+                    MedinaCafeTemplate, MoroccanFineDiningTemplate,
+                    ModernMoroccanGardenTemplate
 Service Classes: MenuService, ImageService
 ```
+
+Menu templates render the same menu content with different layouts. Sections may
+contain optional subsections, and items may include photos, descriptions, tags,
+prices, and availability. Keep those content rules consistent across templates;
+template components own presentation only.
 
 ---
 

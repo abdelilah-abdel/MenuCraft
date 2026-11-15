@@ -125,6 +125,7 @@ export class MenuService {
       id: this.generateId(),
       ownerId,
       restaurantName: 'My Restaurant',
+      originalLanguage: 'en',
       description: 'Welcome to our restaurant',
       sections: [],
       template: 'classic',

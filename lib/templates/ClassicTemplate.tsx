@@ -1,139 +1,59 @@
 import React from 'react';
 import { Menu, MenuItem as MenuItemType } from '../types/menu';
-import { imageService } from '../services/imageService';
+import { getMenuSectionGroups, getVisibleMenuSections, localizedMenuText, MenuItemPhoto, MenuItemTags, menuDirection, SoldOutLabel, formatMenuPrice } from './menuTemplateUtils';
 
-interface TemplateProps {
-  menu: Menu;
-}
+interface TemplateProps { menu: Menu }
 
 export const ClassicTemplate: React.FC<TemplateProps> = ({ menu }) => {
-  const { customization, restaurantName, description, sections } = menu;
+  const { customization, restaurantName, description } = menu;
+  const sections = getVisibleMenuSections(menu);
 
   return (
-    <div
-      className="min-h-screen p-8"
-      style={{
-        backgroundColor: '#faf9f6',
-        fontFamily: customization.fontFamily,
-      }}
-    >
-      {/* Header */}
-      <div className="max-w-4xl mx-auto text-center mb-12">
-        {customization.logoImage && (
-          <div className="mb-6">
-            <img
-              src={imageService.getImageUrl(customization.logoImage)}
-              alt={restaurantName}
-              className="h-24 mx-auto object-contain"
-            />
-          </div>
-        )}
-        <h1
-          className="text-5xl font-bold mb-4"
-          style={{ color: customization.primaryColor }}
-        >
-          {restaurantName}
-        </h1>
-        {description && (
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            {description}
-          </p>
-        )}
-        <div className="mt-4 w-32 h-1 mx-auto" style={{ backgroundColor: customization.primaryColor }} />
-      </div>
+    <main dir={menuDirection(menu)} lang={menu.originalLanguage} className="min-h-screen bg-[#faf9f6] p-6 sm:p-8" style={{ fontFamily: customization.fontFamily }}>
+      <header className="mx-auto mb-12 max-w-4xl text-center">
+        {customization.logoImage && <img src={customization.logoImage} alt={`${restaurantName} logo`} className="mx-auto mb-6 h-24 max-w-48 object-contain" />}
+        <h1 className="mb-4 font-serif text-4xl font-bold sm:text-5xl" style={{ color: customization.primaryColor }}>{restaurantName}</h1>
+        {description && <p className="mx-auto max-w-2xl text-lg text-gray-600">{description}</p>}
+        <div className="mx-auto mt-4 h-1 w-32" style={{ backgroundColor: customization.primaryColor }} />
+      </header>
 
-      {/* Menu Sections */}
-      <div className="max-w-4xl mx-auto space-y-12">
+      <div className="mx-auto max-w-4xl space-y-12">
+        {sections.length === 0 && <p className="py-12 text-center font-serif text-xl text-gray-500">{localizedMenuText(menu.originalLanguage, 'Menu coming soon', 'Menu bientôt disponible', 'قائمة الطعام قريباً')}</p>}
         {sections.map((section) => (
-          <div key={section.id} className="border-b border-gray-200 pb-8 last:border-0">
-            <div className="text-center mb-8">
-              <h2
-                className="text-3xl font-semibold mb-2"
-                style={{ color: customization.secondaryColor }}
-              >
-                {section.name}
-              </h2>
-              {section.description && (
-                <p className="text-gray-600 italic">{section.description}</p>
-              )}
+          <section key={section.id} className="border-b border-gray-200 pb-8 last:border-0">
+            <div className="mb-8 text-center">
+              <h2 className="mb-2 font-serif text-3xl font-semibold" style={{ color: customization.secondaryColor }}>{section.name}</h2>
+              {section.description && <p className="italic text-gray-600">{section.description}</p>}
             </div>
-
-            <div className="space-y-6">
-              {section.items.map((item) => (
-                <ClassicMenuItem
-                  key={item.id}
-                  item={item}
-                  customization={customization}
-                />
+            <div className="space-y-7">
+              {getMenuSectionGroups(section).map((group) => (
+                <div key={group.subsection?.id || 'section-items'}>
+                  {group.subsection && <h3 className="mb-3 border-b border-gray-200 pb-2 text-sm font-bold uppercase tracking-[0.18em] text-gray-600">{group.subsection.name}</h3>}
+                  {group.subsection?.description && <p className="mb-3 text-sm italic text-gray-500">{group.subsection.description}</p>}
+                  <div className="space-y-6">{group.items.map((item) => <ClassicMenuItem key={item.id} item={item} customization={customization} language={menu.originalLanguage} />)}</div>
+                </div>
               ))}
             </div>
-          </div>
+          </section>
         ))}
       </div>
-    </div>
+    </main>
   );
 };
 
-const ClassicMenuItem: React.FC<{
-  item: MenuItemType;
-  customization: Menu['customization'];
-}> = ({ item, customization }) => {
-  if (!item.available) return null;
-
-  return (
-    <div className="flex gap-4">
-      {customization.showImages && item.image && (
-        <div className="flex-shrink-0">
-          <img
-            src={imageService.getImageUrl(item.image)}
-            alt={item.name}
-            className="w-24 h-24 object-cover rounded-lg shadow-sm"
-          />
+const ClassicMenuItem: React.FC<{ item: MenuItemType; customization: Menu['customization']; language: Menu['originalLanguage'] }> = ({ item, customization, language }) => (
+  <article className={`flex gap-4 ${!item.available ? 'opacity-75' : ''}`}>
+    <MenuItemPhoto item={item} showImages={customization.showImages} className="h-24 w-24 shrink-0 rounded-lg object-cover shadow-sm" />
+    <div className="min-w-0 flex-1">
+      <div className="flex items-start justify-between gap-4">
+        <div className="min-w-0">
+          <h3 className="font-serif text-xl font-semibold text-gray-900">{item.name || 'Untitled dish'}</h3>
+          <MenuItemTags item={item} className="mt-1" />
         </div>
-      )}
-
-      <div className="flex-1 flex justify-between items-start gap-4">
-        <div className="flex-1">
-          <div className="flex items-baseline gap-2">
-            <h3 className="text-xl font-semibold text-gray-900">
-              {item.name}
-            </h3>
-            {item.tags && item.tags.length > 0 && (
-              <div className="flex gap-1">
-                {item.tags.map((tag) => (
-                  <span
-                    key={tag}
-                    className="text-xs px-2 py-1 rounded-full"
-                    style={{
-                      backgroundColor: `${customization.primaryColor}20`,
-                      color: customization.primaryColor,
-                    }}
-                  >
-                    {tag}
-                  </span>
-                ))}
-              </div>
-            )}
-          </div>
-
-          {customization.showDescriptions && item.description && (
-            <p className="text-gray-600 mt-1 leading-relaxed">
-              {item.description}
-            </p>
-          )}
-        </div>
-
-        {customization.showPrices && (
-          <div className="flex-shrink-0">
-            <span
-              className="text-xl font-semibold"
-              style={{ color: customization.primaryColor }}
-            >
-              {item.currency} {item.price.toFixed(2)}
-            </span>
-          </div>
-        )}
+        {customization.showPrices && <span className="shrink-0 text-lg font-semibold" style={{ color: customization.primaryColor }}>{formatMenuPrice(item)}</span>}
       </div>
+      {customization.showDescriptions && item.description && <p className="mt-1 leading-relaxed text-gray-600">{item.description}</p>}
+      {!item.available && <SoldOutLabel className="mt-2" language={language} />}
     </div>
-  );
-};
+  </article>
+);

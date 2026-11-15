@@ -7,8 +7,16 @@ export interface MenuItem {
   price: number;
   currency: string;
   image?: string; // base64 or URL
+  subsectionId?: string;
   tags?: string[]; // e.g., "vegetarian", "spicy", "popular"
   available: boolean;
+}
+
+export interface MenuSubsection {
+  id: string;
+  name: string;
+  description?: string;
+  order: number;
 }
 
 export interface MenuSection {
@@ -16,6 +24,7 @@ export interface MenuSection {
   name: string;
   description?: string;
   items: MenuItem[];
+  subsections?: MenuSubsection[];
   order: number;
 }
 
@@ -33,6 +42,7 @@ export interface Menu {
   id: string;
   ownerId?: string;
   restaurantName: string;
+  originalLanguage: MenuLanguage;
   description?: string;
   sections: MenuSection[];
   template: TemplateType;
@@ -41,7 +51,15 @@ export interface Menu {
   updatedAt: string;
 }
 
-export type TemplateType = 'classic' | 'modern' | 'minimal';
+export type MenuLanguage = 'ar' | 'fr' | 'en';
+
+export type TemplateType =
+  | 'classic'
+  | 'modern'
+  | 'minimal'
+  | 'medina-cafe'
+  | 'moroccan-fine-dining'
+  | 'modern-moroccan-garden';
 
 export interface MenuExport {
   version: string;
