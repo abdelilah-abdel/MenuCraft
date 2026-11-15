@@ -1,27 +1,54 @@
 @import "tailwindcss";
+/* Tailwind v4 does not auto-load legacy config — wire the design tokens in */
+@config "../tailwind.config.ts";
 
 /* ============================================
-   MODERN RESTAURANT MENU - THEME SYSTEM
-   Minimal | Elegant | Menu-Inspired
+   DIRECTION B — "THE WALL" · Letterpress editorial
+   MenuCraft chrome design system (design-lab/b-wall)
+
+   Palette sources (every colour named at its origin):
+   paper  #F2ECDF  offset litho paper stock
+   ink    #17140F  letterpress black, ink-soaked fibre
+   stamp  #C4311F  red rubber stamp ink  (#E86B55 lifted, on ink grounds)
+   graphite #55504A  graphite pencil
    ============================================ */
 
+@font-face {
+  font-family: 'Bricolage Grotesque';
+  src: url('/fonts/bricolage-grotesque-latin.woff2') format('woff2');
+  font-weight: 200 800;
+  font-stretch: 75% 100%;
+  font-display: swap;
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+2000-206F, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Bricolage Grotesque';
+  src: url('/fonts/bricolage-grotesque-latin-ext.woff2') format('woff2');
+  font-weight: 200 800;
+  font-stretch: 75% 100%;
+  font-display: swap;
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+1E00-1EFF,
+    U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+
 :root {
-  /* Modern Menu Color System */
-  --color-cream: #F7F3EB; /* Parchment background */
-  --color-cream-dark: #F0EAE0;
-  --color-cream-light: #FEFDFB;
+  /* Letterpress palette */
+  --color-paper: #F2ECDF;       /* offset litho paper — the ground */
+  --color-paper-light: #FDFBF6; /* unprinted margin */
+  --color-paper-dark: #E9E1D0;  /* paper in shadow */
 
-  --color-charcoal: #2D2D2D; /* Primary text */
-  --color-charcoal-light: #4A4A4A;
-  --color-charcoal-dark: #1F1F1F;
+  --color-ink: #17140F;         /* body ink */
+  --color-ink-light: #565049;   /* graphite secondary — 7:1 on paper */
+  --color-ink-deep: #0B0906;    /* display ink */
 
-  --color-gold: #D4AF37; /* Elegant accent */
-  --color-gold-light: #F0D166;
-  --color-gold-dark: #C19A2E;
+  --color-stamp: #C4311F;       /* rubber stamp — the one accent */
+  --color-stamp-lift: #E86B55;  /* stamp on ink grounds */
+  --color-stamp-deep: #A82818;  /* hover / small text — 6:1 on paper */
 
-  /* Menu aesthetics */
+  /* Rules, not shadows */
   --menu-border: 1.5px;
   --menu-spacing: 2rem;
+  --menu-rule: rgba(23, 20, 15, 0.28);
 }
 
 html {
@@ -35,20 +62,22 @@ body {
 }
 
 body {
-  font-family: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  font-family: 'Bricolage Grotesque', ui-sans-serif, system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background: var(--color-cream);
-  color: var(--color-charcoal);
+  background: var(--color-paper);
+  color: var(--color-ink);
 }
 
-a {
-  color: inherit;
-  text-decoration: none;
+/* In Tailwind v4 this file's plain rules sit outside the cascade layers and
+   would beat every layered utility (e.g. text-menu-paper-50 on an <a>).
+   Keep element defaults in the base layer so utilities can override them. */
+@layer base {
+  a { color: inherit; text-decoration: none; }
 }
 
 /* ============================================
-   CUSTOM SCROLLBAR - Elegant Menu Style
+   SCROLLBAR — stamp on paper
    ============================================ */
 ::-webkit-scrollbar {
   width: 8px;
@@ -56,33 +85,43 @@ a {
 }
 
 ::-webkit-scrollbar-track {
-  background: var(--color-cream-dark);
+  background: var(--color-paper-dark);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--color-gold);
-  border-radius: 4px;
+  background: var(--color-stamp);
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--color-gold-dark);
+  background: var(--color-stamp-deep);
 }
 
 /* ============================================
-   FOCUS & SELECTION - Menu Colors
+   FOCUS & SELECTION — stamp red
    ============================================ */
 *:focus-visible {
-  outline: 2px solid var(--color-gold);
-  outline-offset: 2px;
+  outline: 3px solid var(--color-stamp);
+  outline-offset: 3px;
 }
 
 ::selection {
-  background-color: var(--color-gold-light);
-  color: var(--color-charcoal-dark);
+  background-color: var(--color-stamp);
+  color: var(--color-paper-light);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
 }
 
 /* ============================================
-   MENU-STYLE DIVIDERS
+   RULES — hairlines do the dividing
    ============================================ */
 
 .menu-divider {
@@ -94,14 +133,9 @@ a {
   content: '';
   display: block;
   width: 100%;
-  height: var(--menu-border);
-  background: linear-gradient(90deg,
-    transparent 0%,
-    var(--color-gold) 20%,
-    var(--color-gold) 80%,
-    transparent 100%
-  );
-  opacity: 0.3;
+  height: 1px;
+  background: var(--color-ink);
+  opacity: 0.9;
 }
 
 .menu-divider-center::before {
@@ -109,20 +143,23 @@ a {
   margin: 0 auto;
 }
 
+/* The old dotted ornament is now a short centred rule — anti-ornament */
 .menu-divider-dots {
   text-align: center;
-  color: var(--color-gold);
-  font-size: 1.5rem;
-  letter-spacing: 0.5rem;
-  opacity: 0.5;
+  color: transparent;
+  font-size: 0;
+  height: 1.5px;
+  width: 96px;
+  margin: var(--menu-spacing) auto;
+  background: var(--color-stamp);
 }
 
 .menu-divider-dots::before {
-  content: '• • •';
+  content: '';
 }
 
 /* ============================================
-   MENU SECTION HEADERS
+   SECTION HEADERS — label over a hairline
    ============================================ */
 
 .menu-section-header {
@@ -138,8 +175,8 @@ a {
   top: 50%;
   width: 60px;
   height: 1px;
-  background: var(--color-gold);
-  opacity: 0.4;
+  background: var(--color-ink);
+  opacity: 0.9;
 }
 
 .menu-section-header::before {
@@ -151,30 +188,28 @@ a {
 }
 
 /* ============================================
-   MENU CARD / PAPER STYLE
+   CARDS — paper stock with a rule, never a shadow
    ============================================ */
 
 .menu-card {
-  background: #FEFDFB;
-  border: var(--menu-border) solid rgba(45, 45, 45, 0.1);
-  box-shadow: 0 2px 8px 0 rgba(0, 0, 0, 0.08);
-  transition: all 0.3s ease;
+  background: var(--color-paper-light);
+  border: var(--menu-border) solid var(--color-ink);
+  transition: border-color 0.2s ease;
 }
 
 .menu-card:hover {
-  box-shadow: 0 4px 16px 0 rgba(0, 0, 0, 0.12);
-  border-color: rgba(212, 175, 55, 0.3);
+  border-color: var(--color-stamp);
 }
 
 .menu-card-bordered {
-  border-top: 3px solid var(--color-gold);
-  border-bottom: 3px solid var(--color-gold);
-  border-left: var(--menu-border) solid rgba(45, 45, 45, 0.1);
-  border-right: var(--menu-border) solid rgba(45, 45, 45, 0.1);
+  border-top: 3px solid var(--color-ink);
+  border-bottom: 3px solid var(--color-ink);
+  border-left: var(--menu-border) solid var(--color-ink);
+  border-right: var(--menu-border) solid var(--color-ink);
 }
 
 /* ============================================
-   TYPOGRAPHY - Menu Style
+   TYPOGRAPHY — one family, five steps, big jumps
    ============================================ */
 
 h1, h2, h3, h4, h5, h6, p {
@@ -183,39 +218,44 @@ h1, h2, h3, h4, h5, h6, p {
 }
 
 .menu-title {
-  font-family: Georgia, serif;
-  font-weight: 400;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-  color: var(--color-charcoal-dark);
+  font-family: 'Bricolage Grotesque', ui-sans-serif, sans-serif;
+  font-weight: 800;
+  font-stretch: 75%;
+  letter-spacing: -0.03em;
+  line-height: 1;
+  text-transform: none;
+  color: var(--color-ink-deep);
 }
 
 .menu-subtitle {
-  font-family: Georgia, serif;
-  font-style: italic;
-  color: var(--color-charcoal-light);
-  font-weight: 300;
+  font-family: 'Bricolage Grotesque', ui-sans-serif, sans-serif;
+  font-style: normal;
+  font-weight: 400;
+  color: var(--color-ink-light);
+  letter-spacing: -0.01em;
 }
 
 .menu-price {
-  font-family: Georgia, serif;
-  color: var(--color-gold);
-  font-weight: 500;
+  font-family: 'Bricolage Grotesque', ui-sans-serif, sans-serif;
+  color: var(--color-ink-deep);
+  font-weight: 800;
+  font-stretch: 75%;
+  font-variant-numeric: tabular-nums;
 }
 
 .menu-description {
   font-size: 0.95rem;
   line-height: 1.6;
-  color: var(--color-charcoal-light);
+  color: var(--color-ink-light);
 }
 
 /* ============================================
-   MENU ITEM LAYOUTS
+   MENU ITEM ROWS — name, leader, number
    ============================================ */
 
 .menu-item {
   padding: 1.5rem 0;
-  border-bottom: 1px solid rgba(45, 45, 45, 0.08);
+  border-bottom: 1px solid var(--menu-rule);
   transition: background 0.2s ease;
 }
 
@@ -224,7 +264,7 @@ h1, h2, h3, h4, h5, h6, p {
 }
 
 .menu-item:hover {
-  background: rgba(212, 175, 55, 0.03);
+  background: rgba(23, 20, 15, 0.03);
 }
 
 .menu-item-name {
@@ -234,34 +274,39 @@ h1, h2, h3, h4, h5, h6, p {
   margin-bottom: 0.5rem;
 }
 
+/* Dot leaders sit on the baseline — the printed-menu move */
 .menu-item-name::after {
   content: '';
   flex: 1;
   min-width: 1rem;
   margin: 0 0.75rem;
-  border-bottom: 1px dotted rgba(45, 45, 45, 0.2);
+  border-bottom: 2px dotted rgba(85, 80, 74, 0.55);
+  transform: translateY(-4px);
 }
 
 /* ============================================
-   ORNAMENTAL ELEMENTS
+   ORNAMENTS — a stamp rule instead of filigree
    ============================================ */
 
 .menu-ornament {
   text-align: center;
-  color: var(--color-gold);
-  opacity: 0.6;
-  font-size: 1.25rem;
-  margin: 2rem 0;
+  color: transparent;
+  opacity: 1;
+  font-size: 0;
+  height: 1.5px;
+  width: 88px;
+  margin: 2rem auto;
+  background: var(--color-stamp);
 }
 
 .menu-ornament::before,
 .menu-ornament::after {
-  content: '❖';
-  margin: 0 1rem;
+  content: '';
+  margin: 0;
 }
 
 /* ============================================
-   ANIMATIONS - Subtle & Elegant
+   ANIMATIONS — quiet, no bounce
    ============================================ */
 
 @keyframes fadeIn {
@@ -310,60 +355,60 @@ h1, h2, h3, h4, h5, h6, p {
 }
 
 /* ============================================
-   BUTTONS - Menu Style
+   BUTTONS — ink and stamp fills, square edges
    ============================================ */
 
 .btn-menu {
-  font-family: var(--font-inter), sans-serif;
-  font-weight: 500;
-  letter-spacing: 0.05em;
+  font-family: 'Bricolage Grotesque', ui-sans-serif, sans-serif;
+  font-weight: 700;
+  letter-spacing: 0.02em;
   text-transform: uppercase;
   font-size: 0.875rem;
   padding: 0.75rem 2rem;
-  border: var(--menu-border) solid var(--color-charcoal);
+  border: var(--menu-border) solid var(--color-ink);
   background: transparent;
-  color: var(--color-charcoal);
-  transition: all 0.3s ease;
+  color: var(--color-ink);
+  transition: background 0.2s ease, color 0.2s ease;
   cursor: pointer;
 }
 
 .btn-menu:hover {
-  background: var(--color-charcoal);
-  color: var(--color-cream-light);
+  background: var(--color-ink);
+  color: var(--color-paper);
 }
 
 .btn-menu-primary {
-  background: var(--color-charcoal);
-  color: var(--color-cream-light);
-  border-color: var(--color-charcoal);
+  background: var(--color-ink);
+  color: var(--color-paper);
+  border-color: var(--color-ink);
 }
 
 .btn-menu-primary:hover {
-  background: var(--color-charcoal-dark);
-  border-color: var(--color-charcoal-dark);
+  background: var(--color-stamp);
+  border-color: var(--color-stamp);
+  color: var(--color-paper-light);
 }
 
-.btn-menu-gold {
-  border-color: var(--color-gold);
-  color: var(--color-gold);
+.btn-menu-stamp {
+  border-color: var(--color-stamp);
+  color: var(--color-stamp);
 }
 
-.btn-menu-gold:hover {
-  background: var(--color-gold);
-  color: var(--color-charcoal-dark);
+.btn-menu-stamp:hover {
+  background: var(--color-stamp);
+  color: var(--color-paper-light);
 }
 
 /* ============================================
-   HOVER EFFECTS - Subtle
+   HOVER — rules change, cards do not levitate
    ============================================ */
 
 .hover-lift {
-  transition: all 0.3s ease;
+  transition: border-color 0.2s ease;
 }
 
 .hover-lift:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 16px 0 rgba(0, 0, 0, 0.12);
+  border-color: var(--color-stamp);
 }
 
 /* ============================================
@@ -394,15 +439,15 @@ canvas {
 }
 
 /* ============================================
-   PAPER TEXTURE (Subtle)
+   PAPER GRID (subtle press registration marks)
    ============================================ */
 
 .menu-paper-texture {
   position: relative;
   background:
-    linear-gradient(90deg, rgba(0, 0, 0, 0.01) 1px, transparent 1px),
-    linear-gradient(rgba(0, 0, 0, 0.01) 1px, transparent 1px);
-  background-size: 20px 20px;
+    linear-gradient(90deg, rgba(23, 20, 15, 0.02) 1px, transparent 1px),
+    linear-gradient(rgba(23, 20, 15, 0.02) 1px, transparent 1px);
+  background-size: 24px 24px;
 }
 
 /* ============================================
@@ -419,4 +464,86 @@ canvas {
 
 .letter-spacing-wider {
   letter-spacing: 0.15em;
+}
+
+/* Kicker — the small stamp-red label that opens each section */
+.kicker {
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--color-stamp);
+}
+
+/* Kicker on ink grounds — lifted stamp for AA (5.9:1) */
+.kicker-on-ink {
+  color: #e86b55;
+}
+
+/* ============================================
+   LANDING MOTION GATES (Direction B)
+   Pre-hydration class added by layout.tsx; removed
+   by LandingMotion once tweens own their start state.
+   Without JS or with reduced motion, nothing is hidden.
+   ============================================ */
+
+.motion-ok [data-cinematic] {
+  opacity: 0;
+}
+
+/* Flip zone — the card rests inside zone 1 until the scrub moves it */
+.flip-stage {
+  position: relative;
+}
+
+.flip-card {
+  position: absolute;
+  top: clamp(16px, 3vh, 30px);
+  left: clamp(16px, 3vw, 30px);
+  width: calc((100% - 2 * clamp(16px, 3vw, 40px)) / 3 - 2 * clamp(16px, 3vw, 30px));
+  z-index: 5;
+}
+
+@media (max-width: 900px) {
+  .flip-card {
+    position: relative;
+    top: auto;
+    left: auto;
+    width: auto;
+    margin-bottom: 20px;
+    order: -1; /* the card leads the stacked column */
+  }
+}
+
+/* Template preview plate — hidden until a row is hovered */
+#tpreview {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 250px;
+  z-index: 60;
+  pointer-events: none;
+  background: var(--color-paper-light);
+  border: var(--menu-border) solid var(--color-ink);
+  padding: 16px;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.25s ease;
+}
+
+@media (hover: none) {
+  #tpreview { display: none; }
+}
+
+/* Giant closing wordmark — letters rise from the floor */
+.wm-letter {
+  display: inline-block;
+  will-change: transform;
+}
+
+@media (max-width: 900px) {
+  .flip-stage {
+    display: flex;
+    flex-direction: column;
+  }
 }

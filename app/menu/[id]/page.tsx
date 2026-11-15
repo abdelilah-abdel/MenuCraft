@@ -29,10 +29,10 @@ export default function MenuPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="min-h-screen flex items-center justify-center bg-menu-paper-200">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-gray-900 mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading menu...</p>
+          <div className="animate-spin rounded-full h-16 w-16 border-b-[3px] border-menu-ink-900 mx-auto mb-4"></div>
+          <p className="text-menu-ink-500">Setting the table…</p>
         </div>
       </div>
     );
@@ -40,22 +40,22 @@ export default function MenuPage() {
 
   if (!menu) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="text-center max-w-md p-8">
-          <div className="w-16 h-16 rounded-xl bg-gray-900 flex items-center justify-center mx-auto mb-4">
-            <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <div className="min-h-screen flex items-center justify-center bg-menu-paper-200">
+        <div className="text-center max-w-md p-8 border-[1.5px] border-menu-ink-900 bg-menu-paper-50">
+          <div className="w-16 h-16 border-[1.5px] border-menu-stamp-500 flex items-center justify-center mx-auto mb-4">
+            <svg className="w-8 h-8 text-menu-stamp-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
             </svg>
           </div>
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">Menu Not Found</h1>
-          <p className="text-gray-600 mb-6">
+          <h1 className="text-2xl font-display font-extrabold tracking-[-0.03em] text-menu-ink-900 mb-2">Menu not found</h1>
+          <p className="text-menu-ink-500 mb-6">
             This menu doesn&apos;t exist or has been removed.
           </p>
           <a
             href="/"
-            className="inline-block px-6 py-3 bg-gray-900 text-white rounded-lg font-medium hover:bg-gray-800 transition-colors"
+            className="inline-block px-6 py-3 bg-menu-ink-900 text-menu-paper-50 font-bold uppercase tracking-[0.02em] hover:bg-menu-stamp-500 transition-colors"
           >
-            Create Your Own Menu
+            Create your own menu
           </a>
         </div>
       </div>

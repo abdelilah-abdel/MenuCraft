@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MenuCraft — Direction C · The Shop Floor</title>
+<style>
+  :focus-visible { outline: 3px solid var(--hazard, #F5C518); outline-offset: 3px; }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; transition-duration: 0.001ms !important; scroll-behavior: auto !important; }
+    .rail-viewport { overflow-x: auto !important; }
+    .rail-track { transform: none !important; }
+  }
+</style>
+<style>
+/* ============================================================
+   DIRECTION C — THE SHOP FLOOR
+   Palette sources:
+   --peg    #1A1C1B  pegboard graphite
+   --chalk  #F2F1EC  chalk white
+   --hazard #F5C518  workshop hazard-tape yellow
+   --oxide  #B5461F  rust oxide on steel
+   ============================================================ */
+@font-face {
+  font-family: 'Bricolage';
+  src: url('../fonts/bricolage-grotesque-latin.woff2') format('woff2');
+  font-weight: 200 800; font-stretch: 75% 100%; font-display: swap;
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+2000-206F, U+2212;
+}
+@font-face {
+  font-family: 'Bricolage';
+  src: url('../fonts/bricolage-grotesque-latin-ext.woff2') format('woff2');
+  font-weight: 200 800; font-stretch: 75% 100%; font-display: swap;
+  unicode-range: U+0100-02BA, U+1E00-1EFF, U+2020, U+20A0-20AB;
+}
+:root {
+  --peg: #1A1C1B;
+  --peg-2: #232624;
+  --chalk: #F2F1EC;
+  --hazard: #F5C518;
+  --oxide: #B5461F;
+  --oxide-lit: #E07B4B;   /* oxide on peg ground: 5.8:1 */
+  --line: rgba(242,241,236,.22);
+  --pad: clamp(20px, 4vw, 56px);
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: 'Bricolage', system-ui, sans-serif;
+  background: var(--peg); color: var(--chalk);
+  font-size: 17px; line-height: 1.5;
+  -webkit-font-smoothing: antialiased; overflow-x: hidden;
+}
+a { color: inherit; }
+::selection { background: var(--hazard); color: var(--peg); }
+
+.progress { position: fixed; top: 0; left: 0; height: 4px; width: 100%; background: var(--hazard); transform: scaleX(0); transform-origin: 0 50%; z-index: 100; }
+
+/* pegboard dot field behind everything */
+body::before {
+  content: ""; position: fixed; inset: 0; z-index: -1; pointer-events: none;
+  background-image: radial-gradient(rgba(242,241,236,.10) 1.2px, transparent 1.2px);
+  background-size: 26px 26px;
+}
+
+.topbar {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 90;
+  display: flex; align-items: center; justify-content: space-between; gap: 20px;
+  padding: 13px var(--pad); background: rgba(26,28,27,.92); border-bottom: 1px solid var(--line);
+  backdrop-filter: blur(6px);
+}
+.brand { font-weight: 800; font-stretch: 75%; font-size: 19px; text-transform: uppercase; letter-spacing: -0.02em; text-decoration: none; }
+.brand b { color: var(--hazard); }
+.topbar nav { display: flex; gap: clamp(12px, 2.4vw, 30px); align-items: center; }
+.topbar nav a { font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: .1em; text-decoration: none; color: rgba(242,241,236,.8); }
+.topbar nav a:hover { color: var(--hazard); }
+
+.btn {
+  position: relative; overflow: hidden; display: inline-block; cursor: pointer;
+  font-family: inherit; font-size: 15px; font-weight: 700; letter-spacing: .03em;
+  padding: 15px 28px; text-decoration: none; text-transform: uppercase;
+  background: var(--hazard); color: var(--peg); border: none;
+  --r: 0%; --cx: 50%; --cy: 50%;
+}
+/* circle fill: the fill layer and the clone label share one clip-path,
+   so the label is always legible on whichever layer is under it */
+.btn .fill, .btn .clone {
+  position: absolute; pointer-events: none;
+  clip-path: circle(var(--r) at var(--cx) var(--cy));
+  transition: clip-path .5s cubic-bezier(.2,.7,.2,1);
+}
+.btn .fill { inset: 0; background: var(--chalk); }
+.btn .clone { inset: 0; display: block; padding: inherit; text-align: inherit;
+  color: var(--peg); z-index: 2; font: inherit; letter-spacing: inherit; line-height: inherit; }
+.btn:hover, .btn:focus-visible { --r: 150%; }
+.btn span.lbl { position: relative; z-index: 1; color: inherit; }
+.btn--line { background: transparent; color: var(--chalk); border: 1.5px solid var(--hazard); }
+.btn--line .fill { background: var(--hazard); }
+.btn--sm { padding: 10px 18px; font-size: 12.5px; }
+
+section { padding: clamp(70px, 12vh, 140px) var(--pad); border-bottom: 1px solid var(--line); position: relative; }
+.kicker { font-size: 12px; font-weight: 700; letter-spacing: .2em; text-transform: uppercase; color: var(--hazard); margin-bottom: 26px; display: flex; gap: 14px; align-items: center; }
+.kicker::after { content: ""; flex: 1; height: 1px; background: var(--line); }
+
+/* ---------- hero ---------- */
+.hero { min-height: 100svh; display: flex; flex-direction: column; justify-content: center; padding-top: 120px; }
+.hero h1 { font-size: clamp(52px, 11vw, 168px); font-weight: 800; font-stretch: 75%; line-height: .92; letter-spacing: -0.04em; text-transform: uppercase; }
+.hero h1 .swap { color: var(--hazard); display: inline-block; min-width: 5ch; }
+.hero__row { display: flex; flex-wrap: wrap; gap: 26px 60px; align-items: flex-end; justify-content: space-between; margin-top: clamp(30px, 6vh, 64px); }
+.hero__row p { max-width: 42ch; color: rgba(242,241,236,.82); font-size: clamp(16px, 1.5vw, 20px); }
+.hero__cta { display: flex; gap: 14px; flex-wrap: wrap; }
+.stats { display: grid; grid-template-columns: repeat(3, 1fr); border-top: 1px solid var(--line); margin-top: clamp(40px, 7vh, 80px); }
+.stat { padding: 22px 26px 6px 0; border-right: 1px solid var(--line); }
+.stat:last-child { border-right: none; }
+.stat b { display: block; font-size: clamp(38px, 5.5vw, 72px); font-weight: 800; font-stretch: 75%; line-height: 1; letter-spacing: -0.03em; color: var(--hazard); font-variant-numeric: tabular-nums; }
+.stat b .count { font-size: inherit; font-weight: inherit; letter-spacing: inherit; color: inherit; }
+.stat > span { font-size: 12.5px; text-transform: uppercase; letter-spacing: .12em; color: rgba(242,241,236,.6); font-weight: 600; }
+
+/* ---------- timeline ---------- */
+.intro h2 { font-size: clamp(32px, 4.8vw, 66px); font-weight: 700; letter-spacing: -0.03em; line-height: 1.05; max-width: 22ch; }
+.intro h2 b { color: var(--hazard); font-weight: 800; font-stretch: 75%; }
+.steps { margin-top: clamp(50px, 9vh, 110px); }
+.steps__track { position: relative; height: 3px; background: var(--line); margin-bottom: 34px; }
+.steps__fill { position: absolute; inset: 0 auto 0 0; width: 25%; background: var(--hazard); transform-origin: 0 50%; }
+.steps__grid { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: clamp(16px, 3vw, 44px); }
+.step { cursor: pointer; background: none; border: none; font-family: inherit; text-align: left; padding: 0; color: rgba(242,241,236,.55); transition: color .3s; }
+.step[aria-current="true"] { color: var(--chalk); }
+.step .no { font-size: 13px; font-weight: 700; letter-spacing: .18em; color: var(--hazard); }
+.step h3 { font-size: clamp(20px, 2.2vw, 30px); font-weight: 800; font-stretch: 75%; text-transform: uppercase; letter-spacing: -0.01em; margin: 8px 0 6px; }
+.step p { font-size: 14.5px; line-height: 1.45; }
+
+/* ---------- workbench: instrument panel + tabs ---------- */
+.panel { background: var(--peg-2); border: 1px solid var(--line); }
+.panel__bar { display: flex; align-items: center; gap: 18px; padding: 14px 20px; border-bottom: 1px solid var(--line); position: relative; }
+.tablist { display: flex; gap: 6px; position: relative; }
+.tab {
+  position: relative; z-index: 1; background: none; border: none; font-family: inherit;
+  font-size: 13px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase;
+  color: rgba(242,241,236,.6); padding: 9px 16px; cursor: pointer; transition: color .2s;
+}
+.tab[aria-selected="true"] { color: var(--peg); }
+.tab-pill { position: absolute; top: 0; left: 0; height: 100%; background: var(--hazard); z-index: 0; border-radius: 999px; }
+.panel__meta { margin-left: auto; font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: rgba(242,241,236,.5); }
+.panel__body { padding: clamp(20px, 3vw, 36px); min-height: 420px; }
+.tabpanel[hidden] { display: none; }
+.tabpanel { animation: none; }
+
+/* edit panel */
+.form-grid { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 22px 34px; }
+.field label { display: block; font-size: 11px; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; color: var(--hazard); margin-bottom: 8px; }
+.field input, .field select {
+  width: 100%; font-family: inherit; font-size: 16px; color: var(--chalk);
+  background: transparent; border: none; border-bottom: 2px solid var(--line); padding: 8px 2px;
+}
+.field input:focus, .field select:focus { outline: none; border-bottom-color: var(--hazard); }
+.field select option { background: var(--peg-2); }
+.itemlist { grid-column: 1 / -1; border-top: 1px solid var(--line); padding-top: 18px; }
+.itemlist h4 { font-size: 12px; letter-spacing: .16em; text-transform: uppercase; color: rgba(242,241,236,.6); margin-bottom: 12px; font-weight: 700; }
+.item { display: flex; align-items: baseline; gap: 12px; padding: 11px 0; border-bottom: 1px solid rgba(242,241,236,.12); }
+.item .nm { font-weight: 600; }
+.item .dots { flex: 1; border-bottom: 2px dotted rgba(242,241,236,.35); transform: translateY(-4px); }
+.item .pr { font-weight: 800; font-stretch: 75%; font-variant-numeric: tabular-nums; color: var(--hazard); }
+.item .off { font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--oxide-lit); border: 1px solid var(--oxide-lit); padding: 2px 7px; }
+
+/* preview panel */
+.minimenu { background: var(--chalk); color: var(--peg); padding: clamp(22px, 3vw, 38px); max-width: 560px; }
+.minimenu h3 { font-size: clamp(26px, 3vw, 38px); font-weight: 800; font-stretch: 75%; text-transform: uppercase; letter-spacing: -0.02em; }
+.minimenu .sub { color: #5b5b55; font-size: 14px; margin: 6px 0 20px; }
+.minimenu .sec { font-size: 11.5px; font-weight: 700; letter-spacing: .2em; text-transform: uppercase; color: var(--oxide); border-bottom: 1.5px solid var(--peg); padding-bottom: 6px; margin: 18px 0 4px; }
+.minimenu .row { display: flex; align-items: baseline; gap: 10px; padding: 8px 0; }
+.minimenu .row .nm { font-weight: 600; }
+.minimenu .row .dots { flex: 1; border-bottom: 2px dotted #9a978d; transform: translateY(-4px); }
+.minimenu .row .pr { font-weight: 800; font-stretch: 75%; font-variant-numeric: tabular-nums; }
+
+/* share panel */
+.sharegrid { display: grid; grid-template-columns: auto 1fr; gap: clamp(24px, 4vw, 56px); align-items: center; }
+.qr-plate { background: var(--chalk); padding: 22px; width: clamp(220px, 26vw, 300px); }
+.qr-plate img { width: 100%; display: block; }
+.sharegrid h3 { font-size: clamp(26px, 3.4vw, 44px); font-weight: 800; font-stretch: 75%; text-transform: uppercase; letter-spacing: -0.02em; line-height: 1.02; }
+.sharegrid ul { list-style: none; margin-top: 18px; display: grid; gap: 10px; }
+.sharegrid li { font-size: 15px; color: rgba(242,241,236,.8); display: flex; gap: 12px; align-items: baseline; }
+.sharegrid li::before { content: "▸"; color: var(--hazard); }
+.sharegrid .link { display: inline-block; margin-top: 18px; font-weight: 700; color: var(--hazard); text-decoration: none; border-bottom: 2px solid var(--hazard); padding-bottom: 2px; }
+
+/* ---------- shelf: draggable slider ---------- */
+.shelf__head { display: flex; justify-content: space-between; align-items: flex-end; gap: 24px; flex-wrap: wrap; margin-bottom: 36px; }
+.shelf__head h2 { font-size: clamp(34px, 5vw, 66px); font-weight: 800; font-stretch: 75%; text-transform: uppercase; letter-spacing: -0.03em; line-height: 1; }
+.shelf__hint { font-size: 13px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: rgba(242,241,236,.55); }
+.rail-viewport { overflow: hidden; }
+.rail-track { display: flex; gap: 22px; width: max-content; padding-bottom: 6px; will-change: transform; }
+.tcard {
+  width: clamp(250px, 28vw, 360px); background: var(--chalk); color: var(--peg);
+  border: 1px solid rgba(0,0,0,.25); user-select: none; flex: none;
+}
+.tcard__prev { height: 200px; padding: 18px; border-bottom: 1px solid var(--peg); font-size: 12.5px; overflow: hidden; }
+.tcard__prev .t { font-weight: 800; text-transform: uppercase; font-size: 16px; letter-spacing: .03em; margin-bottom: 8px; }
+.tcard__prev .r { display: flex; gap: 6px; align-items: baseline; margin: 5px 0; }
+.tcard__prev .r i { font-style: normal; flex: 1; border-bottom: 1.5px dotted currentColor; opacity: .55; transform: translateY(-3px); }
+.tcard__body { padding: 15px 18px 19px; display: flex; justify-content: space-between; align-items: baseline; gap: 10px; }
+.tcard__body h3 { font-size: 17px; font-weight: 800; font-stretch: 75%; text-transform: uppercase; }
+.tcard__body span { font-size: 11.5px; letter-spacing: .1em; text-transform: uppercase; color: #6b6b63; text-align: right; }
+.tp--dark { background: #141414; color: #eee; }
+.tp--dark .t { color: var(--hazard); }
+.tp--green { background: #eef4ec; color: #234d2f; }
+.tp--clay { background: #f7efe0; color: #0f3d33; }
+.tp--clay .t { color: #b3541e; }
+.tp--plain { background: #f4f4f2; color: #222; }
+.tp--white { background: #fff; color: #111; }
+.tp--white .t { letter-spacing: .28em; font-size: 12px; }
+.railbar { height: 4px; background: var(--line); margin-top: 22px; position: relative; }
+.railbar i { position: absolute; inset: 0 auto 0 0; width: 18%; background: var(--hazard); display: block; }
+
+/* fan stack (card fan) */
+.fan { position: relative; height: 300px; margin-top: clamp(46px, 8vh, 90px); display: flex; justify-content: center; align-items: flex-end; }
+.fan .tcard { position: absolute; bottom: 0; transform-origin: bottom center; box-shadow: 0 18px 40px rgba(0,0,0,.45); }
+.fan-cap { text-align: center; margin-top: 22px; font-size: 13.5px; color: rgba(242,241,236,.6); }
+
+/* ---------- rates (light scene) ---------- */
+.rates { background: var(--chalk); color: var(--peg); border-bottom: none; }
+.rates .kicker { color: var(--oxide); }
+.rates .kicker::after { background: rgba(23,20,15,.25); }
+.rates__grid { display: grid; grid-template-columns: minmax(0,5fr) minmax(0,7fr); gap: clamp(30px, 5vw, 80px); align-items: start; }
+.rates h2 { font-size: clamp(34px, 4.8vw, 62px); font-weight: 800; font-stretch: 75%; text-transform: uppercase; letter-spacing: -0.03em; line-height: 1; }
+.rates__copy p { margin-top: 18px; color: #55504A; max-width: 42ch; }
+.menu-list { list-style: none; border-top: 2.5px solid var(--peg); }
+.menu-list li { padding: 21px 0; border-bottom: 1px solid rgba(23,20,15,.25); }
+.plan-top { display: flex; align-items: baseline; gap: 13px; }
+.plan-top h3 { font-size: clamp(21px, 2.3vw, 30px); font-weight: 800; font-stretch: 75%; text-transform: uppercase; white-space: nowrap; }
+.plan-top .leader { flex: 1; border-bottom: 2px dotted #8b857a; transform: translateY(-6px); min-width: 30px; }
+.plan-top .price { font-size: clamp(21px, 2.3vw, 30px); font-weight: 800; font-stretch: 75%; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.plan-top .price small { font-size: .42em; font-weight: 600; text-transform: uppercase; letter-spacing: .08em; color: #6b655c; margin-left: 5px; }
+.plan-top .price .from { font-size: .42em; font-weight: 500; color: #6b655c; margin-right: 7px; }
+.plan-feats { margin-top: 9px; display: grid; gap: 4px; }
+.plan-feats span { font-size: 15px; color: #3a362f; }
+.plan-tag { display: inline-block; font-size: 11px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; background: var(--oxide); color: var(--chalk); padding: 3px 9px; margin-left: 10px; vertical-align: middle; }
+
+/* ---------- closing ---------- */
+.closing { background: var(--peg); border-bottom: none; padding-bottom: 0; }
+.closing h2 { font-size: clamp(40px, 6.5vw, 92px); font-weight: 800; font-stretch: 75%; text-transform: uppercase; letter-spacing: -0.035em; line-height: .96; max-width: 14ch; }
+.closing .cta-row { display: flex; gap: 16px; flex-wrap: wrap; margin-top: clamp(30px, 6vh, 56px); }
+.footlinks { display: flex; flex-wrap: wrap; gap: 14px 34px; margin-top: clamp(50px, 9vh, 110px); padding-top: 20px; border-top: 1px solid var(--line); font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: .1em; }
+.footlinks a { text-decoration: none; color: rgba(242,241,236,.75); }
+.footlinks a:hover { color: var(--hazard); }
+.footlinks .legal { margin-left: auto; text-transform: none; letter-spacing: 0; font-weight: 500; color: rgba(242,241,236,.5); }
+.wordmark { overflow: hidden; line-height: .74; margin-top: 26px; }
+.wordmark span { display: inline-block; font-size: clamp(70px, 17vw, 290px); font-weight: 800; font-stretch: 75%; letter-spacing: -0.045em; color: var(--hazard); transform: translateY(110%); }
+
+@media (max-width: 900px) {
+  .stats, .steps__grid, .form-grid { grid-template-columns: 1fr; }
+  .stat { border-right: none; border-bottom: 1px solid var(--line); }
+  .steps__grid { gap: 26px; }
+  .sharegrid, .rates__grid { grid-template-columns: 1fr; }
+  .topbar nav a:not(.btn) { display: none; }
+  .fan { display: none; }
+}
+</style>
+</head>
+<body>
+
+<div class="progress" aria-hidden="true"></div>
+
+<header class="topbar" id="topbar">
+  <a class="brand" href="#">Menu<b>Craft</b></a>
+  <nav aria-label="Primary">
+    <a href="#how">How</a>
+    <a href="#bench">Bench</a>
+    <a href="#shelf">Shelf</a>
+    <a href="#rates">Rates</a>
+    <a href="#start" class="btn btn--sm magnetic"><span class="fill" aria-hidden="true"></span><span class="lbl">Start free</span></a>
+  </nav>
+</header>
+
+<main>
+<!-- ============ OPENING ============ -->
+<section class="hero" aria-label="Opening">
+  <p class="kicker">Menu workbench · online</p>
+  <h1>Move your menu from<br><span class="swap" id="swap-a">paper</span> to <span class="swap" id="swap-b">phone</span></h1>
+  <div class="hero__row">
+    <p>MenuCraft is the shop floor where restaurants build, proof and publish a menu — sections in, prices stamped, QR out. Five minutes from blank page to table tent.</p>
+    <div class="hero__cta">
+      <a href="#bench" class="btn magnetic"><span class="fill" aria-hidden="true"></span><span class="lbl">Open the bench</span></a>
+      <a href="#shelf" class="btn btn--line magnetic"><span class="fill" aria-hidden="true"></span><span class="lbl">Walk the shelf</span></a>
+    </div>
+  </div>
+  <div class="stats" id="stats">
+    <div class="stat"><b><span class="count" data-to="5">5</span> min</b><span>Blank page to published</span></div>
+    <div class="stat"><b><span class="count" data-to="6">6</span></b><span>Templates on the shelf</span></div>
+    <div class="stat"><b>$<span class="count" data-to="0">0</span></b><span>Free tier, no contract</span></div>
+  </div>
+</section>
+
+<!-- ============ INTRO + TIMELINE ============ -->
+<section class="intro" id="how" aria-label="How it works">
+  <p class="kicker">The job, start to scan</p>
+  <h2 id="intro-h">A printed menu costs <b>$500–$2,000</b> a redesign. This costs <b>nothing</b> and takes five minutes.</h2>
+
+  <div class="steps">
+    <div class="steps__track" aria-hidden="true"><div class="steps__fill" id="steps-fill"></div></div>
+    <div class="steps__grid" role="tablist" aria-label="How it works">
+      <button class="step" data-step="0" aria-current="true">
+        <span class="no">STEP 01</span><h3>Build</h3>
+        <p>Sections, items, prices, descriptions. The form is the whole learning curve.</p>
+      </button>
+      <button class="step" data-step="1">
+        <span class="no">STEP 02</span><h3>Proof</h3>
+        <p>The live plate sits beside the form. Watch the menu set itself as you type.</p>
+      </button>
+      <button class="step" data-step="2">
+        <span class="no">STEP 03</span><h3>Publish</h3>
+        <p>One stamp saves it to a public link that is yours and stays yours.</p>
+      </button>
+      <button class="step" data-step="3">
+        <span class="no">STEP 04</span><h3>Scan</h3>
+        <p>Print the QR once. Update the food forever — the code on the table never changes.</p>
+      </button>
+    </div>
+  </div>
+</section>
+
+<!-- ============ BENCH: morphing tabs ============ -->
+<section id="bench" aria-label="The bench">
+  <p class="kicker">The bench — one panel, three instruments</p>
+  <div class="panel">
+    <div class="panel__bar">
+      <div class="tablist" role="tablist" aria-label="Bench views">
+        <span class="tab-pill" id="tab-pill" aria-hidden="true"></span>
+        <button class="tab" role="tab" id="tab-edit" aria-selected="true" aria-controls="p-edit">Edit</button>
+        <button class="tab" role="tab" id="tab-preview" aria-selected="false" aria-controls="p-preview">Proof</button>
+        <button class="tab" role="tab" id="tab-share" aria-selected="false" aria-controls="p-share">Share</button>
+      </div>
+      <span class="panel__meta">Job · Casa Medina · Draft</span>
+    </div>
+    <div class="panel__body">
+      <div class="tabpanel" role="tabpanel" id="p-edit" aria-labelledby="tab-edit">
+        <div class="form-grid">
+          <div class="field"><label for="c-name">Restaurant name</label><input id="c-name" type="text" value="Casa Medina" readonly></div>
+          <div class="field"><label for="c-style">Template</label><input id="c-style" type="text" value="Medina Café" readonly></div>
+          <div class="field"><label for="c-desc">Description</label><input id="c-desc" type="text" value="Moroccan kitchen, open fire, since 1998" readonly></div>
+          <div class="field"><label for="c-currency">Currency</label><input id="c-currency" type="text" value="MAD" readonly></div>
+          <div class="itemlist">
+            <h4>Section — Starters</h4>
+            <div class="item"><span class="nm">Harira soup</span><span class="dots" aria-hidden="true"></span><span class="pr">45</span></div>
+            <div class="item"><span class="nm">Zaalouk, smoked aubergine</span><span class="dots" aria-hidden="true"></span><span class="pr">55</span></div>
+            <div class="item"><span class="nm">Pastilla, pigeon</span><span class="dots" aria-hidden="true"></span><span class="pr">85</span></div>
+            <div class="item"><span class="nm">Mechoui, slow lamb</span><span class="off">Sold out</span><span class="dots" aria-hidden="true"></span><span class="pr">140</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="tabpanel" role="tabpanel" id="p-preview" aria-labelledby="tab-preview" hidden>
+        <div class="minimenu">
+          <h3>Casa Medina</h3>
+          <p class="sub">Moroccan kitchen, open fire, since 1998</p>
+          <p class="sec">Starters</p>
+          <div class="row"><span class="nm">Harira soup</span><span class="dots" aria-hidden="true"></span><span class="pr">45</span></div>
+          <div class="row"><span class="nm">Zaalouk, smoked aubergine</span><span class="dots" aria-hidden="true"></span><span class="pr">55</span></div>
+          <div class="row"><span class="nm">Pastilla, pigeon</span><span class="dots" aria-hidden="true"></span><span class="pr">85</span></div>
+          <p class="sec">Mains</p>
+          <div class="row"><span class="nm">Tagine kefta</span><span class="dots" aria-hidden="true"></span><span class="pr">95</span></div>
+          <div class="row"><span class="nm">Mechoui, slow lamb</span><span class="dots" aria-hidden="true"></span><span class="pr">140</span></div>
+        </div>
+      </div>
+      <div class="tabpanel" role="tabpanel" id="p-share" aria-labelledby="tab-share" hidden>
+        <div class="sharegrid">
+          <figure class="qr-plate"><img src="../qr-demo.svg" alt="QR code that opens the demo menu at menucraft.app/menu/demo" width="320" height="320"></figure>
+          <div>
+            <h3>One code,<br>every table.</h3>
+            <ul>
+              <li>The QR never changes when the menu does.</li>
+              <li>Four modules of quiet zone; a real link sits beside it.</li>
+              <li>Print once, edit from the bench at 6 a.m.</li>
+            </ul>
+            <a class="link" href="#">menucraft.app/menu/demo</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SHELF: draggable slider + card fan ============ -->
+<section id="shelf" aria-label="The shelf">
+  <div class="shelf__head">
+    <div>
+      <p class="kicker">The shelf — six templates</p>
+      <h2>Drag one down.<br>Try it on.</h2>
+    </div>
+    <p class="shelf__hint">Drag · throw · arrow keys</p>
+  </div>
+
+  <div class="rail-viewport" id="rail-viewport">
+    <div class="rail-track" id="rail-track" tabindex="0" role="region" aria-label="Template shelf, draggable">
+      <article class="tcard"><div class="tcard__prev tp--white"><div class="t">La Trattoria</div><div class="r">Bruschetta <i></i> 8</div><div class="r">Tagliatelle <i></i> 16</div><div class="r">Tiramisù <i></i> 7</div></div><div class="tcard__body"><h3>Classic</h3><span>Fine dining</span></div></article>
+      <article class="tcard"><div class="tcard__prev tp--dark"><div class="t">Night Shift</div><div class="r">Smash burger <i></i> 12</div><div class="r">Loaded fries <i></i> 7</div><div class="r">Stout <i></i> 6</div></div><div class="tcard__body"><h3>Modern</h3><span>Bars · late</span></div></article>
+      <article class="tcard"><div class="tcard__prev tp--plain"><div class="t">Still</div><div class="r">Filter <i></i> 3</div><div class="r">Toast <i></i> 5</div><div class="r">Cake <i></i> 4</div></div><div class="tcard__body"><h3>Minimal</h3><span>Cafés</span></div></article>
+      <article class="tcard"><div class="tcard__prev tp--clay"><div class="t">Medina Café</div><div class="r">Mint tea <i></i> 20</div><div class="r">Chebakia <i></i> 15</div><div class="r">Msemen <i></i> 25</div></div><div class="tcard__body"><h3>Medina Café</h3><span>Moroccan cafés</span></div></article>
+      <article class="tcard"><div class="tcard__prev tp--white"><div class="t">Dining</div><div class="r">Mechoui <i></i> 140</div><div class="r">Tagine kefta <i></i> 95</div><div class="r">Orange blossom <i></i> 40</div></div><div class="tcard__body"><h3>Fine Dining</h3><span>Riads · rooftops</span></div></article>
+      <article class="tcard"><div class="tcard__prev tp--green"><div class="t">The Garden</div><div class="r">Courgette salad <i></i> 65</div><div class="r">Lamb, preserved lemon <i></i> 120</div><div class="r">Mint sorbet <i></i> 45</div></div><div class="tcard__body"><h3>Garden</h3><span>Courtyards</span></div></article>
+    </div>
+  </div>
+  <div class="railbar" aria-hidden="true"><i id="railbar-fill"></i></div>
+
+  <div class="fan" id="fan" aria-hidden="true">
+    <article class="tcard" data-i="0"><div class="tcard__prev tp--clay"><div class="t">Medina Café</div><div class="r">Mint tea <i></i> 20</div><div class="r">Chebakia <i></i> 15</div></div><div class="tcard__body"><h3>Medina</h3><span>Warm plaster</span></div></article>
+    <article class="tcard" data-i="1"><div class="tcard__prev tp--dark"><div class="t">Night Shift</div><div class="r">Smash burger <i></i> 12</div><div class="r">Stout <i></i> 6</div></div><div class="tcard__body"><h3>Modern</h3><span>Dark, bold</span></div></article>
+    <article class="tcard" data-i="2"><div class="tcard__prev tp--green"><div class="t">The Garden</div><div class="r">Courgette <i></i> 65</div><div class="r">Mint sorbet <i></i> 45</div></div><div class="tcard__body"><h3>Garden</h3><span>Leafy, light</span></div></article>
+  </div>
+  <p class="fan-cap">Three off the shelf — the fan spreads as you arrive.</p>
+</section>
+
+<!-- ============ RATES (light scene) ============ -->
+<section class="rates" id="rates" aria-label="The rates">
+  <div class="rates__grid">
+    <div class="rates__copy">
+      <p class="kicker">The rates — set like a menu</p>
+      <h2>Name, leader, number.</h2>
+      <p>Prices sit the way they do on a printed card. No sales call, no annual lock-in, no seat counting.</p>
+      <p style="margin-top:26px"><a href="#" class="btn magnetic"><span class="fill" aria-hidden="true"></span><span class="lbl">Start on free</span></a></p>
+    </div>
+    <ul class="menu-list">
+      <li class="reveal">
+        <div class="plan-top"><h3>Free</h3><span class="leader" aria-hidden="true"></span><span class="price">$0</span></div>
+        <div class="plan-feats"><span>One menu, unlimited items, QR codes and public links</span><span>Basic templates · MenuCraft stamp on the page</span></div>
+      </li>
+      <li class="reveal">
+        <div class="plan-top"><h3>Starter</h3><span class="leader" aria-hidden="true"></span><span class="price"><span class="from">from</span>$19<small>/mo</small></span></div>
+        <div class="plan-feats"><span>Three menus, stamp removed, fifty images</span><span>Basic analytics · one custom domain</span></div>
+      </li>
+      <li class="reveal">
+        <div class="plan-top"><h3>Professional <span class="plan-tag">House</span></h3><span class="leader" aria-hidden="true"></span><span class="price"><span class="from">from</span>$49<small>/mo</small></span></div>
+        <div class="plan-feats"><span>Unlimited menus and images · advanced analytics</span><span>Five domains · A/B tests · seasonal scheduling · API</span></div>
+      </li>
+      <li class="reveal">
+        <div class="plan-top"><h3>Enterprise</h3><span class="leader" aria-hidden="true"></span><span class="price">agreement</span></div>
+        <div class="plan-feats"><span>White label · franchise controls · POS integrations</span><span>Multi-user collaboration · SLA</span></div>
+      </li>
+    </ul>
+  </div>
+</section>
+
+<!-- ============ CLOSING ============ -->
+<footer class="closing" id="start" aria-label="Closing">
+  <p class="kicker">Closing the shift</p>
+  <h2>Build it tonight.<br>Scan it tomorrow.</h2>
+  <div class="cta-row">
+    <a href="#" class="btn magnetic"><span class="fill" aria-hidden="true"></span><span class="lbl">Open the workbench</span></a>
+    <a href="#shelf" class="btn btn--line magnetic"><span class="fill" aria-hidden="true"></span><span class="lbl">See the six</span></a>
+  </div>
+  <nav class="footlinks" aria-label="Footer">
+    <a href="#how">How</a><a href="#bench">Bench</a><a href="#shelf">Shelf</a><a href="#rates">Rates</a><a href="#">Docs</a><a href="#">GitHub</a>
+    <span class="legal">MenuCraft — MIT licence · digital menus made simple</span>
+  </nav>
+  <div class="wordmark" aria-hidden="true" id="wordmark">
+    <span>M</span><span>E</span><span>N</span><span>U</span><span>C</span><span>R</span><span>A</span><span>F</span><span>T</span>
+  </div>
+</footer>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/ScrollTrigger.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/SplitText.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/Draggable.min.js"></script>
+<script>
+(function () {
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var hasGsap = typeof gsap !== 'undefined';
+
+  /* Circle-fill buttons: clone the label into the clipped layer and remember
+     where the pointer entered, so the fill and its text move together. */
+  document.querySelectorAll('.btn').forEach(function (btn) {
+    var lbl = btn.querySelector('.lbl');
+    if (!lbl) return;
+    var clone = document.createElement('span');
+    clone.className = 'clone';
+    clone.setAttribute('aria-hidden', 'true');
+    clone.textContent = lbl.textContent;
+    btn.appendChild(clone);
+    btn.addEventListener('pointerenter', function (e) {
+      var r = btn.getBoundingClientRect();
+      btn.style.setProperty('--cx', (((e.clientX - r.left) / r.width) * 100).toFixed(1) + '%');
+      btn.style.setProperty('--cy', (((e.clientY - r.top) / r.height) * 100).toFixed(1) + '%');
+    });
+  });
+
+  if (!hasGsap || reduce) {
+    document.querySelectorAll('.wordmark span').forEach(function (s) { s.style.transform = 'none'; });
+
+    /* Tabs stay usable: the pill is placed without travelling. */
+    var pillEl = document.getElementById('tab-pill');
+    var placeStaticPill = function () {
+      var active = document.querySelector('.tab[aria-selected="true"]');
+      if (active && pillEl) {
+        pillEl.style.width = active.offsetWidth + 'px';
+        pillEl.style.transform = 'translateX(' + active.offsetLeft + 'px)';
+      }
+    };
+    document.querySelectorAll('.tab').forEach(function (t) {
+      t.addEventListener('click', function () {
+        document.querySelectorAll('.tab').forEach(function (o) {
+          var on = o === t;
+          o.setAttribute('aria-selected', on ? 'true' : 'false');
+          document.getElementById(o.getAttribute('aria-controls')).hidden = !on;
+        });
+        placeStaticPill();
+      });
+    });
+    placeStaticPill();
+    window.addEventListener('resize', placeStaticPill);
+
+    /* The fan rests in its spread final state, not stacked. */
+    document.querySelectorAll('#fan .tcard').forEach(function (c, i) {
+      c.style.transform = 'translateX(' + ((i - 1) * 130) + 'px) rotate(' + ((i - 1) * 9) + 'deg)';
+      c.style.opacity = '1';
+      c.style.visibility = 'visible';
+    });
+    return;
+  }
+
+  gsap.registerPlugin(ScrollTrigger, SplitText, Draggable);
+
+  /* 1 — Progress line */
+  gsap.to('.progress', {
+    scaleX: 1, ease: 'none',
+    scrollTrigger: { trigger: document.body, start: 'top top', end: 'bottom bottom', scrub: 0.3 }
+  });
+
+  /* 2 — Dual scramble: two words decode at once */
+  var A = ['paper', 'print', 'photo'], B = ['phone', 'table', 'link'];
+  var glyphs = 'abcdefghijklmnopqrstuvwxyz#*';
+  var ai = 0, bi = 0;
+  function scrambleTo(el, next) {
+    var frames = 8, f = 0;
+    var iv = setInterval(function () {
+      f++;
+      el.textContent = next.split('').map(function (c, i) {
+        return f > i + 3 ? c : glyphs[Math.floor(Math.random() * glyphs.length)];
+      }).join('');
+      if (f >= frames + 3) { clearInterval(iv); el.textContent = next; }
+    }, 50);
+  }
+  var sa = document.getElementById('swap-a'), sb = document.getElementById('swap-b');
+  setInterval(function () {
+    ai = (ai + 1) % A.length; bi = (bi + 1) % B.length;
+    scrambleTo(sa, A[ai]); scrambleTo(sb, B[bi]);
+  }, 3000);
+
+  /* 3 — Counter */
+  document.querySelectorAll('.count').forEach(function (node) {
+    var to = parseInt(node.getAttribute('data-to'), 10) || 0;
+    var obj = { v: 0 };
+    gsap.to(obj, {
+      v: to, duration: 1.3, ease: 'power2.out',
+      scrollTrigger: { trigger: '#stats', start: 'top 88%', once: true },
+      onUpdate: function () { node.textContent = Math.round(obj.v); }
+    });
+  });
+
+  /* 4 — Step-by-step timeline: line fills to the step, scroll owns the steps */
+  var steps = Array.prototype.slice.call(document.querySelectorAll('.step'));
+  var fill = document.getElementById('steps-fill');
+  function setStep(i, animate) {
+    steps.forEach(function (s, idx) { s.setAttribute('aria-current', idx === i ? 'true' : 'false'); });
+    gsap.to(fill, { scaleX: (i + 1) / steps.length, transformOrigin: '0 50%', width: '100%',
+      duration: animate === false ? 0 : 0.4, ease: 'power2.out', overwrite: true });
+  }
+  gsap.set(fill, { scaleX: 1 / steps.length, transformOrigin: '0 50%', width: '100%' });
+  steps.forEach(function (s, i) { s.addEventListener('click', function () { setStep(i); }); });
+  ScrollTrigger.create({
+    trigger: '.steps', start: 'top 70%', end: 'bottom 30%', scrub: true,
+    onUpdate: function (self) {
+      var i = Math.min(steps.length - 1, Math.floor(self.progress * steps.length));
+      if (fill.getAttribute('data-i') !== String(i)) { fill.setAttribute('data-i', i); setStep(i); }
+    }
+  });
+
+  /* 5 — Text reveal: intro statement */
+  var introSplit = SplitText.create('#intro-h', { type: 'lines', mask: 'lines' });
+  gsap.from(introSplit.lines, {
+    yPercent: 108, duration: 1.0, stagger: 0.1, ease: 'expo.out',
+    scrollTrigger: { trigger: '#intro-h', start: 'top 80%', once: true }
+  });
+
+  /* 6 — Morphing tabs: the pill travels, panels cut */
+  var pill = document.getElementById('tab-pill');
+  var tabs = Array.prototype.slice.call(document.querySelectorAll('.tab'));
+  function movePill(tab) {
+    gsap.to(pill, { x: tab.offsetLeft, width: tab.offsetWidth, duration: 0.32, ease: 'power2.inOut' });
+  }
+  function selectTab(tab) {
+    tabs.forEach(function (t) {
+      var on = t === tab;
+      t.setAttribute('aria-selected', on ? 'true' : 'false');
+      document.getElementById(t.getAttribute('aria-controls')).hidden = !on;
+    });
+    movePill(tab);
+    if (window.innerWidth > 900) {
+      gsap.fromTo('#' + tab.getAttribute('aria-controls'), { autoAlpha: 0, y: 10 }, { autoAlpha: 1, y: 0, duration: 0.28, ease: 'power2.out' });
+    }
+  }
+  tabs.forEach(function (t) {
+    t.addEventListener('click', function () { selectTab(t); });
+    t.addEventListener('keydown', function (e) {
+      var i = tabs.indexOf(t);
+      if (e.key === 'ArrowRight') { selectTab(tabs[(i + 1) % tabs.length]); tabs[(i + 1) % tabs.length].focus(); e.preventDefault(); }
+      if (e.key === 'ArrowLeft')  { selectTab(tabs[(i - 1 + tabs.length) % tabs.length]); tabs[(i - 1 + tabs.length) % tabs.length].focus(); e.preventDefault(); }
+    });
+  });
+  var placePill = function () { var active = document.querySelector('.tab[aria-selected="true"]'); if (active) movePill(active); };
+  placePill(); window.addEventListener('resize', placePill);
+
+  /* 7 — Draggable slider: throw the shelf, it snaps to a card */
+  var track = document.getElementById('rail-track');
+  var viewport = document.getElementById('rail-viewport');
+  var barFill = document.getElementById('railbar-fill');
+  var boundsFn = function () { return { minX: Math.min(0, viewport.clientWidth - track.scrollWidth), maxX: 0 }; };
+  var snapPoints = function () {
+    var cards = track.querySelectorAll('.tcard');
+    var max = viewport.clientWidth - track.scrollWidth;
+    return Array.prototype.map.call(cards, function (c) { return Math.max(max, Math.min(0, -c.offsetLeft)); });
+  };
+  var drag = Draggable.create(track, {
+    type: 'x', bounds: boundsFn, edgeResistance: 0.85, dragClickables: true,
+    snap: function (value) {
+      var pts = snapPoints();
+      return pts.reduce(function (best, p) { return Math.abs(p - value) < Math.abs(best - value) ? p : best; }, pts[0]);
+    },
+    onDrag: updateBar, onThrowUpdate: updateBar
+  })[0];
+  function updateBar() {
+    var max = track.scrollWidth - viewport.clientWidth;
+    var p = max > 0 ? Math.min(1, Math.max(0, -gsap.getProperty(track, 'x') / max)) : 0;
+    gsap.to(barFill, { width: (18 + p * 82) + '%', duration: 0.15, overwrite: true });
+  }
+  track.addEventListener('keydown', function (e) {
+    var cards = track.querySelectorAll('.tcard');
+    var stepW = cards[0].offsetWidth + 22;
+    var cur = gsap.getProperty(track, 'x');
+    if (e.key === 'ArrowRight') { gsap.to(track, { x: Math.max(boundsFn().minX, cur - stepW), duration: 0.4, ease: 'power2.out', onUpdate: updateBar }); e.preventDefault(); }
+    if (e.key === 'ArrowLeft')  { gsap.to(track, { x: Math.min(0, cur + stepW), duration: 0.4, ease: 'power2.out', onUpdate: updateBar }); e.preventDefault(); }
+  });
+  window.addEventListener('resize', function () { drag.applyBounds(boundsFn()); updateBar(); });
+
+  /* 8 — Card fan: the stack spreads into an arc on arrival */
+  var fanCards = Array.prototype.slice.call(document.querySelectorAll('#fan .tcard'));
+  fanCards.forEach(function (c, i) { gsap.set(c, { x: 0, rotation: 0, y: 40, autoAlpha: 0 }); });
+  gsap.to(fanCards, {
+    autoAlpha: 1, y: 0, rotation: function (i) { return (i - 1) * 9; },
+    x: function (i) { return (i - 1) * 130; },
+    duration: 0.9, stagger: 0.12, ease: 'power3.out',
+    scrollTrigger: { trigger: '#fan', start: 'top 85%', once: true }
+  });
+
+  /* 9 — Parallax: the pegboard dots drift against the scroll */
+  gsap.to('body', {
+    backgroundPositionY: '120px', ease: 'none',
+    scrollTrigger: { trigger: document.body, start: 'top top', end: 'bottom bottom', scrub: true }
+  });
+
+  /* 10 — Background colour: shop floor → chalk for the rates → back */
+  ScrollTrigger.create({
+    trigger: '.rates', start: 'top 60%', end: 'bottom 40%',
+    onEnter:     function () { gsap.to('body', { backgroundColor: '#F2F1EC', duration: 0.6, overwrite: 'auto' }); document.body.classList.add('light-scene'); },
+    onEnterBack: function () { gsap.to('body', { backgroundColor: '#F2F1EC', duration: 0.6, overwrite: 'auto' }); document.body.classList.add('light-scene'); },
+    onLeave:     function () { gsap.to('body', { backgroundColor: '#1A1C1B', duration: 0.6, overwrite: 'auto' }); document.body.classList.remove('light-scene'); },
+    onLeaveBack: function () { gsap.to('body', { backgroundColor: '#1A1C1B', duration: 0.6, overwrite: 'auto' }); document.body.classList.remove('light-scene'); }
+  });
+
+  /* 11 — Magnetic button: one quiet pull */
+  document.querySelectorAll('.magnetic').forEach(function (btn) {
+    var xTo = gsap.quickTo(btn, 'x', { duration: 0.4, ease: 'power3' });
+    var yTo = gsap.quickTo(btn, 'y', { duration: 0.4, ease: 'power3' });
+    btn.addEventListener('pointermove', function (e) {
+      var r = btn.getBoundingClientRect();
+      xTo((e.clientX - (r.left + r.width / 2)) * 0.28);
+      yTo((e.clientY - (r.top + r.height / 2)) * 0.28);
+    });
+    btn.addEventListener('pointerleave', function () { xTo(0); yTo(0); });
+  });
+
+  /* 12 — Element reveal + wordmark rise */
+  gsap.utils.toArray('.reveal').forEach(function (el) {
+    gsap.from(el, { autoAlpha: 0, y: 26, duration: 0.85, ease: 'power3.out',
+      scrollTrigger: { trigger: el, start: 'top 88%', once: true } });
+  });
+  gsap.fromTo('#wordmark span', { yPercent: 110 },
+    { yPercent: 0, duration: 0.7, stagger: 0.055, ease: 'expo.out',
+      scrollTrigger: { trigger: '#wordmark', start: 'top 94%', once: true } });
+})();
+</script>
+</body>
+</html>

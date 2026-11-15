@@ -26,11 +26,11 @@ function TemplateMiniature({ template }: { template: TemplateType }) {
       <div className="h-full overflow-hidden rounded-md bg-[#f5f0e3] text-[#352b22]">
         <div className="relative h-20 bg-[#1e6b70]">
           <img src={demoPhotos.tagine} alt="" className="h-full w-full object-cover opacity-70" />
-          <div className="absolute inset-0 flex flex-col items-center justify-center text-white"><span className="text-[7px] uppercase tracking-[.3em]">Cuisine du Maroc</span><span className="mt-1 font-serif text-lg">Dar Medina</span></div>
+          <div className="absolute inset-0 flex flex-col items-center justify-center text-white"><span className="text-[7px] uppercase tracking-[.3em]">Cuisine du Maroc</span><span className="mt-1 font-display text-lg">Dar Medina</span></div>
         </div>
         <div className="p-3">
           <div className="mb-2 flex justify-center gap-1.5">{['Matin', 'Déjeuner', 'Thé'].map((label) => <span key={label} className="rounded-full border border-[#cbb890] px-2 py-0.5 text-[6px] uppercase tracking-wide">{label}</span>)}</div>
-          <p className="border-b border-[#d8c8a5] pb-1 text-center font-serif text-[10px] font-semibold text-[#8b4b2b]">Les classiques du jour</p>
+          <p className="border-b border-[#d8c8a5] pb-1 text-center font-display text-[10px] font-semibold text-[#8b4b2b]">Les classiques du jour</p>
           <div className="mt-2 space-y-1.5">{['Salades marocaines', 'Tajines & couscous', 'Douceurs maison'].map((label, i) => <div key={label} className="flex items-center gap-2"><span className="h-px flex-1 bg-[#d8c8a5]"/><span className="text-[7px] text-[#74685a]">{label}</span><span className="h-px w-5 bg-[#c98b48]" /></div>)}</div>
         </div>
       </div>
@@ -41,11 +41,11 @@ function TemplateMiniature({ template }: { template: TemplateType }) {
     return (
       <div className="h-full overflow-hidden rounded-md bg-[#f7f4ee] text-[#352b2b]">
         <div className="grid h-24 grid-cols-[1fr_1.15fr] bg-[#332323] text-[#f7f1e7]">
-          <div className="flex flex-col justify-center px-4"><span className="text-[6px] uppercase tracking-[.3em] text-[#d8bd8a]">L’art de recevoir</span><span className="mt-1 font-serif text-sm">La Table Royale</span><span className="mt-1 text-[7px] text-white/60">Menu de saison</span></div>
+          <div className="flex flex-col justify-center px-4"><span className="text-[6px] uppercase tracking-[.3em] text-[#d8bd8a]">L’art de recevoir</span><span className="mt-1 font-display text-sm">La Table Royale</span><span className="mt-1 text-[7px] text-white/60">Menu de saison</span></div>
           <img src={demoPhotos.couscous} alt="" className="h-full w-full object-cover opacity-85" />
         </div>
         <div className="grid grid-cols-2 gap-2 p-3">
-          {['Entrées', 'Poissons', 'Viandes', 'Desserts'].map((label, i) => <div key={label} className="border-b border-[#d6c9b6] pb-1"><span className="block font-serif text-[9px] text-[#8b6a38]">{label}</span><span className="mt-1 block h-1 w-4/5 rounded bg-[#b9ada0]"/><span className="mt-1 block h-1 w-3/5 rounded bg-[#d3cbc1]"/></div>)}
+          {['Entrées', 'Poissons', 'Viandes', 'Desserts'].map((label, i) => <div key={label} className="border-b border-[#d6c9b6] pb-1"><span className="block font-display text-[9px] text-[#8b6a38]">{label}</span><span className="mt-1 block h-1 w-4/5 rounded bg-[#b9ada0]"/><span className="mt-1 block h-1 w-3/5 rounded bg-[#d3cbc1]"/></div>)}
         </div>
       </div>
     );
@@ -54,7 +54,7 @@ function TemplateMiniature({ template }: { template: TemplateType }) {
   if (template === 'modern-moroccan-garden') {
     return (
       <div className="h-full overflow-hidden rounded-md bg-[#f7f8f1] text-[#2f3b2c]">
-        <div className="relative h-24 bg-[#526d49]"><img src={demoPhotos.tea} alt="" className="h-full w-full object-cover opacity-75"/><div className="absolute inset-0 bg-gradient-to-r from-[#263b2a]/90 to-transparent"/><div className="absolute inset-y-0 left-4 flex flex-col justify-center text-white"><span className="text-[6px] uppercase tracking-[.3em] text-[#e5d4a8]">Du jardin à la table</span><span className="mt-1 font-serif text-lg">Jardin d’Atlas</span></div></div>
+        <div className="relative h-24 bg-[#526d49]"><img src={demoPhotos.tea} alt="" className="h-full w-full object-cover opacity-75"/><div className="absolute inset-0 bg-gradient-to-r from-[#263b2a]/90 to-transparent"/><div className="absolute inset-y-0 left-4 flex flex-col justify-center text-white"><span className="text-[6px] uppercase tracking-[.3em] text-[#e5d4a8]">Du jardin à la table</span><span className="mt-1 font-display text-lg">Jardin d’Atlas</span></div></div>
         <div className="grid grid-cols-2 gap-2 p-3">
           {[['Local', demoPhotos.couscous], ['À partager', demoPhotos.tagine]].map(([label, image]) => <div key={label} className="overflow-hidden rounded-md border border-[#dbe3d2] bg-white"><img src={image} alt="" className="h-14 w-full object-cover"/><div className="flex items-center justify-between p-1.5"><span className="text-[7px] font-semibold">{label}</span><span className="h-1 w-5 rounded bg-[#90a27b]"/></div></div>)}
         </div>
@@ -74,18 +74,18 @@ function TemplateMiniature({ template }: { template: TemplateType }) {
 function TemplateCard({ template, selected, onSelect, onUseSample }: { template: TemplateType; selected: boolean; onSelect: (template: TemplateType) => void; onUseSample?: () => void }) {
   const info = templateInfo[template];
   return (
-    <article className={`group relative flex h-full flex-col rounded-xl border-2 bg-white p-4 transition hover:-translate-y-0.5 hover:shadow-lg sm:p-5 ${selected ? 'border-[#b18137] shadow-md ring-2 ring-[#b18137]/15' : 'border-[#e3ddd2] hover:border-[#bca782]'}`}>
-      {selected && <span className="absolute right-3 top-3 z-10 flex h-8 w-8 items-center justify-center rounded-full bg-[#b18137] text-white shadow" aria-label="Selected template">✓</span>}
-      <button type="button" aria-pressed={selected} onClick={() => onSelect(template)} className="flex flex-1 flex-col text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#b18137]">
+    <article className={`group relative flex h-full flex-col border-[1.5px] border-menu-ink-900 bg-menu-paper-50 p-4 transition sm:p-5 ${selected ? 'border-menu-stamp-500 ring-2 ring-menu-stamp-500/30' : 'hover:bg-menu-paper-100'}`}>
+      {selected && <span className="absolute right-3 top-3 z-10 flex h-8 w-8 items-center justify-center bg-menu-stamp-500 text-white" aria-label="Selected template">✓</span>}
+      <button type="button" aria-pressed={selected} onClick={() => onSelect(template)} className="flex flex-1 flex-col text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-menu-stamp-500">
         <div className="mb-4 flex items-start justify-between gap-3 pr-8">
-          <div><span className={`mb-2 inline-flex rounded-full px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider ${info.category === 'Moroccan' ? 'bg-[#e9efe0] text-[#526d49]' : 'bg-gray-100 text-gray-600'}`}>{info.category}</span><h4 className="font-serif text-xl font-semibold text-[#302a24]">{info.name}</h4></div>
+          <div><span className={`mb-2 inline-flex px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider ${info.category === 'Moroccan' ? 'bg-menu-stamp-50 text-menu-stamp-600 border border-menu-stamp-500' : 'bg-menu-paper-200 text-menu-ink-600 border border-menu-ink-300'}`}>{info.category}</span><h4 className="font-display text-xl font-bold text-menu-ink-900">{info.name}</h4></div>
         </div>
-        <div className="mb-4 h-52 overflow-hidden rounded-md border border-black/5 shadow-inner"><TemplateMiniature template={template} /></div>
-        <p className="text-sm leading-relaxed text-[#655c52]">{info.description}</p>
+        <div className="mb-4 h-52 overflow-hidden border border-menu-ink-900"><TemplateMiniature template={template} /></div>
+        <p className="text-sm leading-relaxed text-menu-ink-500">{info.description}</p>
         <p className="mt-2 text-xs text-[#857a6b]">{info.preview}</p>
-        <span className={`mt-auto pt-5 text-center text-sm font-semibold ${selected ? 'text-[#80612d]' : 'text-[#526d49] group-hover:text-[#31472c]'}`}>{selected ? 'Currently selected' : 'Use this design'}</span>
+        <span className={`mt-auto pt-5 text-center text-sm font-semibold ${selected ? 'text-menu-stamp-600' : 'text-menu-ink-600 group-hover:text-menu-ink-900'}`}>{selected ? 'Currently selected' : 'Use this design'}</span>
       </button>
-      {onUseSample && <button type="button" onClick={onUseSample} className="mt-3 w-full border border-[#b18137]/50 bg-[#fbf7ed] px-3 py-2.5 text-sm font-semibold text-[#725625] transition hover:bg-[#f4ead4] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#b18137]">Load full example menu</button>}
+      {onUseSample && <button type="button" onClick={onUseSample} className="mt-3 w-full border border-menu-ink-900 bg-menu-paper-100 px-3 py-2.5 text-sm font-semibold text-menu-ink-700 transition hover:bg-menu-ink-900 hover:text-menu-paper-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-menu-stamp-500">Load full example menu</button>}
     </article>
   );
 }
@@ -93,17 +93,17 @@ function TemplateCard({ template, selected, onSelect, onUseSample }: { template:
 export const TemplateSelector: React.FC<TemplateSelectorProps> = ({ selectedTemplate, onSelect, onUseSample }) => (
   <div className="space-y-8">
     <div>
-      <h3 className="font-serif text-3xl font-bold text-[#302a24]">Choose a full menu design</h3>
-      <p className="mt-2 max-w-3xl text-sm leading-relaxed text-[#655c52]">Each preset changes the full menu presentation—header, section hierarchy, subsection styling, item layout, and photography treatment. Switching designs keeps your content; use “Load full example menu” to try editable sample dishes and photos.</p>
+      <h3 className="font-display text-3xl font-bold text-menu-ink-900">Choose a full menu design</h3>
+      <p className="mt-2 max-w-3xl text-sm leading-relaxed text-menu-ink-500">Each preset changes the full menu presentation—header, section hierarchy, subsection styling, item layout, and photography treatment. Switching designs keeps your content; use “Load full example menu” to try editable sample dishes and photos.</p>
     </div>
 
     <section aria-labelledby="moroccan-template-heading">
-      <div className="mb-4"><h4 id="moroccan-template-heading" className="font-serif text-xl font-semibold text-[#302a24]">Moroccan collection</h4><p className="mt-1 text-sm text-[#655c52]">Original designs informed by restaurant menus from Morocco.</p></div>
+      <div className="mb-4"><h4 id="moroccan-template-heading" className="font-display text-xl font-bold text-menu-ink-900">Moroccan collection</h4><p className="mt-1 text-sm text-menu-ink-500">Original designs informed by restaurant menus from Morocco.</p></div>
       <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">{moroccanTemplates.map((template) => <TemplateCard key={template} template={template} selected={selectedTemplate === template} onSelect={onSelect} onUseSample={() => onUseSample(template)} />)}</div>
     </section>
 
     <section aria-labelledby="original-template-heading">
-      <div className="mb-4"><h4 id="original-template-heading" className="font-serif text-xl font-semibold text-[#302a24]">More layouts</h4><p className="mt-1 text-sm text-[#655c52]">Your existing designs remain available for saved menus.</p></div>
+      <div className="mb-4"><h4 id="original-template-heading" className="font-display text-xl font-bold text-menu-ink-900">More layouts</h4><p className="mt-1 text-sm text-menu-ink-500">Your existing designs remain available for saved menus.</p></div>
       <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">{originalTemplates.map((template) => <TemplateCard key={template} template={template} selected={selectedTemplate === template} onSelect={onSelect} />)}</div>
     </section>
 

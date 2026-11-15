@@ -409,20 +409,20 @@ export const MenuBuilder: React.FC<MenuBuilderProps> = ({
   return (
     <div className="space-y-6">
       {/* Step 1: Basic Information */}
-      <div className="bg-menu-cream-50 border border-menu-charcoal-200/60 shadow-menu">
-        <div className="bg-menu-cream-200 border-b border-menu-charcoal-200/60 px-6 py-4">
+      <div className="bg-menu-paper-50 border-[1.5px] border-menu-ink-900">
+        <div className="bg-menu-paper-200 border-b border-menu-ink-900 px-6 py-4">
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 bg-menu-gold-600 text-white flex items-center justify-center font-bold">
+            <div className="w-8 h-8 bg-menu-stamp-600 text-white flex items-center justify-center font-bold">
               1
             </div>
             <div>
-              <h2 className="text-lg font-bold text-menu-charcoal-900 uppercase tracking-wide">Basic Information</h2>
-              <p className="text-xs text-menu-charcoal-600">Start by adding your restaurant details</p>
+              <h2 className="text-lg font-bold text-menu-ink-900 uppercase tracking-wide">Basic Information</h2>
+              <p className="text-xs text-menu-ink-600">Start by adding your restaurant details</p>
             </div>
           </div>
         </div>
 
-        <div className="p-6 space-y-5 bg-menu-cream-100">
+        <div className="p-6 space-y-5 bg-menu-paper-100">
           <Input
             label="Restaurant Name *"
             value={menu.restaurantName}
@@ -431,20 +431,20 @@ export const MenuBuilder: React.FC<MenuBuilderProps> = ({
           />
 
           <div>
-            <label htmlFor="original-language" className="block text-xs font-semibold text-menu-charcoal-700 uppercase tracking-wider mb-2">
+            <label htmlFor="original-language" className="block text-xs font-semibold text-menu-ink-700 uppercase tracking-wider mb-2">
               Original Language
             </label>
             <select
               id="original-language"
               value={menu.originalLanguage}
               onChange={(event) => updateMenu({ originalLanguage: event.target.value as MenuLanguage })}
-              className="w-full border border-menu-charcoal-300 bg-white px-4 py-3 text-sm text-menu-charcoal-900 focus:outline-none focus:ring-2 focus:ring-menu-gold-500"
+              className="w-full border border-menu-ink-300 bg-white px-4 py-3 text-sm text-menu-ink-900 focus:outline-none focus:ring-2 focus:ring-menu-stamp-500"
             >
               <option value="ar">Arabic</option>
               <option value="fr">French</option>
               <option value="en">English</option>
             </select>
-            <p className="mt-1 text-xs text-menu-charcoal-500">AI description suggestions use this language.</p>
+            <p className="mt-1 text-xs text-menu-ink-500">AI description suggestions use this language.</p>
           </div>
 
           <Textarea
@@ -456,7 +456,7 @@ export const MenuBuilder: React.FC<MenuBuilderProps> = ({
           />
 
           <div>
-            <label className="block text-xs font-semibold text-menu-charcoal-700 uppercase tracking-wider mb-2">
+            <label className="block text-xs font-semibold text-menu-ink-700 uppercase tracking-wider mb-2">
               Restaurant Logo (Optional)
             </label>
             <div className="flex items-center gap-4">
@@ -465,7 +465,7 @@ export const MenuBuilder: React.FC<MenuBuilderProps> = ({
                   <img
                     src={menu.customization.logoImage}
                     alt="Logo"
-                    className="h-20 w-20 object-contain border border-menu-charcoal-200/60"
+                    className="h-20 w-20 object-contain border border-menu-ink-200/60"
                   />
                   <button
                     onClick={() => updateCustomization({ logoImage: '' })}
@@ -476,12 +476,12 @@ export const MenuBuilder: React.FC<MenuBuilderProps> = ({
                 </div>
               )}
               <label className="flex-1 cursor-pointer">
-                <div className="border border-dashed border-menu-charcoal-300/60 p-6 hover:border-menu-gold-500 hover:bg-white transition-all text-center bg-menu-cream-200">
-                  <svg className="w-8 h-8 mx-auto mb-2 text-menu-charcoal-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div className="border border-dashed border-menu-ink-300/60 p-6 hover:border-menu-stamp-500 hover:bg-white transition-all text-center bg-menu-paper-200">
+                  <svg className="w-8 h-8 mx-auto mb-2 text-menu-ink-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
                   </svg>
-                  <span className="text-sm text-menu-charcoal-700 font-semibold">Upload Logo</span>
-                  <p className="text-xs text-menu-charcoal-500 mt-1">PNG, JPG up to 5MB</p>
+                  <span className="text-sm text-menu-ink-700 font-semibold">Upload Logo</span>
+                  <p className="text-xs text-menu-ink-500 mt-1">PNG, JPG up to 5MB</p>
                   <input
                     type="file"
                     accept="image/*"
@@ -499,65 +499,65 @@ export const MenuBuilder: React.FC<MenuBuilderProps> = ({
       </div>
 
       {/* Step 2: Display Settings */}
-      <div className="bg-menu-cream-50 border border-menu-charcoal-200/60 shadow-menu">
-        <div className="bg-menu-cream-200 border-b border-menu-charcoal-200/60 px-6 py-4">
+      <div className="bg-menu-paper-50 border-[1.5px] border-menu-ink-900">
+        <div className="bg-menu-paper-200 border-b border-menu-ink-900 px-6 py-4">
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 bg-menu-gold-600 text-white flex items-center justify-center font-bold">
+            <div className="w-8 h-8 bg-menu-stamp-600 text-white flex items-center justify-center font-bold">
               2
             </div>
             <div>
-              <h2 className="text-lg font-bold text-menu-charcoal-900 uppercase tracking-wide">Display Settings</h2>
-              <p className="text-xs text-menu-charcoal-600">Control what appears on your menu</p>
+              <h2 className="text-lg font-bold text-menu-ink-900 uppercase tracking-wide">Display Settings</h2>
+              <p className="text-xs text-menu-ink-600">Control what appears on your menu</p>
             </div>
           </div>
         </div>
 
-        <div className="p-6 space-y-5 bg-menu-cream-100">
-          <div className="bg-menu-cream-200 border border-menu-charcoal-200/60 p-5 rounded-sm">
-            <p className="text-xs font-bold text-menu-charcoal-700 uppercase tracking-wider mb-4">What to Display</p>
+        <div className="p-6 space-y-5 bg-menu-paper-100">
+          <div className="bg-menu-paper-200 border border-menu-ink-200/60 p-5 rounded-none">
+            <p className="text-xs font-bold text-menu-ink-700 uppercase tracking-wider mb-4">What to Display</p>
             <div className="space-y-3">
-              <label className="flex items-center gap-3 cursor-pointer p-3 hover:bg-menu-cream-50 transition-colors rounded-sm">
+              <label className="flex items-center gap-3 cursor-pointer p-3 hover:bg-menu-paper-50 transition-colors rounded-none">
                 <input
                   type="checkbox"
                   checked={menu.customization.showPrices}
                   onChange={(e) =>
                     updateCustomization({ showPrices: e.target.checked })
                   }
-                  className="w-5 h-5 text-menu-gold-600 rounded border border-menu-charcoal-300/60 focus:ring-2 focus:ring-menu-gold-500"
+                  className="w-5 h-5 text-menu-stamp-600 rounded border border-menu-ink-300/60 focus:ring-2 focus:ring-menu-stamp-500"
                 />
                 <div>
-                  <span className="text-sm font-semibold text-menu-charcoal-900 block">Show Prices</span>
-                  <span className="text-xs text-menu-charcoal-600">Display item prices on the menu</span>
+                  <span className="text-sm font-semibold text-menu-ink-900 block">Show Prices</span>
+                  <span className="text-xs text-menu-ink-600">Display item prices on the menu</span>
                 </div>
               </label>
 
-              <label className="flex items-center gap-3 cursor-pointer p-3 hover:bg-menu-cream-50 transition-colors rounded-sm">
+              <label className="flex items-center gap-3 cursor-pointer p-3 hover:bg-menu-paper-50 transition-colors rounded-none">
                 <input
                   type="checkbox"
                   checked={menu.customization.showDescriptions}
                   onChange={(e) =>
                     updateCustomization({ showDescriptions: e.target.checked })
                   }
-                  className="w-5 h-5 text-menu-gold-600 rounded border border-menu-charcoal-300/60 focus:ring-2 focus:ring-menu-gold-500"
+                  className="w-5 h-5 text-menu-stamp-600 rounded border border-menu-ink-300/60 focus:ring-2 focus:ring-menu-stamp-500"
                 />
                 <div>
-                  <span className="text-sm font-semibold text-menu-charcoal-900 block">Show Descriptions</span>
-                  <span className="text-xs text-menu-charcoal-600">Display item descriptions</span>
+                  <span className="text-sm font-semibold text-menu-ink-900 block">Show Descriptions</span>
+                  <span className="text-xs text-menu-ink-600">Display item descriptions</span>
                 </div>
               </label>
 
-              <label className="flex items-center gap-3 cursor-pointer p-3 hover:bg-menu-cream-50 transition-colors rounded-sm">
+              <label className="flex items-center gap-3 cursor-pointer p-3 hover:bg-menu-paper-50 transition-colors rounded-none">
                 <input
                   type="checkbox"
                   checked={menu.customization.showImages}
                   onChange={(e) =>
                     updateCustomization({ showImages: e.target.checked })
                   }
-                  className="w-5 h-5 text-menu-gold-600 rounded border border-menu-charcoal-300/60 focus:ring-2 focus:ring-menu-gold-500"
+                  className="w-5 h-5 text-menu-stamp-600 rounded border border-menu-ink-300/60 focus:ring-2 focus:ring-menu-stamp-500"
                 />
                 <div>
-                  <span className="text-sm font-semibold text-menu-charcoal-900 block">Show Images</span>
-                  <span className="text-xs text-menu-charcoal-600">Display item photos</span>
+                  <span className="text-sm font-semibold text-menu-ink-900 block">Show Images</span>
+                  <span className="text-xs text-menu-ink-600">Display item photos</span>
                 </div>
               </label>
             </div>
@@ -565,7 +565,7 @@ export const MenuBuilder: React.FC<MenuBuilderProps> = ({
 
           <div className="grid md:grid-cols-2 gap-5">
             <div>
-              <label className="block text-xs font-semibold text-menu-charcoal-700 uppercase tracking-wider mb-2">
+              <label className="block text-xs font-semibold text-menu-ink-700 uppercase tracking-wider mb-2">
                 Primary Color
               </label>
               <div className="flex gap-3 items-stretch">
@@ -575,7 +575,7 @@ export const MenuBuilder: React.FC<MenuBuilderProps> = ({
                   onChange={(e) =>
                     updateCustomization({ primaryColor: e.target.value }, 'customization:primary-color')
                   }
-                  className="h-auto w-16 cursor-pointer border border-menu-charcoal-200/60 rounded-sm"
+                  className="h-auto w-16 cursor-pointer border border-menu-ink-200/60 rounded-none"
                 />
                 <Input
                   value={menu.customization.primaryColor}
@@ -589,7 +589,7 @@ export const MenuBuilder: React.FC<MenuBuilderProps> = ({
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-menu-charcoal-700 uppercase tracking-wider mb-2">
+              <label className="block text-xs font-semibold text-menu-ink-700 uppercase tracking-wider mb-2">
                 Secondary Color
               </label>
               <div className="flex gap-3 items-stretch">
@@ -599,7 +599,7 @@ export const MenuBuilder: React.FC<MenuBuilderProps> = ({
                   onChange={(e) =>
                     updateCustomization({ secondaryColor: e.target.value }, 'customization:secondary-color')
                   }
-                  className="h-auto w-16 cursor-pointer border border-menu-charcoal-200/60 rounded-sm"
+                  className="h-auto w-16 cursor-pointer border border-menu-ink-200/60 rounded-none"
                 />
                 <Input
                   value={menu.customization.secondaryColor}
@@ -616,19 +616,19 @@ export const MenuBuilder: React.FC<MenuBuilderProps> = ({
       </div>
 
       {/* Step 3: Menu Sections & Items */}
-      <div className="bg-menu-cream-50 border border-menu-charcoal-200/60 shadow-menu">
-        <div className="bg-menu-cream-200 border-b border-menu-charcoal-200/60 px-6 py-4">
+      <div className="bg-menu-paper-50 border-[1.5px] border-menu-ink-900">
+        <div className="bg-menu-paper-200 border-b border-menu-ink-900 px-6 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="w-8 h-8 bg-menu-gold-600 text-white flex items-center justify-center font-bold">
+              <div className="w-8 h-8 bg-menu-stamp-600 text-white flex items-center justify-center font-bold">
                 3
               </div>
               <div>
-                <h2 className="text-lg font-bold text-menu-charcoal-900 uppercase tracking-wide">Menu Sections & Items</h2>
-                <p className="text-xs text-menu-charcoal-600">Add your menu categories and dishes</p>
+                <h2 className="text-lg font-bold text-menu-ink-900 uppercase tracking-wide">Menu Sections & Items</h2>
+                <p className="text-xs text-menu-ink-600">Add your menu categories and dishes</p>
               </div>
             </div>
-            <Button onClick={addSection} variant="gold" size="sm">
+            <Button onClick={addSection} variant="stamp" size="sm">
               <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
               </svg>
@@ -637,15 +637,15 @@ export const MenuBuilder: React.FC<MenuBuilderProps> = ({
           </div>
         </div>
 
-        <div className="p-6 bg-menu-cream-100">
+        <div className="p-6 bg-menu-paper-100">
           {menu.sections.length === 0 && (
-            <div className="border border-dashed border-menu-charcoal-300/60 bg-menu-cream-200 p-12 text-center rounded-sm">
-              <svg className="w-16 h-16 mx-auto mb-4 text-menu-gold-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div className="border border-dashed border-menu-ink-300/60 bg-menu-paper-200 p-12 text-center rounded-none">
+              <svg className="w-16 h-16 mx-auto mb-4 text-menu-stamp-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 13h6m-3-3v6m5 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
               </svg>
-              <h3 className="text-lg font-bold text-menu-charcoal-900 mb-2 uppercase tracking-wide">No Sections Yet</h3>
-              <p className="text-sm text-menu-charcoal-600 mb-6">Create your first menu section (e.g., Appetizers, Main Courses, Desserts)</p>
-              <Button onClick={addSection} variant="gold">
+              <h3 className="text-lg font-bold text-menu-ink-900 mb-2 uppercase tracking-wide">No Sections Yet</h3>
+              <p className="text-sm text-menu-ink-600 mb-6">Create your first menu section (e.g., Appetizers, Main Courses, Desserts)</p>
+              <Button onClick={addSection} variant="stamp">
                 <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                 </svg>
@@ -659,7 +659,7 @@ export const MenuBuilder: React.FC<MenuBuilderProps> = ({
         {menu.sections.map((section, sectionIndex) => (
           <div
             key={section.id}
-            className={`bg-white border border-menu-charcoal-200/60 shadow-menu rounded-sm transition-shadow ${dropTarget === `section:${section.id}` ? 'ring-2 ring-menu-gold-500' : ''}`}
+            className={`bg-menu-paper-50 border-[1.5px] border-menu-ink-900 transition-shadow ${dropTarget === `section:${section.id}` ? 'ring-2 ring-menu-stamp-500' : ''}`}
             onDragOver={(event) => {
               if (!readDragPayload(event)) return;
               event.preventDefault();
@@ -672,7 +672,7 @@ export const MenuBuilder: React.FC<MenuBuilderProps> = ({
               }
             }}
           >
-            <div className="bg-menu-cream-100 border-b border-menu-charcoal-200/60 px-5 py-3 flex items-center justify-between">
+            <div className="bg-menu-paper-100 border-b border-menu-ink-200/60 px-5 py-3 flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <button
                   type="button"
@@ -681,14 +681,14 @@ export const MenuBuilder: React.FC<MenuBuilderProps> = ({
                   onDragEnd={() => { dragPayload.current = null; setDropTarget(''); }}
                   aria-label={`Drag section ${section.name || sectionIndex + 1} to reorder`}
                   title="Drag to reorder this section"
-                  className="cursor-grab touch-none px-1 text-lg text-menu-charcoal-500 active:cursor-grabbing"
+                  className="cursor-grab touch-none px-1 text-lg text-menu-ink-500 active:cursor-grabbing"
                 >
                   ⋮⋮
                 </button>
-                <span className="w-7 h-7 bg-menu-charcoal-700 text-white flex items-center justify-center text-sm font-bold">
+                <span className="w-7 h-7 bg-menu-ink-700 text-white flex items-center justify-center text-sm font-bold">
                   {sectionIndex + 1}
                 </span>
-                <span className="text-sm font-bold text-menu-charcoal-900 uppercase tracking-wide">Section {sectionIndex + 1}</span>
+                <span className="text-sm font-bold text-menu-ink-900 uppercase tracking-wide">Section {sectionIndex + 1}</span>
                 <div className="flex gap-1">
                   <button
                     type="button"
@@ -696,7 +696,7 @@ export const MenuBuilder: React.FC<MenuBuilderProps> = ({
                     disabled={sectionIndex === 0}
                     aria-label={`Move section ${section.name || sectionIndex + 1} up`}
                     title="Move section up"
-                    className="border border-menu-charcoal-300 px-2 py-1 text-xs text-menu-charcoal-700 disabled:opacity-40"
+                    className="border border-menu-ink-300 px-2 py-1 text-xs text-menu-ink-700 disabled:opacity-40"
                   >↑</button>
                   <button
                     type="button"
@@ -704,7 +704,7 @@ export const MenuBuilder: React.FC<MenuBuilderProps> = ({
                     disabled={sectionIndex === menu.sections.length - 1}
                     aria-label={`Move section ${section.name || sectionIndex + 1} down`}
                     title="Move section down"
-                    className="border border-menu-charcoal-300 px-2 py-1 text-xs text-menu-charcoal-700 disabled:opacity-40"
+                    className="border border-menu-ink-300 px-2 py-1 text-xs text-menu-ink-700 disabled:opacity-40"
                   >↓</button>
                 </div>
               </div>
@@ -719,7 +719,7 @@ export const MenuBuilder: React.FC<MenuBuilderProps> = ({
               </button>
             </div>
 
-            <div className="p-5 space-y-4 bg-menu-cream-50">
+            <div className="p-5 space-y-4 bg-menu-paper-50">
               <Input
                 label={`Section Name *`}
                 value={section.name}
@@ -739,25 +739,25 @@ export const MenuBuilder: React.FC<MenuBuilderProps> = ({
                 rows={2}
               />
 
-              <div className="border border-menu-charcoal-200/60 bg-menu-cream-100 p-4">
+              <div className="border border-menu-ink-200/60 bg-menu-paper-100 p-4">
                 <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
                   <div>
-                    <h3 className="text-xs font-bold uppercase tracking-wider text-menu-charcoal-800">Subsections (Optional)</h3>
-                    <p className="mt-1 text-xs text-menu-charcoal-500">Group dishes under headings such as Tagines, Couscous, or Mint Tea.</p>
+                    <h3 className="text-xs font-bold uppercase tracking-wider text-menu-ink-800">Subsections (Optional)</h3>
+                    <p className="mt-1 text-xs text-menu-ink-500">Group dishes under headings such as Tagines, Couscous, or Mint Tea.</p>
                   </div>
                   <Button type="button" size="sm" variant="outline" onClick={() => addSubsection(section.id)}>Add Subsection</Button>
                 </div>
                 {(section.subsections || []).length === 0 ? (
-                  <p className="border border-dashed border-menu-charcoal-200 bg-white px-3 py-3 text-xs text-menu-charcoal-500">No subsections yet. Items can stay at this section level.</p>
+                  <p className="border border-dashed border-menu-ink-200 bg-white px-3 py-3 text-xs text-menu-ink-500">No subsections yet. Items can stay at this section level.</p>
                 ) : (
                   <div className="space-y-3">
                     {[...(section.subsections || [])].sort((left, right) => left.order - right.order).map((subsection, subsectionIndex) => (
-                      <div key={subsection.id} className="border border-menu-charcoal-200 bg-white p-3">
+                      <div key={subsection.id} className="border border-menu-ink-200 bg-white p-3">
                         <div className="mb-3 flex items-center justify-between gap-2">
-                          <span className="text-xs font-semibold uppercase tracking-wide text-menu-charcoal-500">Subsection {subsectionIndex + 1}</span>
+                          <span className="text-xs font-semibold uppercase tracking-wide text-menu-ink-500">Subsection {subsectionIndex + 1}</span>
                           <div className="flex items-center gap-1">
-                            <button type="button" onClick={() => moveSubsectionBy(section.id, subsection.id, -1)} disabled={subsectionIndex === 0} aria-label={`Move subsection ${subsection.name} up`} className="border border-menu-charcoal-300 px-2 py-1 text-xs disabled:opacity-40">↑</button>
-                            <button type="button" onClick={() => moveSubsectionBy(section.id, subsection.id, 1)} disabled={subsectionIndex === (section.subsections || []).length - 1} aria-label={`Move subsection ${subsection.name} down`} className="border border-menu-charcoal-300 px-2 py-1 text-xs disabled:opacity-40">↓</button>
+                            <button type="button" onClick={() => moveSubsectionBy(section.id, subsection.id, -1)} disabled={subsectionIndex === 0} aria-label={`Move subsection ${subsection.name} up`} className="border border-menu-ink-300 px-2 py-1 text-xs disabled:opacity-40">↑</button>
+                            <button type="button" onClick={() => moveSubsectionBy(section.id, subsection.id, 1)} disabled={subsectionIndex === (section.subsections || []).length - 1} aria-label={`Move subsection ${subsection.name} down`} className="border border-menu-ink-300 px-2 py-1 text-xs disabled:opacity-40">↓</button>
                             <button type="button" onClick={() => deleteSubsection(section.id, subsection.id)} className="border border-red-200 px-2 py-1 text-xs text-red-700 hover:bg-red-50">Delete</button>
                           </div>
                         </div>
@@ -784,9 +784,9 @@ export const MenuBuilder: React.FC<MenuBuilderProps> = ({
             </div>
 
             {/* Items */}
-            <div className="border-t border-menu-charcoal-200/60 bg-white p-5">
+            <div className="border-t border-menu-ink-200/60 bg-white p-5">
               <div className="flex justify-between items-center mb-5">
-                <h3 className="text-sm font-bold text-menu-charcoal-900 uppercase tracking-wider">Items in this Section</h3>
+                <h3 className="text-sm font-bold text-menu-ink-900 uppercase tracking-wider">Items in this Section</h3>
                 <Button size="sm" variant="secondary" onClick={() => addItem(section.id)}>
                   <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
@@ -799,7 +799,7 @@ export const MenuBuilder: React.FC<MenuBuilderProps> = ({
                 {section.items.map((item) => (
                   <div
                     key={item.id}
-                    className={`bg-menu-cream-50 p-4 border border-menu-charcoal-200/60 rounded-sm transition-shadow ${dropTarget === `item:${item.id}` ? 'ring-2 ring-menu-gold-500' : ''}`}
+                    className={`bg-menu-paper-50 p-4 border border-menu-ink-900 transition-shadow ${dropTarget === `item:${item.id}` ? 'ring-2 ring-menu-stamp-500' : ''}`}
                     onDragOver={(event) => {
                       const payload = readDragPayload(event);
                       if (!payload || payload.type !== 'item') return;
@@ -818,11 +818,11 @@ export const MenuBuilder: React.FC<MenuBuilderProps> = ({
                           onDragEnd={() => { dragPayload.current = null; setDropTarget(''); }}
                           aria-label={`Drag ${item.name || 'menu item'} to reorder or move sections`}
                           title="Drag to reorder or move to another section"
-                          className="cursor-grab touch-none px-1 text-lg text-menu-charcoal-500 active:cursor-grabbing"
+                          className="cursor-grab touch-none px-1 text-lg text-menu-ink-500 active:cursor-grabbing"
                         >
                           ⋮⋮
                         </button>
-                        <span className="text-xs font-semibold uppercase tracking-wide text-menu-charcoal-500">Move item</span>
+                        <span className="text-xs font-semibold uppercase tracking-wide text-menu-ink-500">Move item</span>
                       </div>
                       <div className="flex flex-wrap items-center gap-2">
                         <button
@@ -831,7 +831,7 @@ export const MenuBuilder: React.FC<MenuBuilderProps> = ({
                           disabled={section.items[0]?.id === item.id}
                           aria-label={`Move ${item.name || 'menu item'} up`}
                           title="Move item up"
-                          className="border border-menu-charcoal-300 px-2 py-1 text-xs text-menu-charcoal-700 disabled:opacity-40"
+                          className="border border-menu-ink-300 px-2 py-1 text-xs text-menu-ink-700 disabled:opacity-40"
                         >↑</button>
                         <button
                           type="button"
@@ -839,7 +839,7 @@ export const MenuBuilder: React.FC<MenuBuilderProps> = ({
                           disabled={section.items[section.items.length - 1]?.id === item.id}
                           aria-label={`Move ${item.name || 'menu item'} down`}
                           title="Move item down"
-                          className="border border-menu-charcoal-300 px-2 py-1 text-xs text-menu-charcoal-700 disabled:opacity-40"
+                          className="border border-menu-ink-300 px-2 py-1 text-xs text-menu-ink-700 disabled:opacity-40"
                         >↓</button>
                         <label className="sr-only" htmlFor={`move-item-${item.id}`}>Move {item.name || 'menu item'} to section</label>
                         <select
@@ -847,7 +847,7 @@ export const MenuBuilder: React.FC<MenuBuilderProps> = ({
                           value={section.id}
                           disabled={menu.sections.length < 2}
                           onChange={(event) => moveItemToSection(section.id, item.id, event.target.value)}
-                          className="max-w-48 border border-menu-charcoal-300 bg-white px-2 py-1 text-xs text-menu-charcoal-700 disabled:opacity-50"
+                          className="max-w-48 border border-menu-ink-300 bg-white px-2 py-1 text-xs text-menu-ink-700 disabled:opacity-50"
                         >
                           {menu.sections.map((targetSection) => (
                             <option key={targetSection.id} value={targetSection.id}>{targetSection.name || 'Untitled section'}</option>
@@ -898,17 +898,17 @@ export const MenuBuilder: React.FC<MenuBuilderProps> = ({
                     </div>
 
                     <div className="mb-4 max-w-md">
-                      <label htmlFor={`item-subsection-${item.id}`} className="mb-2 block text-xs font-semibold uppercase tracking-wider text-menu-charcoal-700">Subsection</label>
+                      <label htmlFor={`item-subsection-${item.id}`} className="mb-2 block text-xs font-semibold uppercase tracking-wider text-menu-ink-700">Subsection</label>
                       <select
                         id={`item-subsection-${item.id}`}
                         value={(section.subsections || []).some((subsection) => subsection.id === item.subsectionId) ? item.subsectionId : ''}
                         onChange={(event) => updateItem(section.id, item.id, { subsectionId: event.target.value || undefined }, `item:${item.id}:subsection`)}
-                        className="w-full border border-menu-charcoal-300 bg-white px-3 py-2.5 text-sm text-menu-charcoal-900 focus:outline-none focus:ring-2 focus:ring-menu-gold-500"
+                        className="w-full border border-menu-ink-300 bg-white px-3 py-2.5 text-sm text-menu-ink-900 focus:outline-none focus:ring-2 focus:ring-menu-stamp-500"
                       >
                         <option value="">Keep in {section.name || 'section'}</option>
                         {[...(section.subsections || [])].sort((left, right) => left.order - right.order).map((subsection) => <option key={subsection.id} value={subsection.id}>{subsection.name || 'Untitled subsection'}</option>)}
                       </select>
-                      <p className="mt-1 text-xs text-menu-charcoal-500">The selected template will style this group as a nested menu heading.</p>
+                      <p className="mt-1 text-xs text-menu-ink-500">The selected template will style this group as a nested menu heading.</p>
                     </div>
 
                     <Textarea
@@ -933,13 +933,13 @@ export const MenuBuilder: React.FC<MenuBuilderProps> = ({
                       );
 
                       return (
-                        <div className="mb-4 border border-menu-gold-300 bg-menu-gold-50 p-4">
+                        <div className="mb-4 border border-menu-stamp-300 bg-menu-stamp-50 p-4">
                           <div className="mb-3">
-                            <h4 className="text-sm font-bold text-menu-charcoal-900">AI description suggestion</h4>
-                            <p className="mt-1 text-xs text-menu-charcoal-600">Add only confirmed facts. The current description stays unchanged until you apply a draft.</p>
-                            <p className="mt-1 text-xs text-menu-charcoal-500">Only this dish name, your facts, and the Original Language are sent to your configured AI provider.</p>
+                            <h4 className="text-sm font-bold text-menu-ink-900">AI description suggestion</h4>
+                            <p className="mt-1 text-xs text-menu-ink-600">Add only confirmed facts. The current description stays unchanged until you apply a draft.</p>
+                            <p className="mt-1 text-xs text-menu-ink-500">Only this dish name, your facts, and the Original Language are sent to your configured AI provider.</p>
                           </div>
-                          <label className="mb-2 block text-xs font-semibold uppercase tracking-wide text-menu-charcoal-700" htmlFor={`ai-facts-${item.id}`}>
+                          <label className="mb-2 block text-xs font-semibold uppercase tracking-wide text-menu-ink-700" htmlFor={`ai-facts-${item.id}`}>
                             Facts to include (optional)
                           </label>
                           <textarea
@@ -949,13 +949,13 @@ export const MenuBuilder: React.FC<MenuBuilderProps> = ({
                             maxLength={1200}
                             rows={2}
                             placeholder="For example: grilled on a charcoal fire; served with house-made sauce"
-                            className="w-full border border-menu-charcoal-300 bg-white px-3 py-2 text-sm text-menu-charcoal-900 focus:outline-none focus:ring-2 focus:ring-menu-gold-500"
+                            className="w-full border border-menu-ink-300 bg-white px-3 py-2 text-sm text-menu-ink-900 focus:outline-none focus:ring-2 focus:ring-menu-stamp-500"
                           />
                           <div className="mt-3 flex flex-wrap gap-2">
                             <Button
                               type="button"
                               size="sm"
-                              variant="gold"
+                              variant="stamp"
                               onClick={() => void generateDescription(item)}
                               disabled={!item.name.trim() || Boolean(suggestion.loading)}
                             >
@@ -967,11 +967,11 @@ export const MenuBuilder: React.FC<MenuBuilderProps> = ({
                               </Button>
                             )}
                           </div>
-                          {suggestion.loading && <p role="status" className="mt-3 text-xs text-menu-charcoal-600">Preparing one description draft…</p>}
+                          {suggestion.loading && <p role="status" className="mt-3 text-xs text-menu-ink-600">Preparing one description draft…</p>}
                           {suggestion.error && <p role="alert" className="mt-3 text-xs text-red-700">{suggestion.error}</p>}
                           {suggestion.draft && (
-                            <div className="mt-4 border-t border-menu-gold-200 pt-4">
-                              <label className="mb-2 block text-xs font-semibold uppercase tracking-wide text-menu-charcoal-700" htmlFor={`ai-draft-${item.id}`}>
+                            <div className="mt-4 border-t border-menu-stamp-200 pt-4">
+                              <label className="mb-2 block text-xs font-semibold uppercase tracking-wide text-menu-ink-700" htmlFor={`ai-draft-${item.id}`}>
                                 Review draft · {menu.originalLanguage.toUpperCase()}
                               </label>
                               <Textarea
@@ -1004,7 +1004,7 @@ export const MenuBuilder: React.FC<MenuBuilderProps> = ({
 
                     <div className="flex items-end justify-between gap-4">
                       <div className="flex-1">
-                        <label className="block text-sm font-medium text-menu-charcoal-700 uppercase tracking-wide mb-2">
+                        <label className="block text-sm font-medium text-menu-ink-700 uppercase tracking-wide mb-2">
                           Item Photo (Optional)
                         </label>
                         <div className="flex items-center gap-3">
@@ -1012,12 +1012,12 @@ export const MenuBuilder: React.FC<MenuBuilderProps> = ({
                             <img
                               src={item.image}
                               alt={item.name}
-                              className="h-16 w-16 object-cover border-menu border-menu-charcoal-200"
+                              className="h-16 w-16 object-cover border-menu border-menu-ink-200"
                             />
                           )}
                           <label className="cursor-pointer flex-1">
-                            <div className="border border-dashed border-menu-charcoal-300/60 px-4 py-2.5 hover:border-menu-gold-500 hover:bg-white transition-all text-center rounded-sm bg-menu-cream-100">
-                              <span className="text-sm text-menu-charcoal-700 uppercase tracking-wide">
+                            <div className="border border-dashed border-menu-ink-300/60 px-4 py-2.5 hover:border-menu-stamp-500 hover:bg-white transition-all text-center rounded-none bg-menu-paper-100">
+                              <span className="text-sm text-menu-ink-700 uppercase tracking-wide">
                                 {item.image ? 'Change photo' : 'Upload photo'}
                               </span>
                               <input
@@ -1046,9 +1046,9 @@ export const MenuBuilder: React.FC<MenuBuilderProps> = ({
                                 available: e.target.checked,
                               })
                             }
-                            className="w-4 h-4 text-menu-gold-600 border-menu-charcoal-300"
+                            className="w-4 h-4 text-menu-stamp-600 border-menu-ink-300"
                           />
-                          <span className="text-sm text-menu-charcoal-600 uppercase tracking-wide">Available</span>
+                          <span className="text-sm text-menu-ink-600 uppercase tracking-wide">Available</span>
                         </label>
 
                         <Button
@@ -1067,12 +1067,12 @@ export const MenuBuilder: React.FC<MenuBuilderProps> = ({
                 ))}
 
                 {section.items.length === 0 && (
-                  <div className="text-center py-10 border border-dashed border-menu-charcoal-300/60 bg-menu-cream-100 rounded-sm">
-                    <svg className="w-12 h-12 mx-auto mb-3 text-menu-charcoal-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <div className="text-center py-10 border border-dashed border-menu-ink-300/60 bg-menu-paper-100 rounded-none">
+                    <svg className="w-12 h-12 mx-auto mb-3 text-menu-ink-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                     </svg>
-                    <p className="mb-4 text-sm font-semibold text-menu-charcoal-700">No Items Yet</p>
-                    <Button size="sm" variant="gold" onClick={() => addItem(section.id)}>
+                    <p className="mb-4 text-sm font-semibold text-menu-ink-700">No Items Yet</p>
+                    <Button size="sm" variant="stamp" onClick={() => addItem(section.id)}>
                       <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                       </svg>
@@ -1089,7 +1089,7 @@ export const MenuBuilder: React.FC<MenuBuilderProps> = ({
       </div>
 
       {/* Save Actions */}
-      <div className="sticky bottom-6 bg-menu-cream-50 border border-menu-charcoal-200/60 shadow-menu-lg p-4 rounded-sm">
+      <div className="sticky bottom-6 bg-menu-paper-50 border-[1.5px] border-menu-ink-900 shadow-menu-lg p-4 rounded-none">
         {saveError && <p role="alert" className="mb-3 text-sm text-red-700">{saveError}</p>}
         <div className="flex gap-4 justify-end">
           <Button onClick={handleSave} variant="primary" className="min-w-[160px]" disabled={isSaving}>

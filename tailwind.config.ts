@@ -9,46 +9,48 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        // Modern Restaurant Menu Palette - Minimal & Elegant
+        // Direction B — "The Wall": letterpress editorial palette
+        // Every scale is named at its source (see design-lab/NOTES.md §3).
         menu: {
-          // Cream/Parchment backgrounds (like menu paper)
-          cream: {
-            50: '#FEFDFB',
-            100: '#FBF9F4',
-            200: '#F7F3EB',
-            300: '#F0EAE0',
-            400: '#E8DFD0',
-            500: '#DDD1BC', // Main cream
-            600: '#C9BAA3',
-            700: '#B5A68A',
-            800: '#9A8A71',
-            900: '#7D6F59',
+          // Paper — offset litho paper stock (ground #F2ECDF at the 200 step)
+          paper: {
+            50: '#FDFBF6',
+            100: '#F8F4EA',
+            200: '#F2ECDF', // main ground — letterpress paper
+            300: '#E9E1D0',
+            400: '#DDD2BC',
+            500: '#C9BBA0',
+            600: '#B3A488',
+            700: '#97886C',
+            800: '#7B6E54',
+            900: '#5F5540',
           },
-          // Deep charcoal (primary text)
-          charcoal: {
-            50: '#F7F7F7',
-            100: '#E3E3E3',
-            200: '#C8C8C8',
-            300: '#A4A4A4',
-            400: '#717171',
-            500: '#4A4A4A',
-            600: '#3A3A3A',
-            700: '#2D2D2D', // Main charcoal
-            800: '#1F1F1F',
-            900: '#141414',
+          // Ink — letterpress black (text ink #17140F at the 700 step)
+          ink: {
+            50: '#F6F4F0',
+            100: '#E6E2DA',
+            200: '#C9C3B8', // hairline borders on paper
+            300: '#A29B90',
+            400: '#7A736A',
+            500: '#565049', // secondary text — 7:1 on paper
+            600: '#3D372F',
+            700: '#17140F', // body ink
+            800: '#12100C',
+            900: '#0B0906', // display ink — deep bite
           },
-          // Elegant gold accent (one sophisticated color)
-          gold: {
-            50: '#FEFBF3',
-            100: '#FDF6E3',
-            200: '#FAEDC4',
-            300: '#F6E19F',
-            400: '#F0D166',
-            500: '#D4AF37', // Main gold - sophisticated
-            600: '#C19A2E',
-            700: '#A38327',
-            800: '#866B20',
-            900: '#6B551A',
+          // Stamp — red rubber stamp ink (accent #C4311F at the 500 step,
+          // lifted #E86B55 at 400 for small accents on ink grounds)
+          stamp: {
+            50: '#FDF3F1',
+            100: '#FAE3DF',
+            200: '#F4C7C0',
+            300: '#EBA69C',
+            400: '#E86B55',
+            500: '#C4311F', // main accent
+            600: '#A82818', // hover / small text on paper — 6:1
+            700: '#8C2114',
+            800: '#6E1A10',
+            900: '#52130C',
           },
         },
       },
@@ -69,11 +71,13 @@ const config: Config = {
         '144': '36rem',
       },
       fontFamily: {
-        sans: ['var(--font-inter)', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+        sans: ['"Bricolage Grotesque"', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+        // Kept as a true serif for the six menu templates — the restaurant's
+        // product output keeps its own voice; MenuCraft's chrome does not.
         serif: ['Georgia', 'Cambria', 'Times New Roman', 'Times', 'serif'],
-        display: ['var(--font-inter)', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+        display: ['"Bricolage Grotesque"', 'ui-sans-serif', 'system-ui', 'sans-serif'],
       },
-      // Minimal, clean borders
+      // Flat, square geometry — rules over shadows
       borderRadius: {
         'none': '0',
         'sm': '0.125rem',
@@ -84,15 +88,16 @@ const config: Config = {
         '2xl': '1rem',
         '3xl': '1.5rem',
       },
-      // Menu-style elegant shadows
+      // Shadows are reserved for floating elements only (headers, modals);
+      // content cards use hairline borders instead.
       boxShadow: {
-        'menu-sm': '0 1px 2px 0 rgba(0, 0, 0, 0.05)',
-        'menu': '0 2px 8px 0 rgba(0, 0, 0, 0.08)',
-        'menu-lg': '0 4px 16px 0 rgba(0, 0, 0, 0.12)',
-        'menu-xl': '0 8px 32px 0 rgba(0, 0, 0, 0.16)',
-        'menu-border': '0 0 0 1px rgba(212, 175, 55, 0.2)',
+        'menu-sm': '0 1px 2px 0 rgba(11, 9, 6, 0.06)',
+        'menu': '0 2px 8px 0 rgba(11, 9, 6, 0.08)',
+        'menu-lg': '0 4px 16px 0 rgba(11, 9, 6, 0.12)',
+        'menu-xl': '0 8px 32px 0 rgba(11, 9, 6, 0.16)',
+        'menu-border': '0 0 0 1px rgba(196, 49, 31, 0.25)',
       },
-      // Menu divider borders
+      // Hairline rules
       borderWidth: {
         'menu': '1.5px',
       },
@@ -126,4 +131,3 @@ const config: Config = {
 };
 
 export default config;
-
