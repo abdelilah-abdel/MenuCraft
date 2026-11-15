@@ -213,8 +213,8 @@ Free Tier → Paid Tiers → Enterprise Solutions
 **Goal:** Validate core concept
 
 **Features:**
-- ✅ Menu builder (sections, items, pricing)
-- ✅ Template system (Classic, Modern, Minimal)
+- ✅ Menu builder (sections, subsections, items, pricing)
+- ✅ Template system (Classic, Modern, Minimal, Medina Café, Moroccan Fine Dining, Modern Moroccan Garden)
 - ✅ QR code generation
 - ✅ Real-time preview
 - ✅ LocalStorage persistence

@@ -1,39 +1,59 @@
 'use client';
 
-import React, { useState } from 'react';
-import { Menu, MenuSection, MenuItem } from '@/lib/types/menu';
+import React, { useRef, useState } from 'react';
+import { Menu, MenuSection, MenuSubsection, MenuItem, MenuLanguage } from '@/lib/types/menu';
 import { MenuService } from '@/lib/services/menuService';
 import { imageService } from '@/lib/services/imageService';
 import { Button } from '../ui/Button';
 import { Input, Textarea } from '../ui/Input';
 
 interface MenuBuilderProps {
-  initialMenu?: Menu;
-  onSave?: (menu: Menu) => void;
-  onPreview?: (menu: Menu) => void;
+  menu: Menu;
+  onMenuChange: (update: Menu | ((current: Menu) => Menu), groupKey?: string) => void;
+  onSave?: (menu: Menu, submittedMenu: Menu) => void;
+}
+
+type DragPayload =
+  | { type: 'section'; sectionId: string }
+  | { type: 'item'; sectionId: string; itemId: string };
+type DescriptionDraft = {
+  facts: string;
+  draft?: string;
+  error?: string;
+  requestedName?: string;
+  requestedFacts?: string;
+  requestedLanguage?: MenuLanguage;
+  loading?: boolean;
+};
+
+const DRAG_DATA_TYPE = 'application/x-menucraft-menu-content';
+
+function normalizeSectionOrder(sections: MenuSection[]): MenuSection[] {
+  return sections.map((section, order) => ({ ...section, order }));
 }
 
 export const MenuBuilder: React.FC<MenuBuilderProps> = ({
-  initialMenu,
+  menu,
+  onMenuChange,
   onSave,
-  onPreview,
 }) => {
-  const [menu, setMenu] = useState<Menu>(
-    initialMenu || MenuService.createDefaultMenu()
-  );
   const [uploading, setUploading] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [saveError, setSaveError] = useState('');
+  const [descriptionDrafts, setDescriptionDrafts] = useState<Record<string, DescriptionDraft>>({});
+  const [dropTarget, setDropTarget] = useState('');
+  const dragPayload = useRef<DragPayload | null>(null);
+  const descriptionRequestIds = useRef<Record<string, number>>({});
 
-  const updateMenu = (updates: Partial<Menu>) => {
-    setMenu((prev) => ({ ...prev, ...updates }));
+  const updateMenu = (updates: Partial<Menu>, groupKey?: string) => {
+    onMenuChange((prev) => ({ ...prev, ...updates }), groupKey);
   };
 
-  const updateCustomization = (updates: Partial<Menu['customization']>) => {
-    setMenu((prev) => ({
+  const updateCustomization = (updates: Partial<Menu['customization']>, groupKey?: string) => {
+    onMenuChange((prev) => ({
       ...prev,
       customization: { ...prev.customization, ...updates },
-    }));
+    }), groupKey);
   };
 
   const addSection = () => {
@@ -44,65 +64,295 @@ export const MenuBuilder: React.FC<MenuBuilderProps> = ({
       items: [],
       order: menu.sections.length,
     };
-    setMenu((prev) => ({
+    onMenuChange((prev) => ({
       ...prev,
-      sections: [...prev.sections, newSection],
+      sections: normalizeSectionOrder([...prev.sections, newSection]),
     }));
   };
 
-  const updateSection = (sectionId: string, updates: Partial<MenuSection>) => {
-    setMenu((prev) => ({
+  const updateSection = (sectionId: string, updates: Partial<MenuSection>, groupKey?: string) => {
+    onMenuChange((prev) => ({
       ...prev,
       sections: prev.sections.map((s) =>
         s.id === sectionId ? { ...s, ...updates } : s
       ),
+    }), groupKey);
+  };
+
+  const addSubsection = (sectionId: string) => {
+    const subsection: MenuSubsection = {
+      id: MenuService.generateId(),
+      name: 'New Subsection',
+      description: '',
+      order: 0,
+    };
+    onMenuChange((prev) => ({
+      ...prev,
+      sections: prev.sections.map((section) => {
+        if (section.id !== sectionId) return section;
+        const subsections = [...(section.subsections || []), { ...subsection, order: section.subsections?.length || 0 }];
+        return { ...section, subsections };
+      }),
+    }));
+  };
+
+  const updateSubsection = (sectionId: string, subsectionId: string, updates: Partial<MenuSubsection>, groupKey?: string) => {
+    onMenuChange((prev) => ({
+      ...prev,
+      sections: prev.sections.map((section) => section.id !== sectionId ? section : {
+        ...section,
+        subsections: (section.subsections || []).map((subsection) => subsection.id === subsectionId ? { ...subsection, ...updates } : subsection),
+      }),
+    }), groupKey);
+  };
+
+  const moveSubsectionBy = (sectionId: string, subsectionId: string, direction: -1 | 1) => {
+    onMenuChange((prev) => ({
+      ...prev,
+      sections: prev.sections.map((section) => {
+        if (section.id !== sectionId) return section;
+        const subsections = [...(section.subsections || [])];
+        const from = subsections.findIndex((subsection) => subsection.id === subsectionId);
+        const to = from + direction;
+        if (from < 0 || to < 0 || to >= subsections.length) return section;
+        [subsections[from], subsections[to]] = [subsections[to], subsections[from]];
+        return { ...section, subsections: subsections.map((subsection, order) => ({ ...subsection, order })) };
+      }),
+    }));
+  };
+
+  const deleteSubsection = (sectionId: string, subsectionId: string) => {
+    onMenuChange((prev) => ({
+      ...prev,
+      sections: prev.sections.map((section) => section.id !== sectionId ? section : {
+        ...section,
+        subsections: (section.subsections || []).filter((subsection) => subsection.id !== subsectionId).map((subsection, order) => ({ ...subsection, order })),
+        items: section.items.map((item) => item.subsectionId === subsectionId ? { ...item, subsectionId: undefined } : item),
+      }),
     }));
   };
 
   const deleteSection = (sectionId: string) => {
-    setMenu((prev) => ({
+    onMenuChange((prev) => ({
       ...prev,
-      sections: prev.sections.filter((s) => s.id !== sectionId),
+      sections: normalizeSectionOrder(prev.sections.filter((s) => s.id !== sectionId)),
     }));
   };
 
-  const addItem = (sectionId: string) => {
+  const addItem = (sectionId: string, subsectionId?: string) => {
     const newItem: MenuItem = {
       id: `item-${Date.now()}`,
       name: 'New Item',
       description: '',
       price: 0,
-      currency: '$',
+      currency: 'MAD',
+      subsectionId,
       available: true,
     };
 
-    updateSection(sectionId, {
-      items: [
-        ...menu.sections.find((s) => s.id === sectionId)!.items,
-        newItem,
-      ],
-    });
+    onMenuChange((prev) => ({
+      ...prev,
+      sections: prev.sections.map((section) => section.id === sectionId
+        ? { ...section, items: [...section.items, newItem] }
+        : section),
+    }));
   };
 
   const updateItem = (
     sectionId: string,
     itemId: string,
-    updates: Partial<MenuItem>
+    updates: Partial<MenuItem>,
+    groupKey?: string,
   ) => {
-    const section = menu.sections.find((s) => s.id === sectionId);
-    if (!section) return;
-
-    updateSection(sectionId, {
-      items: section.items.map((i) => (i.id === itemId ? { ...i, ...updates } : i)),
-    });
+    onMenuChange((prev) => ({
+      ...prev,
+      sections: prev.sections.map((section) => section.id === sectionId
+        ? { ...section, items: section.items.map((item) => item.id === itemId ? { ...item, ...updates } : item) }
+        : section),
+    }), groupKey);
   };
 
   const deleteItem = (sectionId: string, itemId: string) => {
-    const section = menu.sections.find((s) => s.id === sectionId);
-    if (!section) return;
+    onMenuChange((prev) => ({
+      ...prev,
+      sections: prev.sections.map((section) => section.id === sectionId
+        ? { ...section, items: section.items.filter((item) => item.id !== itemId) }
+        : section),
+    }));
+  };
 
-    updateSection(sectionId, {
-      items: section.items.filter((i) => i.id !== itemId),
+  const moveSection = (sourceId: string, targetId: string, position: 'before' | 'after') => {
+    onMenuChange((prev) => {
+      if (sourceId === targetId) return prev;
+      const sections = [...prev.sections];
+      const sourceIndex = sections.findIndex((section) => section.id === sourceId);
+      if (sourceIndex < 0) return prev;
+      const [moving] = sections.splice(sourceIndex, 1);
+      const targetIndex = sections.findIndex((section) => section.id === targetId);
+      if (targetIndex < 0) return prev;
+      sections.splice(targetIndex + (position === 'after' ? 1 : 0), 0, moving);
+      return { ...prev, sections: normalizeSectionOrder(sections) };
+    });
+  };
+
+  const moveSectionBy = (sectionId: string, direction: -1 | 1) => {
+    onMenuChange((prev) => {
+      const from = prev.sections.findIndex((section) => section.id === sectionId);
+      const to = from + direction;
+      if (from < 0 || to < 0 || to >= prev.sections.length) return prev;
+      const sections = [...prev.sections];
+      [sections[from], sections[to]] = [sections[to], sections[from]];
+      return { ...prev, sections: normalizeSectionOrder(sections) };
+    });
+  };
+
+  const moveItem = (sourceSectionId: string, itemId: string, targetSectionId: string, targetIndex: number) => {
+    onMenuChange((prev) => {
+      const sourceSection = prev.sections.find((section) => section.id === sourceSectionId);
+      const targetSection = prev.sections.find((section) => section.id === targetSectionId);
+      if (!sourceSection || !targetSection) return prev;
+      const sourceIndex = sourceSection.items.findIndex((item) => item.id === itemId);
+      if (sourceIndex < 0) return prev;
+
+      const sourceItems = [...sourceSection.items];
+      const [moving] = sourceItems.splice(sourceIndex, 1);
+      const destinationItems = sourceSectionId === targetSectionId
+        ? sourceItems
+        : [...targetSection.items];
+      const adjustedIndex = sourceSectionId === targetSectionId && sourceIndex < targetIndex
+        ? targetIndex - 1
+        : targetIndex;
+      const insertionIndex = Math.max(0, Math.min(adjustedIndex, destinationItems.length));
+      const movedItem = sourceSectionId === targetSectionId ? moving : { ...moving, subsectionId: undefined };
+      destinationItems.splice(insertionIndex, 0, movedItem);
+
+      if (sourceSectionId === targetSectionId &&
+        destinationItems.every((item, index) => item.id === sourceSection.items[index]?.id)) {
+        return prev;
+      }
+
+      return {
+        ...prev,
+        sections: prev.sections.map((section) => {
+          if (section.id === sourceSectionId && section.id === targetSectionId) {
+            return { ...section, items: destinationItems };
+          }
+          if (section.id === sourceSectionId) return { ...section, items: sourceItems };
+          if (section.id === targetSectionId) return { ...section, items: destinationItems };
+          return section;
+        }),
+      };
+    });
+  };
+
+  const moveItemBy = (sectionId: string, itemId: string, direction: -1 | 1) => {
+    const section = menu.sections.find((entry) => entry.id === sectionId);
+    const index = section?.items.findIndex((item) => item.id === itemId) ?? -1;
+    if (index >= 0) moveItem(sectionId, itemId, sectionId, index + (direction < 0 ? -1 : 2));
+  };
+
+  const moveItemToSection = (sourceSectionId: string, itemId: string, targetSectionId: string) => {
+    const target = menu.sections.find((section) => section.id === targetSectionId);
+    if (target) moveItem(sourceSectionId, itemId, targetSectionId, target.items.length);
+  };
+
+  const readDragPayload = (event: React.DragEvent): DragPayload | null => {
+    if (dragPayload.current) return dragPayload.current;
+    try {
+      const raw = event.dataTransfer.getData(DRAG_DATA_TYPE) || event.dataTransfer.getData('text/plain');
+      const value = JSON.parse(raw) as DragPayload;
+      return value && (value.type === 'section' || value.type === 'item') ? value : null;
+    } catch {
+      return null;
+    }
+  };
+
+  const startDrag = (event: React.DragEvent, payload: DragPayload) => {
+    dragPayload.current = payload;
+    event.dataTransfer.effectAllowed = 'move';
+    event.dataTransfer.setData(DRAG_DATA_TYPE, JSON.stringify(payload));
+    event.dataTransfer.setData('text/plain', JSON.stringify(payload));
+  };
+
+  const dropOnSection = (event: React.DragEvent, sectionId: string) => {
+    event.preventDefault();
+    event.stopPropagation();
+    const payload = readDragPayload(event);
+    if (!payload) return;
+    if (payload.type === 'item') {
+      const section = menu.sections.find((entry) => entry.id === sectionId);
+      if (section) moveItem(payload.sectionId, payload.itemId, sectionId, section.items.length);
+    } else {
+      const bounds = event.currentTarget.getBoundingClientRect();
+      moveSection(payload.sectionId, sectionId, event.clientY < bounds.top + bounds.height / 2 ? 'before' : 'after');
+    }
+    setDropTarget('');
+    dragPayload.current = null;
+  };
+
+  const dropOnItem = (event: React.DragEvent, sectionId: string, itemId: string) => {
+    const payload = readDragPayload(event);
+    if (!payload || payload.type !== 'item') return;
+    event.preventDefault();
+    event.stopPropagation();
+    const section = menu.sections.find((entry) => entry.id === sectionId);
+    const targetIndex = section?.items.findIndex((item) => item.id === itemId) ?? -1;
+    if (!section || targetIndex < 0) return;
+    const bounds = event.currentTarget.getBoundingClientRect();
+    const position = event.clientY < bounds.top + bounds.height / 2 ? targetIndex : targetIndex + 1;
+    moveItem(payload.sectionId, payload.itemId, sectionId, position);
+    setDropTarget('');
+    dragPayload.current = null;
+  };
+
+  const updateDescriptionDraft = (itemId: string, updates: Partial<DescriptionDraft>) => {
+    setDescriptionDrafts((previous) => ({
+      ...previous,
+      [itemId]: { ...(previous[itemId] || { facts: '' }), ...updates },
+    }));
+  };
+
+  const generateDescription = async (item: MenuItem) => {
+    const current = descriptionDrafts[item.id] || { facts: '' };
+    if (!item.name.trim()) return;
+    const requestId = (descriptionRequestIds.current[item.id] || 0) + 1;
+    descriptionRequestIds.current[item.id] = requestId;
+    updateDescriptionDraft(item.id, { loading: true, error: undefined });
+
+    try {
+      const response = await fetch('/api/ai/menu-description', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: item.name, facts: current.facts, language: menu.originalLanguage }),
+      });
+      const result = await response.json() as { description?: string; error?: string };
+      if (descriptionRequestIds.current[item.id] !== requestId) return;
+      if (!response.ok || !result.description) {
+        throw new Error(result.error || 'Could not create a suggestion. Your description was not changed; try again.');
+      }
+      updateDescriptionDraft(item.id, {
+        draft: result.description,
+        requestedName: item.name,
+        requestedFacts: current.facts,
+        requestedLanguage: menu.originalLanguage,
+        loading: false,
+        error: undefined,
+      });
+    } catch (error) {
+      if (descriptionRequestIds.current[item.id] !== requestId) return;
+      updateDescriptionDraft(item.id, {
+        loading: false,
+        error: error instanceof Error ? error.message : 'The AI provider is unavailable. Your description was not changed; try again.',
+      });
+    }
+  };
+
+  const cancelDescriptionDraft = (itemId: string) => {
+    descriptionRequestIds.current[itemId] = (descriptionRequestIds.current[itemId] || 0) + 1;
+    setDescriptionDrafts((previous) => {
+      const next = { ...previous };
+      delete next[itemId];
+      return next;
     });
   };
 
@@ -145,10 +395,10 @@ export const MenuBuilder: React.FC<MenuBuilderProps> = ({
   const handleSave = async () => {
     setIsSaving(true);
     setSaveError('');
+    const submittedMenu = menu;
     try {
-      const savedMenu = await MenuService.saveMenu(menu);
-      setMenu(savedMenu);
-      onSave?.(savedMenu);
+      const savedMenu = await MenuService.saveMenu(submittedMenu);
+      onSave?.(savedMenu, submittedMenu);
     } catch (error) {
       setSaveError(error instanceof Error ? error.message : 'Unable to save your menu right now.');
     } finally {
@@ -176,14 +426,31 @@ export const MenuBuilder: React.FC<MenuBuilderProps> = ({
           <Input
             label="Restaurant Name *"
             value={menu.restaurantName}
-            onChange={(e) => updateMenu({ restaurantName: e.target.value })}
+            onChange={(e) => updateMenu({ restaurantName: e.target.value }, 'restaurant:name')}
             placeholder="e.g., La Bella Italia"
           />
+
+          <div>
+            <label htmlFor="original-language" className="block text-xs font-semibold text-menu-charcoal-700 uppercase tracking-wider mb-2">
+              Original Language
+            </label>
+            <select
+              id="original-language"
+              value={menu.originalLanguage}
+              onChange={(event) => updateMenu({ originalLanguage: event.target.value as MenuLanguage })}
+              className="w-full border border-menu-charcoal-300 bg-white px-4 py-3 text-sm text-menu-charcoal-900 focus:outline-none focus:ring-2 focus:ring-menu-gold-500"
+            >
+              <option value="ar">Arabic</option>
+              <option value="fr">French</option>
+              <option value="en">English</option>
+            </select>
+            <p className="mt-1 text-xs text-menu-charcoal-500">AI description suggestions use this language.</p>
+          </div>
 
           <Textarea
             label="Restaurant Description"
             value={menu.description || ''}
-            onChange={(e) => updateMenu({ description: e.target.value })}
+            onChange={(e) => updateMenu({ description: e.target.value }, 'restaurant:description')}
             placeholder="Brief description of your restaurant (optional)"
             rows={3}
           />
@@ -306,14 +573,14 @@ export const MenuBuilder: React.FC<MenuBuilderProps> = ({
                   type="color"
                   value={menu.customization.primaryColor}
                   onChange={(e) =>
-                    updateCustomization({ primaryColor: e.target.value })
+                    updateCustomization({ primaryColor: e.target.value }, 'customization:primary-color')
                   }
                   className="h-auto w-16 cursor-pointer border border-menu-charcoal-200/60 rounded-sm"
                 />
                 <Input
                   value={menu.customization.primaryColor}
                   onChange={(e) =>
-                    updateCustomization({ primaryColor: e.target.value })
+                    updateCustomization({ primaryColor: e.target.value }, 'customization:primary-color')
                   }
                   className="flex-1"
                   placeholder="#000000"
@@ -330,14 +597,14 @@ export const MenuBuilder: React.FC<MenuBuilderProps> = ({
                   type="color"
                   value={menu.customization.secondaryColor}
                   onChange={(e) =>
-                    updateCustomization({ secondaryColor: e.target.value })
+                    updateCustomization({ secondaryColor: e.target.value }, 'customization:secondary-color')
                   }
                   className="h-auto w-16 cursor-pointer border border-menu-charcoal-200/60 rounded-sm"
                 />
                 <Input
                   value={menu.customization.secondaryColor}
                   onChange={(e) =>
-                    updateCustomization({ secondaryColor: e.target.value })
+                    updateCustomization({ secondaryColor: e.target.value }, 'customization:secondary-color')
                   }
                   className="flex-1"
                   placeholder="#000000"
@@ -392,14 +659,54 @@ export const MenuBuilder: React.FC<MenuBuilderProps> = ({
         {menu.sections.map((section, sectionIndex) => (
           <div
             key={section.id}
-            className="bg-white border border-menu-charcoal-200/60 shadow-menu rounded-sm"
+            className={`bg-white border border-menu-charcoal-200/60 shadow-menu rounded-sm transition-shadow ${dropTarget === `section:${section.id}` ? 'ring-2 ring-menu-gold-500' : ''}`}
+            onDragOver={(event) => {
+              if (!readDragPayload(event)) return;
+              event.preventDefault();
+              setDropTarget(`section:${section.id}`);
+            }}
+            onDrop={(event) => dropOnSection(event, section.id)}
+            onDragLeave={(event) => {
+              if (!event.currentTarget.contains(event.relatedTarget as Node | null)) {
+                setDropTarget('');
+              }
+            }}
           >
             <div className="bg-menu-cream-100 border-b border-menu-charcoal-200/60 px-5 py-3 flex items-center justify-between">
               <div className="flex items-center gap-3">
+                <button
+                  type="button"
+                  draggable
+                  onDragStart={(event) => startDrag(event, { type: 'section', sectionId: section.id })}
+                  onDragEnd={() => { dragPayload.current = null; setDropTarget(''); }}
+                  aria-label={`Drag section ${section.name || sectionIndex + 1} to reorder`}
+                  title="Drag to reorder this section"
+                  className="cursor-grab touch-none px-1 text-lg text-menu-charcoal-500 active:cursor-grabbing"
+                >
+                  ⋮⋮
+                </button>
                 <span className="w-7 h-7 bg-menu-charcoal-700 text-white flex items-center justify-center text-sm font-bold">
                   {sectionIndex + 1}
                 </span>
                 <span className="text-sm font-bold text-menu-charcoal-900 uppercase tracking-wide">Section {sectionIndex + 1}</span>
+                <div className="flex gap-1">
+                  <button
+                    type="button"
+                    onClick={() => moveSectionBy(section.id, -1)}
+                    disabled={sectionIndex === 0}
+                    aria-label={`Move section ${section.name || sectionIndex + 1} up`}
+                    title="Move section up"
+                    className="border border-menu-charcoal-300 px-2 py-1 text-xs text-menu-charcoal-700 disabled:opacity-40"
+                  >↑</button>
+                  <button
+                    type="button"
+                    onClick={() => moveSectionBy(section.id, 1)}
+                    disabled={sectionIndex === menu.sections.length - 1}
+                    aria-label={`Move section ${section.name || sectionIndex + 1} down`}
+                    title="Move section down"
+                    className="border border-menu-charcoal-300 px-2 py-1 text-xs text-menu-charcoal-700 disabled:opacity-40"
+                  >↓</button>
+                </div>
               </div>
               <button
                 onClick={() => deleteSection(section.id)}
@@ -417,7 +724,7 @@ export const MenuBuilder: React.FC<MenuBuilderProps> = ({
                 label={`Section Name *`}
                 value={section.name}
                 onChange={(e) =>
-                  updateSection(section.id, { name: e.target.value })
+                  updateSection(section.id, { name: e.target.value }, `section:${section.id}:name`)
                 }
                 placeholder="e.g., Appetizers, Main Courses, Desserts"
               />
@@ -426,11 +733,54 @@ export const MenuBuilder: React.FC<MenuBuilderProps> = ({
                 label="Section Description (Optional)"
                 value={section.description || ''}
                 onChange={(e) =>
-                  updateSection(section.id, { description: e.target.value })
+                  updateSection(section.id, { description: e.target.value }, `section:${section.id}:description`)
                 }
                 placeholder="Optional description for this section..."
                 rows={2}
               />
+
+              <div className="border border-menu-charcoal-200/60 bg-menu-cream-100 p-4">
+                <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
+                  <div>
+                    <h3 className="text-xs font-bold uppercase tracking-wider text-menu-charcoal-800">Subsections (Optional)</h3>
+                    <p className="mt-1 text-xs text-menu-charcoal-500">Group dishes under headings such as Tagines, Couscous, or Mint Tea.</p>
+                  </div>
+                  <Button type="button" size="sm" variant="outline" onClick={() => addSubsection(section.id)}>Add Subsection</Button>
+                </div>
+                {(section.subsections || []).length === 0 ? (
+                  <p className="border border-dashed border-menu-charcoal-200 bg-white px-3 py-3 text-xs text-menu-charcoal-500">No subsections yet. Items can stay at this section level.</p>
+                ) : (
+                  <div className="space-y-3">
+                    {[...(section.subsections || [])].sort((left, right) => left.order - right.order).map((subsection, subsectionIndex) => (
+                      <div key={subsection.id} className="border border-menu-charcoal-200 bg-white p-3">
+                        <div className="mb-3 flex items-center justify-between gap-2">
+                          <span className="text-xs font-semibold uppercase tracking-wide text-menu-charcoal-500">Subsection {subsectionIndex + 1}</span>
+                          <div className="flex items-center gap-1">
+                            <button type="button" onClick={() => moveSubsectionBy(section.id, subsection.id, -1)} disabled={subsectionIndex === 0} aria-label={`Move subsection ${subsection.name} up`} className="border border-menu-charcoal-300 px-2 py-1 text-xs disabled:opacity-40">↑</button>
+                            <button type="button" onClick={() => moveSubsectionBy(section.id, subsection.id, 1)} disabled={subsectionIndex === (section.subsections || []).length - 1} aria-label={`Move subsection ${subsection.name} down`} className="border border-menu-charcoal-300 px-2 py-1 text-xs disabled:opacity-40">↓</button>
+                            <button type="button" onClick={() => deleteSubsection(section.id, subsection.id)} className="border border-red-200 px-2 py-1 text-xs text-red-700 hover:bg-red-50">Delete</button>
+                          </div>
+                        </div>
+                        <div className="grid gap-3 md:grid-cols-2">
+                          <Input
+                            label="Subsection Name"
+                            value={subsection.name}
+                            onChange={(event) => updateSubsection(section.id, subsection.id, { name: event.target.value }, `subsection:${subsection.id}:name`)}
+                            placeholder="e.g., Chicken Tagines"
+                          />
+                          <Input
+                            label="Subsection Description (Optional)"
+                            value={subsection.description || ''}
+                            onChange={(event) => updateSubsection(section.id, subsection.id, { description: event.target.value }, `subsection:${subsection.id}:description`)}
+                            placeholder="A short note about this group"
+                          />
+                        </div>
+                        <Button type="button" size="sm" variant="secondary" className="mt-3" onClick={() => addItem(section.id, subsection.id)}>Add Item to {subsection.name || 'Subsection'}</Button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
             </div>
 
             {/* Items */}
@@ -449,16 +799,72 @@ export const MenuBuilder: React.FC<MenuBuilderProps> = ({
                 {section.items.map((item) => (
                   <div
                     key={item.id}
-                    className="bg-menu-cream-50 p-4 border border-menu-charcoal-200/60 rounded-sm"
+                    className={`bg-menu-cream-50 p-4 border border-menu-charcoal-200/60 rounded-sm transition-shadow ${dropTarget === `item:${item.id}` ? 'ring-2 ring-menu-gold-500' : ''}`}
+                    onDragOver={(event) => {
+                      const payload = readDragPayload(event);
+                      if (!payload || payload.type !== 'item') return;
+                      event.preventDefault();
+                      event.stopPropagation();
+                      setDropTarget(`item:${item.id}`);
+                    }}
+                    onDrop={(event) => dropOnItem(event, section.id, item.id)}
                   >
+                    <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
+                      <div className="flex items-center gap-2">
+                        <button
+                          type="button"
+                          draggable
+                          onDragStart={(event) => startDrag(event, { type: 'item', sectionId: section.id, itemId: item.id })}
+                          onDragEnd={() => { dragPayload.current = null; setDropTarget(''); }}
+                          aria-label={`Drag ${item.name || 'menu item'} to reorder or move sections`}
+                          title="Drag to reorder or move to another section"
+                          className="cursor-grab touch-none px-1 text-lg text-menu-charcoal-500 active:cursor-grabbing"
+                        >
+                          ⋮⋮
+                        </button>
+                        <span className="text-xs font-semibold uppercase tracking-wide text-menu-charcoal-500">Move item</span>
+                      </div>
+                      <div className="flex flex-wrap items-center gap-2">
+                        <button
+                          type="button"
+                          onClick={() => moveItemBy(section.id, item.id, -1)}
+                          disabled={section.items[0]?.id === item.id}
+                          aria-label={`Move ${item.name || 'menu item'} up`}
+                          title="Move item up"
+                          className="border border-menu-charcoal-300 px-2 py-1 text-xs text-menu-charcoal-700 disabled:opacity-40"
+                        >↑</button>
+                        <button
+                          type="button"
+                          onClick={() => moveItemBy(section.id, item.id, 1)}
+                          disabled={section.items[section.items.length - 1]?.id === item.id}
+                          aria-label={`Move ${item.name || 'menu item'} down`}
+                          title="Move item down"
+                          className="border border-menu-charcoal-300 px-2 py-1 text-xs text-menu-charcoal-700 disabled:opacity-40"
+                        >↓</button>
+                        <label className="sr-only" htmlFor={`move-item-${item.id}`}>Move {item.name || 'menu item'} to section</label>
+                        <select
+                          id={`move-item-${item.id}`}
+                          value={section.id}
+                          disabled={menu.sections.length < 2}
+                          onChange={(event) => moveItemToSection(section.id, item.id, event.target.value)}
+                          className="max-w-48 border border-menu-charcoal-300 bg-white px-2 py-1 text-xs text-menu-charcoal-700 disabled:opacity-50"
+                        >
+                          {menu.sections.map((targetSection) => (
+                            <option key={targetSection.id} value={targetSection.id}>{targetSection.name || 'Untitled section'}</option>
+                          ))}
+                        </select>
+                      </div>
+                    </div>
+
                     <div className="grid md:grid-cols-2 gap-4 mb-4">
                       <Input
                         label="Item Name"
                         value={item.name}
+                        maxLength={120}
                         onChange={(e) =>
                           updateItem(section.id, item.id, {
                             name: e.target.value,
-                          })
+                          }, `item:${item.id}:name`)
                         }
                         placeholder="Dish name"
                       />
@@ -470,7 +876,7 @@ export const MenuBuilder: React.FC<MenuBuilderProps> = ({
                           onChange={(e) =>
                             updateItem(section.id, item.id, {
                               currency: e.target.value,
-                            })
+                            }, `item:${item.id}:currency`)
                           }
                           placeholder="$"
                         />
@@ -483,12 +889,26 @@ export const MenuBuilder: React.FC<MenuBuilderProps> = ({
                             onChange={(e) =>
                               updateItem(section.id, item.id, {
                                 price: parseFloat(e.target.value) || 0,
-                              })
+                              }, `item:${item.id}:price`)
                             }
                             placeholder="0.00"
                           />
                         </div>
                       </div>
+                    </div>
+
+                    <div className="mb-4 max-w-md">
+                      <label htmlFor={`item-subsection-${item.id}`} className="mb-2 block text-xs font-semibold uppercase tracking-wider text-menu-charcoal-700">Subsection</label>
+                      <select
+                        id={`item-subsection-${item.id}`}
+                        value={(section.subsections || []).some((subsection) => subsection.id === item.subsectionId) ? item.subsectionId : ''}
+                        onChange={(event) => updateItem(section.id, item.id, { subsectionId: event.target.value || undefined }, `item:${item.id}:subsection`)}
+                        className="w-full border border-menu-charcoal-300 bg-white px-3 py-2.5 text-sm text-menu-charcoal-900 focus:outline-none focus:ring-2 focus:ring-menu-gold-500"
+                      >
+                        <option value="">Keep in {section.name || 'section'}</option>
+                        {[...(section.subsections || [])].sort((left, right) => left.order - right.order).map((subsection) => <option key={subsection.id} value={subsection.id}>{subsection.name || 'Untitled subsection'}</option>)}
+                      </select>
+                      <p className="mt-1 text-xs text-menu-charcoal-500">The selected template will style this group as a nested menu heading.</p>
                     </div>
 
                     <Textarea
@@ -497,12 +917,90 @@ export const MenuBuilder: React.FC<MenuBuilderProps> = ({
                       onChange={(e) =>
                         updateItem(section.id, item.id, {
                           description: e.target.value,
-                        })
+                        }, `item:${item.id}:description`)
                       }
                       placeholder="Describe this item..."
                       rows={2}
                       className="mb-4"
                     />
+
+                    {(() => {
+                      const suggestion = descriptionDrafts[item.id] || { facts: '' };
+                      const draftIsStale = Boolean(suggestion.draft) && (
+                        suggestion.requestedName !== item.name ||
+                        suggestion.requestedFacts !== suggestion.facts ||
+                        suggestion.requestedLanguage !== menu.originalLanguage
+                      );
+
+                      return (
+                        <div className="mb-4 border border-menu-gold-300 bg-menu-gold-50 p-4">
+                          <div className="mb-3">
+                            <h4 className="text-sm font-bold text-menu-charcoal-900">AI description suggestion</h4>
+                            <p className="mt-1 text-xs text-menu-charcoal-600">Add only confirmed facts. The current description stays unchanged until you apply a draft.</p>
+                            <p className="mt-1 text-xs text-menu-charcoal-500">Only this dish name, your facts, and the Original Language are sent to your configured AI provider.</p>
+                          </div>
+                          <label className="mb-2 block text-xs font-semibold uppercase tracking-wide text-menu-charcoal-700" htmlFor={`ai-facts-${item.id}`}>
+                            Facts to include (optional)
+                          </label>
+                          <textarea
+                            id={`ai-facts-${item.id}`}
+                            value={suggestion.facts}
+                            onChange={(event) => updateDescriptionDraft(item.id, { facts: event.target.value })}
+                            maxLength={1200}
+                            rows={2}
+                            placeholder="For example: grilled on a charcoal fire; served with house-made sauce"
+                            className="w-full border border-menu-charcoal-300 bg-white px-3 py-2 text-sm text-menu-charcoal-900 focus:outline-none focus:ring-2 focus:ring-menu-gold-500"
+                          />
+                          <div className="mt-3 flex flex-wrap gap-2">
+                            <Button
+                              type="button"
+                              size="sm"
+                              variant="gold"
+                              onClick={() => void generateDescription(item)}
+                              disabled={!item.name.trim() || Boolean(suggestion.loading)}
+                            >
+                              {suggestion.loading ? 'Generating…' : suggestion.draft ? 'Regenerate' : 'Generate with AI'}
+                            </Button>
+                            {(suggestion.draft || suggestion.loading) && (
+                              <Button type="button" size="sm" variant="outline" onClick={() => cancelDescriptionDraft(item.id)}>
+                                Cancel
+                              </Button>
+                            )}
+                          </div>
+                          {suggestion.loading && <p role="status" className="mt-3 text-xs text-menu-charcoal-600">Preparing one description draft…</p>}
+                          {suggestion.error && <p role="alert" className="mt-3 text-xs text-red-700">{suggestion.error}</p>}
+                          {suggestion.draft && (
+                            <div className="mt-4 border-t border-menu-gold-200 pt-4">
+                              <label className="mb-2 block text-xs font-semibold uppercase tracking-wide text-menu-charcoal-700" htmlFor={`ai-draft-${item.id}`}>
+                                Review draft · {menu.originalLanguage.toUpperCase()}
+                              </label>
+                              <Textarea
+                                id={`ai-draft-${item.id}`}
+                                value={suggestion.draft}
+                                onChange={(event) => updateDescriptionDraft(item.id, { draft: event.target.value })}
+                                rows={3}
+                                aria-label={`Review AI description for ${item.name}`}
+                              />
+                              {draftIsStale && <p role="status" className="mt-2 text-xs text-amber-800">Dish facts or language changed. Regenerate before applying this draft.</p>}
+                              <div className="mt-3 flex flex-wrap gap-2">
+                                <Button
+                                  type="button"
+                                  size="sm"
+                                  variant="primary"
+                                  disabled={draftIsStale || !suggestion.draft.trim() || Boolean(suggestion.loading)}
+                                  onClick={() => {
+                                    updateItem(section.id, item.id, { description: suggestion.draft });
+                                    cancelDescriptionDraft(item.id);
+                                  }}
+                                >
+                                  Apply suggestion
+                                </Button>
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })()}
 
                     <div className="flex items-end justify-between gap-4">
                       <div className="flex-1">
@@ -594,13 +1092,6 @@ export const MenuBuilder: React.FC<MenuBuilderProps> = ({
       <div className="sticky bottom-6 bg-menu-cream-50 border border-menu-charcoal-200/60 shadow-menu-lg p-4 rounded-sm">
         {saveError && <p role="alert" className="mb-3 text-sm text-red-700">{saveError}</p>}
         <div className="flex gap-4 justify-end">
-          <Button variant="outline" onClick={() => onPreview?.(menu)}>
-            <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-            </svg>
-            Preview Menu
-          </Button>
           <Button onClick={handleSave} variant="primary" className="min-w-[160px]" disabled={isSaving}>
             <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" />

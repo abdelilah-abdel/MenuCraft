@@ -10,6 +10,8 @@ import { MenuPreview } from '@/components/preview/MenuPreview';
 import { QRCodeDisplay } from '@/components/preview/QRCodeDisplay';
 import { Button } from '@/components/ui/Button';
 import Link from 'next/link';
+import { useMenuHistory } from '@/lib/hooks/useMenuHistory';
+import { createSampleMenuSections } from '@/lib/templates/sampleMenus';
 
 type ViewMode = 'edit' | 'template' | 'daily' | 'share';
 
@@ -17,10 +19,11 @@ function BuilderContent() {
   const searchParams = useSearchParams();
   const menuId = searchParams.get('id');
 
-  const [menu, setMenu] = useState<Menu>(() => MenuService.createDefaultMenu());
+  const [initialMenu] = useState<Menu>(() => MenuService.createDefaultMenu());
+  const { menu, update, undo, redo, canUndo, canRedo, reset, saved } = useMenuHistory(initialMenu);
 
   const [viewMode, setViewMode] = useState<ViewMode>('edit');
-  const [showPreviewModal, setShowPreviewModal] = useState(false);
+  const [mobilePane, setMobilePane] = useState<'edit' | 'preview'>('edit');
   const [isSaved, setIsSaved] = useState(false);
   const [isLoadingWorkspace, setIsLoadingWorkspace] = useState(true);
   const [workspaceError, setWorkspaceError] = useState('');
@@ -40,7 +43,7 @@ function BuilderContent() {
         const currentMenu = await MenuService.loadOwnerMenu(result.owner.id);
 
         if (isMounted) {
-          setMenu(currentMenu || MenuService.createDefaultMenu(result.owner.id));
+          reset(currentMenu || MenuService.createDefaultMenu(result.owner.id));
           setIsLoadingWorkspace(false);
         }
       } catch {
@@ -55,16 +58,72 @@ function BuilderContent() {
     return () => {
       isMounted = false;
     };
-  }, [menuId]);
+  }, [menuId, reset]);
 
-  const handleSave = (updatedMenu: Menu) => {
-    setMenu(updatedMenu);
+  const handleSave = (updatedMenu: Menu, submittedMenu: Menu) => {
+    saved(updatedMenu, submittedMenu);
     setIsSaved(true);
     setTimeout(() => setIsSaved(false), 3000);
   };
 
   const handleTemplateChange = (template: typeof menu.template) => {
-    setMenu((prev) => ({ ...prev, template }));
+    update((prev) => ({ ...prev, template }));
+  };
+
+  const handleUseSampleMenu = (template: Extract<typeof menu.template, 'medina-cafe' | 'moroccan-fine-dining' | 'modern-moroccan-garden'>) => {
+    const hasCurrentMenuContent = menu.sections.some((section) =>
+      Boolean(section.name.trim() || section.description?.trim() || section.items.length || section.subsections?.length),
+    );
+
+    if (hasCurrentMenuContent && !window.confirm('Replace your current menu sections and items with this editable example menu? Your restaurant name, logo, and display settings will stay as they are.')) {
+      return;
+    }
+
+    update((prev) => ({
+      ...prev,
+      template,
+      sections: createSampleMenuSections(template, prev.originalLanguage),
+    }));
+    setViewMode('edit');
+    if (window.matchMedia('(min-width: 1024px)').matches) {
+      window.setTimeout(() => document.getElementById('menu-live-preview')?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 0);
+    } else {
+      setMobilePane('preview');
+    }
+  };
+
+  useEffect(() => {
+    const handleHistoryShortcut = (event: KeyboardEvent) => {
+      const target = event.target;
+      const isTextEntry = target instanceof HTMLElement && (
+        target.isContentEditable ||
+        target instanceof HTMLTextAreaElement ||
+        (target instanceof HTMLInputElement && ['text', 'search', 'url', 'tel', 'email', 'password', 'number'].includes(target.type))
+      );
+      if (isTextEntry || event.altKey || !(event.metaKey || event.ctrlKey)) return;
+
+      const key = event.key.toLowerCase();
+      if (key === 'z') {
+        event.preventDefault();
+        if (event.shiftKey) redo();
+        else undo();
+      } else if (key === 'y') {
+        event.preventDefault();
+        redo();
+      }
+    };
+
+    window.addEventListener('keydown', handleHistoryShortcut);
+    return () => window.removeEventListener('keydown', handleHistoryShortcut);
+  }, [redo, undo]);
+
+  const openPreview = () => {
+    setViewMode('edit');
+    if (window.matchMedia('(min-width: 1024px)').matches) {
+      window.setTimeout(() => document.getElementById('menu-live-preview')?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 0);
+    } else {
+      setMobilePane((current) => viewMode === 'edit' && current === 'preview' ? 'edit' : 'preview');
+    }
   };
 
   const handleExport = () => {
@@ -136,13 +195,41 @@ function BuilderContent() {
                 </span>
               )}
 
-              <Button variant="outline" onClick={() => setShowPreviewModal(true)} size="sm">
+              <Button
+                variant="outline"
+                onClick={openPreview}
+                size="sm"
+                aria-label={viewMode === 'edit' && mobilePane === 'preview' ? 'Return to the menu editor' : 'Show the live menu preview'}
+              >
                 <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                 </svg>
-                <span className="hidden sm:inline">Preview</span>
+                <span className="text-xs sm:text-sm">{viewMode === 'edit' && mobilePane === 'preview' ? 'Edit' : 'Preview'}</span>
               </Button>
+
+              <div className="flex items-center gap-1">
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={undo}
+                  disabled={!canUndo}
+                  aria-label="Undo menu change"
+                  title="Undo (⌘Z / Ctrl+Z)"
+                  className="!px-2 sm:!px-3"
+                ><span aria-hidden="true" className="sm:hidden">↶</span><span className="hidden sm:inline">Undo</span><span className="sr-only sm:hidden">Undo</span></Button>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={redo}
+                  disabled={!canRedo}
+                  aria-label="Redo menu change"
+                  title="Redo (⌘Shift+Z / Ctrl+Y)"
+                  className="!px-2 sm:!px-3"
+                ><span aria-hidden="true" className="sm:hidden">↷</span><span className="hidden sm:inline">Redo</span><span className="sr-only sm:hidden">Redo</span></Button>
+              </div>
 
               <Button variant="outline" onClick={handleExport} size="sm" className="hidden md:inline-flex">
                 Export
@@ -166,7 +253,7 @@ function BuilderContent() {
         <div className="max-w-7xl mx-auto">
           <div className="flex gap-1 overflow-x-auto">
             <button
-              onClick={() => setViewMode('edit')}
+              onClick={() => { setViewMode('edit'); setMobilePane('edit'); }}
               className={`flex items-center gap-2 px-6 py-4 transition-all whitespace-nowrap ${
                 viewMode === 'edit'
                   ? 'border-b-4 border-menu-gold-500 text-menu-charcoal-900 font-semibold'
@@ -227,15 +314,30 @@ function BuilderContent() {
       {/* Main Content Area */}
       <main className="flex-1 overflow-y-auto bg-menu-cream-200">
         <div className="max-w-7xl mx-auto px-6 py-8">
-          {viewMode === 'edit' && (
-            <div className="animate-fade-in">
-              <MenuBuilder
-                initialMenu={menu}
-                onSave={handleSave}
-                onPreview={(m) => setMenu(m)}
-              />
+          <div className={viewMode === 'edit' ? 'animate-fade-in' : 'hidden'}>
+            <div className="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1.1fr)_minmax(320px,0.9fr)]">
+              <section className={`min-w-0 ${mobilePane === 'edit' ? 'block' : 'hidden'} lg:block`} aria-label="Menu editor">
+                <MenuBuilder menu={menu} onMenuChange={update} onSave={handleSave} />
+              </section>
+
+              <aside
+                id="menu-live-preview"
+                className={`min-w-0 ${mobilePane === 'preview' ? 'block' : 'hidden'} lg:block`}
+                aria-label="Live menu preview"
+              >
+                <div className="lg:sticky lg:top-28 lg:max-h-[calc(100vh-8rem)] lg:overflow-y-auto">
+                  <div className="mb-3 flex items-center justify-between gap-3">
+                    <div>
+                      <h2 className="font-serif text-xl text-menu-charcoal-900">Live Preview</h2>
+                      <p className="text-xs text-menu-charcoal-500">Unsaved edits · {menu.template}</p>
+                    </div>
+                    <span className="border border-menu-gold-300 bg-menu-gold-50 px-2 py-1 text-[10px] font-semibold uppercase tracking-wide text-menu-gold-700">Preview only</span>
+                  </div>
+                  <MenuPreview menu={menu} />
+                </div>
+              </aside>
             </div>
-          )}
+          </div>
 
           {viewMode === 'template' && (
             <div className="animate-fade-in">
@@ -246,6 +348,7 @@ function BuilderContent() {
               <TemplateSelector
                 selectedTemplate={menu.template}
                 onSelect={handleTemplateChange}
+                onUseSample={handleUseSampleMenu}
               />
             </div>
           )}
@@ -344,35 +447,6 @@ function BuilderContent() {
         </div>
       </main>
 
-      {/* Preview Modal */}
-      {showPreviewModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-50" onClick={() => setShowPreviewModal(false)}>
-          <div className="relative w-full max-w-5xl max-h-[90vh] bg-menu-cream-200 shadow-menu-xl overflow-hidden" onClick={(e) => e.stopPropagation()}>
-            {/* Modal Header */}
-            <div className="sticky top-0 bg-menu-cream-50 border-b border-menu-charcoal-200 px-6 py-4 z-10 flex items-center justify-between">
-              <div>
-                <h3 className="font-serif text-xl text-menu-charcoal-900">Live Preview</h3>
-                <p className="text-xs text-menu-charcoal-500 uppercase tracking-wide">Template: <span className="text-menu-gold-600 font-semibold">{menu.template}</span></p>
-              </div>
-              <button
-                onClick={() => setShowPreviewModal(false)}
-                className="p-2 hover:bg-menu-cream-200 transition-colors"
-              >
-                <svg className="w-6 h-6 text-menu-charcoal-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              </button>
-            </div>
-
-            {/* Modal Content */}
-            <div className="overflow-y-auto max-h-[calc(90vh-80px)] p-6">
-              <div className="max-w-4xl mx-auto">
-                <MenuPreview menu={menu} />
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

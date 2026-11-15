@@ -1,10 +1,12 @@
 import { mkdir, readFile, rename, unlink, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { randomUUID } from 'node:crypto';
-import type { Menu, MenuItem, MenuSection } from '@/lib/types/menu';
+import type { Menu, MenuItem, MenuSection, MenuSubsection, TemplateType } from '@/lib/types/menu';
 
-export type MenuInput = Omit<Menu, 'ownerId' | 'createdAt' | 'updatedAt'> &
-  Partial<Pick<Menu, 'ownerId' | 'createdAt' | 'updatedAt'>>;
+export type MenuInput = Omit<Menu, 'ownerId' | 'createdAt' | 'updatedAt' | 'originalLanguage'> &
+  Partial<Pick<Menu, 'ownerId' | 'createdAt' | 'updatedAt' | 'originalLanguage'>>;
+
+type StoredMenuInput = MenuInput & Pick<Menu, 'ownerId' | 'createdAt' | 'updatedAt'>;
 
 interface MenuStore {
   menus: Menu[];
@@ -27,7 +29,16 @@ function isMenuItem(value: unknown): value is MenuItem {
     typeof value.available === 'boolean' &&
     (value.description === undefined || typeof value.description === 'string') &&
     (value.image === undefined || typeof value.image === 'string') &&
+    (value.subsectionId === undefined || typeof value.subsectionId === 'string') &&
     (value.tags === undefined || (Array.isArray(value.tags) && value.tags.every((tag) => typeof tag === 'string')));
+}
+
+function isMenuSubsection(value: unknown): value is MenuSubsection {
+  if (!isRecord(value)) return false;
+  return typeof value.id === 'string' &&
+    typeof value.name === 'string' &&
+    typeof value.order === 'number' && Number.isFinite(value.order) &&
+    (value.description === undefined || typeof value.description === 'string');
 }
 
 function isMenuSection(value: unknown): value is MenuSection {
@@ -36,7 +47,13 @@ function isMenuSection(value: unknown): value is MenuSection {
     typeof value.name === 'string' &&
     typeof value.order === 'number' && Number.isFinite(value.order) &&
     Array.isArray(value.items) && value.items.every(isMenuItem) &&
+    (value.subsections === undefined || (Array.isArray(value.subsections) && value.subsections.every(isMenuSubsection))) &&
     (value.description === undefined || typeof value.description === 'string');
+}
+
+function isTemplateType(value: unknown): value is TemplateType {
+  return value === 'classic' || value === 'modern' || value === 'minimal' ||
+    value === 'medina-cafe' || value === 'moroccan-fine-dining' || value === 'modern-moroccan-garden';
 }
 
 export function isMenuInput(value: unknown): value is MenuInput {
@@ -44,9 +61,10 @@ export function isMenuInput(value: unknown): value is MenuInput {
   const customization = value.customization;
   return typeof value.id === 'string' && value.id.trim().length > 0 &&
     typeof value.restaurantName === 'string' &&
+    (value.originalLanguage === undefined || value.originalLanguage === 'ar' || value.originalLanguage === 'fr' || value.originalLanguage === 'en') &&
     (value.description === undefined || typeof value.description === 'string') &&
     Array.isArray(value.sections) && value.sections.every(isMenuSection) &&
-    (value.template === 'classic' || value.template === 'modern' || value.template === 'minimal') &&
+    isTemplateType(value.template) &&
     typeof customization.primaryColor === 'string' &&
     typeof customization.secondaryColor === 'string' &&
     typeof customization.fontFamily === 'string' &&
@@ -58,7 +76,7 @@ export function isMenuInput(value: unknown): value is MenuInput {
     (value.updatedAt === undefined || typeof value.updatedAt === 'string');
 }
 
-function isStoredMenu(value: unknown): value is Menu {
+function isStoredMenu(value: unknown): value is StoredMenuInput {
   return isMenuInput(value) &&
     typeof value.ownerId === 'string' &&
     typeof value.createdAt === 'string' &&
@@ -72,7 +90,12 @@ async function readMenuStore(): Promise<MenuStore> {
     if (!isRecord(parsed) || !Array.isArray(parsed.menus) || !parsed.menus.every(isStoredMenu)) {
       throw new Error('The saved menu store has an invalid format.');
     }
-    return { menus: parsed.menus };
+    return {
+      menus: parsed.menus.map((menu) => ({
+        ...menu,
+        originalLanguage: menu.originalLanguage || 'en',
+      })),
+    };
   } catch (error) {
     if (isRecord(error) && error.code === 'ENOENT') return { menus: [] };
     throw error;
@@ -119,6 +142,7 @@ export function saveMenuForOwner(ownerId: string, input: MenuInput): Promise<Men
       ...input,
       id,
       ownerId,
+      originalLanguage: input.originalLanguage || 'en',
       createdAt: existingMenu?.createdAt || input.createdAt || now,
       updatedAt: now,
     };
