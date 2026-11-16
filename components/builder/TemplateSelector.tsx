@@ -7,11 +7,14 @@ import { templateInfo } from '@/lib/templates';
 interface TemplateSelectorProps {
   selectedTemplate: TemplateType;
   onSelect: (template: TemplateType) => void;
+  /** Load an editable example only for legacy Moroccan collections;
+   * configurable new templates select directly. */
   onUseSample: (template: MoroccanTemplateType) => void;
 }
 
-const moroccanTemplates = ['medina-cafe', 'moroccan-fine-dining', 'modern-moroccan-garden'] as const satisfies readonly TemplateType[];
-type MoroccanTemplateType = typeof moroccanTemplates[number];
+const moroccanTemplates = ['medina-cafe', 'moroccan-fine-dining', 'modern-moroccan-garden', 'atlas-simple'] as const satisfies readonly TemplateType[];
+const sampleTemplates = ['medina-cafe', 'moroccan-fine-dining', 'modern-moroccan-garden'] as const satisfies readonly TemplateType[];
+type MoroccanTemplateType = typeof sampleTemplates[number];
 const originalTemplates: TemplateType[] = ['classic', 'modern', 'minimal'];
 
 const demoPhotos = {
@@ -90,6 +93,14 @@ function TemplateCard({ template, selected, onSelect, onUseSample }: { template:
   );
 }
 
+function useSampleForTemplate(
+  template: TemplateType,
+  onUseSample: TemplateSelectorProps['onUseSample'],
+): (() => void) | undefined {
+  if (!sampleTemplates.includes(template as MoroccanTemplateType)) return undefined;
+  return () => onUseSample(template as MoroccanTemplateType);
+}
+
 export const TemplateSelector: React.FC<TemplateSelectorProps> = ({ selectedTemplate, onSelect, onUseSample }) => (
   <div className="space-y-8">
     <div>
@@ -98,8 +109,8 @@ export const TemplateSelector: React.FC<TemplateSelectorProps> = ({ selectedTemp
     </div>
 
     <section aria-labelledby="moroccan-template-heading">
-      <div className="mb-4"><h4 id="moroccan-template-heading" className="font-display text-xl font-bold text-menu-ink-900">Moroccan collection</h4><p className="mt-1 text-sm text-menu-ink-500">Original designs informed by restaurant menus from Morocco.</p></div>
-      <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">{moroccanTemplates.map((template) => <TemplateCard key={template} template={template} selected={selectedTemplate === template} onSelect={onSelect} onUseSample={() => onUseSample(template)} />)}</div>
+      <div className="mb-4"><h4 id="moroccan-template-heading" className="font-display text-xl font-bold text-menu-ink-900">Moroccan collection</h4><p className="mt-1 text-sm text-menu-ink-500">Original designs informed by restaurant menus from Morocco, plus configuration-only library designs.</p></div>
+      <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">{moroccanTemplates.map((template) => <TemplateCard key={template} template={template} selected={selectedTemplate === template} onSelect={onSelect} onUseSample={useSampleForTemplate(template, onUseSample)} />)}</div>
     </section>
 
     <section aria-labelledby="original-template-heading">

@@ -59,7 +59,8 @@ export type TemplateType =
   | 'minimal'
   | 'medina-cafe'
   | 'moroccan-fine-dining'
-  | 'modern-moroccan-garden';
+  | 'modern-moroccan-garden'
+  | 'atlas-simple';
 
 export interface MenuExport {
   version: string;
