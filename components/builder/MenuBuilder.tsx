@@ -184,7 +184,7 @@ export const MenuBuilder: React.FC<MenuBuilderProps> = ({
       ...prev,
       sections: prev.sections.map((section) => {
         if (section.id !== sectionId) return section;
-        const subsections = [...(section.subsections || [])];
+        const subsections = [...(section.subsections || [])].sort((a,b) => a.order - b.order);
         const from = subsections.findIndex((subsection) => subsection.id === subsectionId);
         const to = from + direction;
         if (from < 0 || to < 0 || to >= subsections.length) return section;
@@ -308,8 +308,14 @@ export const MenuBuilder: React.FC<MenuBuilderProps> = ({
       const targetSection = prev.sections.find((section) => section.id === targetSectionId);
       if (!sourceSection || !targetSection) return prev;
       const sourceIndex = sourceSection.items.findIndex((item) => item.id === itemId);
-      if (sourceIndex < 0) return prev;
+      if (sourceIndex < 0 || (targetSubsectionId && !targetSection.subsections?.some(group => group.id === targetSubsectionId))) return prev;
 
+      const originalItem = sourceSection.items[sourceIndex];
+      const currentGroup = sourceSection.subsections?.some(group => group.id === originalItem.subsectionId) ? originalItem.subsectionId : undefined;
+      if (sourceSectionId === targetSectionId && targetIndex === targetSection.items.length && targetSubsectionId !== undefined && (targetSubsectionId || undefined) === currentGroup) {
+        const siblings = getItemSiblings(sourceSection, itemId);
+        if (siblings.at(-1)?.id === itemId) return prev;
+      }
       const sourceItems = [...sourceSection.items];
       const [moving] = sourceItems.splice(sourceIndex, 1);
       const destinationItems = sourceSectionId === targetSectionId ? sourceItems : [...targetSection.items];
@@ -407,7 +413,7 @@ export const MenuBuilder: React.FC<MenuBuilderProps> = ({
     event.stopPropagation();
     const section = menu.sections.find((entry) => entry.id === sectionId);
     const targetIndex = section?.items.findIndex((item) => item.id === itemId) ?? -1;
-    if (!section || targetIndex < 0) return;
+    if (!section || targetIndex < 0 || (payload.sectionId === sectionId && payload.itemId === itemId)) return;
     const bounds = event.currentTarget.getBoundingClientRect();
     const position = event.clientY < bounds.top + bounds.height / 2 ? targetIndex : targetIndex + 1;
     const targetGroup = section.items[targetIndex].subsectionId;
@@ -533,6 +539,13 @@ export const MenuBuilder: React.FC<MenuBuilderProps> = ({
             endDrag,
             dropSection: dropOnSection,
             dropItem: dropOnItem,
+            dropGroup: (event, sectionId, subsectionId) => {
+              event.preventDefault(); event.stopPropagation();
+              const payload = readDragPayload(event);
+              const section = menu.sections.find(entry => entry.id === sectionId);
+              if (payload?.type === 'item' && section) moveItem(payload.sectionId, payload.itemId, sectionId, section.items.length, subsectionId || null);
+              endDrag();
+            },
             dragOver: (event, target) => {
               if (readDragPayload(event)) {
                 event.preventDefault();
@@ -866,6 +879,19 @@ export const MenuBuilder: React.FC<MenuBuilderProps> = ({
                           </div>
                         </div>
 
+                        <div className="mb-4 text-xs font-semibold"><label htmlFor="move-dish-group">Move dish to group</label>
+                          <select id="move-dish-group" aria-label="Move dish to group" className="mt-2 w-full border bg-white p-3" value={JSON.stringify([section.id, item.subsectionId || ''])} onChange={event => {
+                            const [destination, group] = JSON.parse(event.target.value) as [string, string];
+                            const target = menu.sections.find(entry => entry.id === destination);
+                            if (destination === section.id && group === (item.subsectionId || '')) return;
+                            if (target) moveItem(section.id, item.id, destination, target.items.length, group || null);
+                          }}>
+                            {menu.sections.map(destination => <React.Fragment key={destination.id}>
+                              <option value={JSON.stringify([destination.id, ''])}>{destination.name} / Ungrouped</option>
+                              {destination.subsections?.map(group => <option key={group.id} value={JSON.stringify([destination.id, group.id])}>{destination.name} / {group.name}</option>)}
+                            </React.Fragment>)}
+                          </select>
+                        </div>
                         <div className="grid md:grid-cols-2 gap-4 mb-4">
                           <Input
                             label="Item Name"

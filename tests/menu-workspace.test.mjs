@@ -427,3 +427,21 @@ test('outline duplicates nested content, hides independently of sold out, and re
   assert.equal(copy.items[0].subsectionId, copy.subsections[0].id);
   assert.equal(copy.items[0].available, true);
 });
+
+
+test('dish can move to an empty subsection and empty section without losing its photo', async () => {
+  const menu = structuredClone(initialMenu);
+  menu.sections[0].items[0].image = 'data:image/png;base64,photo';
+  menu.sections.push({ id: 'lunch', name: 'Lunch', order: 1, items: [], subsections: [{ id: 'specials', name: 'Specials', order: 0 }] });
+  let saved;
+  await mount(async value => { saved = value; return value; }, menu);
+  await click('Expand Dinner'); await click('Edit Vegetable tagine');
+  const destination = field('Move dish to group');
+  await act(() => { destination.value = JSON.stringify(['lunch','specials']); destination.dispatchEvent(new window.Event('change',{bubbles:true})); });
+  assert.equal(field('Move dish to group').value, JSON.stringify(['lunch','specials']));
+  await click('Save menu');
+  assert.equal(saved.sections[1].items[0].subsectionId,'specials');
+  assert.equal(saved.sections[1].items[0].image,'data:image/png;base64,photo');
+  await click('Undo menu change');
+  assert.equal(field('Move dish to group').value,JSON.stringify(['dinner','tagines']));
+});

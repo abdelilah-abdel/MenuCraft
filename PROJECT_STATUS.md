@@ -22,6 +22,11 @@
 
 ## Latest changes
 
+### Ticket 05 — movement completed — 2026-11-18
+
+- Reused existing history and drag operations; added explicit section/subsection destination selector and empty subsection drop areas. Group reordering sorts stored order, invalid groups and self drops are ignored, and photo/data IDs stay attached.
+- TypeScript, build and 22 workspace tests passed. Desktop/mobile group destination change verified and screenshots `05-movement-desktop.jpg` / `05-movement-mobile.jpg` captured. Next: ticket 06 content fidelity.
+
 ### Ticket 04 — lifecycle completed — 2026-11-18
 
 - Added nested duplication with fresh IDs, independent hidden state, and reversible outline actions. Subsection removal preserves dishes ungrouped. Shared visibility filtering also excludes hidden hero source photos.

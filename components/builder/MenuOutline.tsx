@@ -15,6 +15,7 @@ interface OutlineActions {
   endDrag: () => void;
   dragOver: (event: React.DragEvent, target: string) => void;
   dropSection: (event: React.DragEvent, sectionId: string) => void;
+  dropGroup: (event: React.DragEvent, sectionId: string, subsectionId?: string) => void;
   dropItem: (event: React.DragEvent, sectionId: string, itemId: string) => void;
 }
 
@@ -211,7 +212,7 @@ export function MenuOutline({
               {groups.map((group) => {
                 const siblings = section.items.filter((item) => item.subsectionId === group.id);
                 return (
-                  <div key={group.id} className="border-t border-menu-ink-200">
+                  <div key={group.id} className={`border-t border-menu-ink-200 ${dropTarget === `group:${group.id}` ? 'ring-2 ring-inset ring-menu-stamp-500' : ''}`} onDragOver={event => { event.stopPropagation(); actions.dragOver(event, `group:${group.id}`); }} onDrop={event => actions.dropGroup(event, section.id, group.id)}>
                     <button
                       type="button"
                       aria-label={`Edit subsection ${group.name}`}
@@ -230,6 +231,7 @@ export function MenuOutline({
                     </button>
                     {entryActions({ kind: 'subsection', sectionId: section.id, subsectionId: group.id }, `subsection ${group.name}`, group.hidden)}
                     {group.hidden && <p className="px-4 text-xs">Hidden</p>}
+                    <p className="px-4 text-xs text-menu-ink-500">Drop dishes here</p>
                     <ul>{siblings.map((item) => itemRow(section, item, siblings))}</ul>
                     <button
                       type="button"
