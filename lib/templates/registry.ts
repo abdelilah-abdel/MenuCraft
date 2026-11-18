@@ -1,3 +1,4 @@
+import { hasSampleContent, type SampleMenuSource } from './sampleContent';
 import { COMPONENT_STYLES, LAYOUT_REGIONS, LAYOUT_SPACING, LAYOUT_ALIGNMENT, type LayoutCapabilities, type ComponentCapabilities } from '../menuDesign';
 export const LEGACY_RENDERER_IDS = [
   'classic',
@@ -63,7 +64,10 @@ interface TemplateMetadata {
   category: (typeof CATEGORIES)[number];
   description: string;
   preview: string;
+  /** Intended outputs, including formats still awaiting qualification. */
   formats: readonly MenuOutputFormat[];
+  verifiedFormats: readonly MenuOutputFormat[];
+  example: { source: SampleMenuSource; restaurantName: string; description: string };
   theme: TemplateThemeConfig;
   layout: TemplateLayoutConfig;
 }
@@ -102,6 +106,8 @@ function validateDefinition(id: string, value: unknown): asserts value is Templa
       new Set(value.formats).size === value.formats.length,
     'unknown, empty, or repeated output formats'
   );
+  check(Array.isArray(value.verifiedFormats) && value.verifiedFormats.every((format: unknown) => (value.formats as unknown[]).includes(format)) && new Set(value.verifiedFormats).size === value.verifiedFormats.length, 'verified formats must be unique intended outputs');
+  check(isRecord(value.example) && hasSampleContent(value.example.source) && typeof value.example.restaurantName === 'string' && value.example.restaurantName.trim() && typeof value.example.description === 'string', 'valid example content is required');
   if (!isRecord(value.theme) || !isRecord(value.layout)) {
     throw new Error(`Invalid template "${id}": theme and layout are required.`);
   }

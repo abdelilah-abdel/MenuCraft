@@ -274,6 +274,12 @@ test('all registered designs preserve the owner menu and an unknown design canno
     const { ownerId: _ownerId, ...expectedPublic } = saved;
     assert.deepEqual(published, expectedPublic);
   }
+  const exampleResponse = await fetch(`${appUrl}/templates/atlas-market/preview`);
+  assert.equal(exampleResponse.status,200);
+  const exampleHtml = await exampleResponse.text();
+  assert.match(exampleHtml,/data-template-example="atlas-market"/);
+  assert.doesNotMatch(exampleHtml,/Atlas Registry Kitchen/);
+  assert.equal((await fetch(`${appUrl}/templates/missing/preview`)).status,404);
   for (const design of [{ componentStyles: { prices: 'freeform' } }, { layout: { columns: 4 } }, { layout: { columns: '2' } }, { layout: { columns: 2, sectionRegions: { missing: 'column-1' } } }, { layout: { columns: 1, sectionRegions: { section: 'column-2' } } }, { layout: { spacing: '999px' } }, { layout: { position: 'absolute' } }]) {
     const response = await fetch(`${appUrl}/api/menus/current`, { method: 'POST', headers, body: JSON.stringify({ ...saved, design }) });
     assert.equal(response.status, 400, 'invalid styles/layout or dangling placements are rejected');

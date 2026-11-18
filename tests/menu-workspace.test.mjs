@@ -588,3 +588,30 @@ test('template switching retains content and dormant choices through reset, save
   await click('Use Atlas Simple design');
   assert.ok(container.querySelector('[data-menu-region="column-3"] [data-dish-treatment="outlined"]'));
 });
+
+
+test('gallery uses separate examples and replacement is explicit, cancelable and undoable', async () => {
+  const menu=structuredClone(initialMenu); menu.design={layout:{columns:2,sectionRegions:{dinner:'column-2'}}};
+  let saved;
+  await mount(async value=>{saved=structuredClone(value);return value;},menu); await click('Templates');
+  const preview=container.querySelector('iframe[title="Atlas Simple example preview"]');
+  assert.ok(preview); assert.match(container.textContent,/Loading example/);
+  await act(()=>preview.dispatchEvent(new window.Event('load',{bubbles:true})));
+  assert.match(container.textContent,/Example preview could not load/);
+  await click('Retry Atlas Simple preview');
+  assert.ok(container.querySelector('iframe[title="Atlas Simple example preview"]'));
+  await click('Use Atlas Market design'); await click('Save menu');
+  assert.equal(saved.template,'atlas-market'); assert.deepEqual(saved.sections,menu.sections);
+  assert.match(container.textContent,/Verified: WEB, MOBILE/); assert.match(container.textContent,/Planned.*A4/);
+  window.confirm=()=>false;
+  await click('Load Atlas Simple example menu');
+  assert.equal(button('Save menu').disabled,true,'canceled replacement has no history or publication change');
+  window.confirm=()=>true;
+  await click('Load Atlas Simple example menu'); await click('Save menu');
+  assert.equal(saved.template,'atlas-simple'); assert.equal(saved.restaurantName,menu.restaurantName);
+  assert.equal(saved.id,menu.id); assert.notDeepEqual(saved.sections,menu.sections);
+  assert.ok(saved.sections.every(section=>section.items.every(item=>item.tags.includes('Example'))));
+  assert.deepEqual(saved.design.layout.sectionRegions,{});
+  await click('Undo menu change'); await click('Save menu');
+  assert.equal(saved.template,'atlas-market'); assert.deepEqual(saved.sections,menu.sections); assert.deepEqual(saved.design,menu.design);
+});

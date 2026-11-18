@@ -20,6 +20,7 @@ Welcome to the MenuCraft documentation! This folder contains all the guides and 
 | Document | Purpose | When to Read |
 |----------|---------|--------------|
 | [**FRONTEND_GUIDE.md**](./FRONTEND_GUIDE.md) | UI/UX development guide with design system, component patterns, and styling conventions | **Before writing any code** |
+| [**TEMPLATE_AUTHORING.md**](./TEMPLATE_AUTHORING.md) | Compose presets, declare examples/capabilities, and qualify formats | **Before adding a template** |
 | [**VERSIONING_STRATEGY.md**](./VERSIONING_STRATEGY.md) | Git workflow, branching strategy, commit conventions, and release process | **Before creating branches** |
 | [**COLLABORATION_GUIDE.md**](./COLLABORATION_GUIDE.md) | Team workflow, code review process, and communication guidelines | **When joining the team** |
 

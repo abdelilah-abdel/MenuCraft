@@ -19,6 +19,8 @@ const legacyTheme = (
 export const TEMPLATE_CONFIGS = defineTemplateRegistry({
   classic: {
     id: 'classic',
+    verifiedFormats: ['WEB', 'MOBILE'],
+    example: { source: 'atlas', restaurantName: 'Atlas Kitchen', description: 'An editable example of a Moroccan kitchen menu.' },
     sectionPhotoPlacements: ['banner', 'heading-side'],
     headerImagePlacements: { defaultLogoSize: 96, logo: ['above'], banner: ['above', 'below'] },
     dishPhotoPlacements: ['thumbnail'],
@@ -37,6 +39,8 @@ export const TEMPLATE_CONFIGS = defineTemplateRegistry({
   },
   modern: {
     id: 'modern',
+    verifiedFormats: ['WEB', 'MOBILE'],
+    example: { source: 'modern-moroccan-garden', restaurantName: 'Garden Kitchen', description: 'An editable example of a Moroccan kitchen menu.' },
     sectionPhotoPlacements: ['banner', 'heading-side'],
     headerImagePlacements: { defaultLogoSize: 80, logo: ['above'], banner: ['above', 'below'] },
     dishPhotoPlacements: ['card-top'],
@@ -55,6 +59,8 @@ export const TEMPLATE_CONFIGS = defineTemplateRegistry({
   },
   minimal: {
     id: 'minimal',
+    verifiedFormats: ['WEB', 'MOBILE'],
+    example: { source: 'atlas', restaurantName: 'Atlas Kitchen', description: 'An editable example of a Moroccan kitchen menu.' },
     sectionPhotoPlacements: ['banner', 'heading-side'],
     headerImagePlacements: { defaultLogoSize: 64, logo: ['above'], banner: ['above', 'below'] },
     dishPhotoPlacements: ['text-side'],
@@ -73,6 +79,8 @@ export const TEMPLATE_CONFIGS = defineTemplateRegistry({
   },
   'medina-cafe': {
     id: 'medina-cafe',
+    verifiedFormats: ['WEB', 'MOBILE'],
+    example: { source: 'medina-cafe', restaurantName: 'Dar Medina', description: 'An editable example of a Moroccan kitchen menu.' },
     sectionPhotoPlacements: ['banner', 'heading-side'],
     headerImagePlacements: { defaultLogoSize: 64, logo: ['above'], banner: ['above', 'below'] },
     dishPhotoPlacements: ['thumbnail'],
@@ -92,6 +100,8 @@ export const TEMPLATE_CONFIGS = defineTemplateRegistry({
   },
   'moroccan-fine-dining': {
     id: 'moroccan-fine-dining',
+    verifiedFormats: ['WEB', 'MOBILE'],
+    example: { source: 'moroccan-fine-dining', restaurantName: 'La Table Royale', description: 'An editable example of a Moroccan kitchen menu.' },
     sectionPhotoPlacements: ['banner', 'heading-side'],
     headerImagePlacements: { defaultLogoSize: 64, logo: ['above'], banner: ['above', 'below'] },
     dishPhotoPlacements: ['card-top'],
@@ -99,7 +109,7 @@ export const TEMPLATE_CONFIGS = defineTemplateRegistry({
     category: 'Moroccan',
     description: 'An editorial, print-inspired layout for detailed dishes and set courses.',
     preview: 'Rich dish descriptions, elegant rules, and fine-dining photography',
-    formats: ['A4', 'A5', 'A3', 'BOOKLET', 'WEB'],
+    formats: ['A4', 'A5', 'A3', 'BOOKLET', 'WEB', 'MOBILE'],
     renderer: 'legacy',
     legacyRenderer: 'moroccan-fine-dining',
     theme: legacyTheme('#332323', '#F7F4EE', 'Georgia, serif'),
@@ -110,6 +120,8 @@ export const TEMPLATE_CONFIGS = defineTemplateRegistry({
   },
   'modern-moroccan-garden': {
     id: 'modern-moroccan-garden',
+    verifiedFormats: ['WEB', 'MOBILE'],
+    example: { source: 'modern-moroccan-garden', restaurantName: 'Jardin d’Atlas', description: 'An editable example of a Moroccan kitchen menu.' },
     sectionPhotoPlacements: ['banner', 'heading-side'],
     headerImagePlacements: { defaultLogoSize: 64, logo: ['above'], banner: ['above', 'below'] },
     dishPhotoPlacements: ['card-top'],
@@ -128,6 +140,8 @@ export const TEMPLATE_CONFIGS = defineTemplateRegistry({
   },
   'atlas-simple': {
     id: 'atlas-simple',
+    verifiedFormats: ['WEB', 'MOBILE'],
+    example: { source: 'atlas', restaurantName: 'Atlas Kitchen', description: 'An editable example of a Moroccan kitchen menu.' },
     layoutOptions: { columns: [1, 2, 3], regions: ['column-1', 'column-2', 'column-3'], spacing: ['compact', 'comfortable', 'airy'], alignment: ['start', 'center'], header: 'full-width' },
     componentStyles: { headings: ['ruled', 'plain'], dishes: ['plain', 'outlined'], prices: ['aligned', 'dotted'] },
     sectionPhotoPlacements: ['banner', 'heading-side'],
@@ -148,6 +162,32 @@ export const TEMPLATE_CONFIGS = defineTemplateRegistry({
     layout: {
       kind: 'editorial', columns: 1, imageStyle: 'none',
       showSectionRules: true, showPricesWithLeaders: true, cornerRadius: 0,
+    },
+  },
+  'atlas-market': {
+    id: 'atlas-market',
+    verifiedFormats: ['WEB', 'MOBILE'],
+    example: { source: 'atlas', restaurantName: 'Atlas Kitchen', description: 'An editable example of a Moroccan kitchen menu.' },
+    layoutOptions: { columns: [1, 2, 3], regions: ['column-1', 'column-2', 'column-3'], spacing: ['compact', 'comfortable', 'airy'], alignment: ['start', 'center'], header: 'full-width' },
+    componentStyles: { headings: ['ruled', 'plain'], dishes: ['plain', 'outlined'], prices: ['aligned', 'dotted'] },
+    sectionPhotoPlacements: ['banner', 'heading-side'],
+    headerImagePlacements: { defaultLogoSize: 64, logo: ['above'], banner: ['above', 'below'] },
+    dishPhotoPlacements: ['card-top', 'thumbnail', 'text-side'],
+    name: 'Atlas Market',
+    category: 'Café',
+    description: 'A two-column café preset composed from shared blocks with photo cards and quiet headings.',
+    preview: 'Photo cards, two section columns, and aligned prices',
+    formats: ['A4', 'A5', 'WEB', 'MOBILE'],
+    renderer: 'configurable',
+    composition: ['restaurant-header', 'menu-sections'],
+    theme: {
+      primaryColor: '#21484B', secondaryColor: '#526D49',
+      backgroundColor: '#F7F8F1', inkColor: '#25241F', headingFont: 'Georgia, serif',
+      bodyFont: 'system-ui, sans-serif',
+    },
+    layout: {
+      kind: 'cards', columns: 2, imageStyle: 'cards',
+      showSectionRules: false, showPricesWithLeaders: false, cornerRadius: 8,
     },
   },
 });

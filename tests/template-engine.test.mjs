@@ -11,10 +11,11 @@ import ts from 'typescript';
 let outputDirectory;
 let config;
 let rendering;
+let examples;
 
 before(async () => {
   outputDirectory = await mkdtemp(path.join(os.tmpdir(), 'menucraft-template-engine-'));
-  const program = ts.createProgram(['lib/templates/config.ts', 'lib/templates/index.tsx'], {
+  const program = ts.createProgram(['lib/templates/config.ts', 'lib/templates/index.tsx', 'lib/templates/examples.ts'], {
     target: ts.ScriptTarget.ES2022,
     module: ts.ModuleKind.CommonJS,
     moduleResolution: ts.ModuleResolutionKind.Node10,
@@ -29,6 +30,7 @@ before(async () => {
   const require = createRequire(import.meta.url);
   config = require(path.join(outputDirectory, 'lib/templates/config.js'));
   rendering = require(path.join(outputDirectory, 'lib/templates/index.js'));
+  examples = require(path.join(outputDirectory, 'lib/templates/examples.js'));
 });
 
 after(async () => {
@@ -84,7 +86,7 @@ test('one template definition makes a new preset discoverable and renders its ow
     },
   });
   const options = config.getTemplateOptions(registry);
-  assert.equal(options.length, 8);
+  assert.equal(options.length, 9);
   assert.equal(options.find((option) => option.id === 'fixture-noir').name, 'Fixture Noir');
   assert.equal(options.find((option) => option.id === 'fixture-noir').category, 'Café');
   const Template = rendering.getTemplate('fixture-noir', registry);
@@ -109,6 +111,9 @@ test('invalid definitions and block or renderer references are rejected at regis
     { ...atlas, id: 'different-id' },
     { ...atlas, theme: {} },
     { ...atlas, formats: ['UNKNOWN'] },
+    { ...atlas, verifiedFormats: ['BOOKLET'] },
+    { ...atlas, verifiedFormats: ['WEB', 'WEB'] },
+    { ...atlas, example: { source: 'missing', restaurantName: 'Example', description: '' } },
     { ...atlas, layout: { ...atlas.layout, columns: 9 } },
     { ...atlas, composition: ['restaurant-header', 'unregistered-block'] },
     { ...atlas, composition: ['restaurant-header', 'restaurant-header'] },
@@ -122,7 +127,7 @@ test('invalid definitions and block or renderer references are rejected at regis
   assert.throws(() => config.defineTemplateRegistry({}), /cannot be empty/);
 });
 
-test('all seven existing IDs render the supplied menu without changing its data', () => {
+test('all registered IDs render the supplied menu without changing its data', () => {
   const original = structuredClone(menu);
   const ids = [
     'classic',
@@ -132,6 +137,7 @@ test('all seven existing IDs render the supplied menu without changing its data'
     'moroccan-fine-dining',
     'modern-moroccan-garden',
     'atlas-simple',
+    'atlas-market',
   ];
   assert.deepEqual(
     config.getTemplateOptions(config.TEMPLATE_CONFIGS).map((entry) => entry.id),
@@ -196,4 +202,18 @@ test('configured styles and section regions preserve content and render through 
   const html=renderToStaticMarkup(React.createElement(rendering.MenuTemplate,{menu:fixture}));
   for (const text of ['data-columns="3"','data-heading-treatment="plain"','data-dish-treatment="outlined"','data-price-treatment="aligned"','data-menu-region="column-3"','Vegetable tagine','Tagines','MAD 72.00','Lunch photo']) assert.ok(html.includes(text),text);
   assert.deepEqual(fixture,before);
+});
+
+
+test('preset examples use the shared renderer and never share mutable owner content', () => {
+  const registry=config.defineTemplateRegistry({'fixture-market':{...config.TEMPLATE_CONFIGS['atlas-market'],id:'fixture-market',name:'Fixture Market',example:{source:'atlas',restaurantName:'Example Market',description:'Example only'}}});
+  const example=examples.createTemplateExample('fixture-market',registry);
+  const Template=rendering.getTemplate('fixture-market',registry);
+  const html=renderToStaticMarkup(React.createElement(Template,{menu:example}));
+  assert.match(html,/Example Market/); assert.match(html,/data-columns="2"/);
+  assert.match(html,/data-price-treatment="aligned"/); assert.match(html,/>Example</);
+  assert.doesNotMatch(html,/data-preview-target/);
+  example.sections[0].items[0].name='Changed privately';
+  assert.notEqual(examples.createTemplateExample('fixture-market',registry).sections[0].items[0].name,'Changed privately');
+  assert.throws(()=>examples.createTemplateExample('unknown'),/Unknown menu template/);
 });

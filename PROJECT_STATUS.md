@@ -19,10 +19,20 @@
 - Ticket 03 is complete: visible restaurant, section/subsection, dish, logo, dish photo, and dish-sourced hero areas in all seven Live Preview designs open ID-matched editor controls. Selection has keyboard actions and visible markers while Published Menus remain clean.
 - Tickets 04–09 are complete: nested lifecycle and visibility, movement into groups, complete content rendering, reusable photo controls, independent logo/banner, and section photo slots. Screenshots were captured for every ticket.
 - Tickets 10–12 are complete: overall appearance, reusable Component Styles, and constrained section regions/columns/spacing/alignment. Atlas exposes the new style/layout capabilities; legacy templates retain signature styles/layouts until their individual migrations. Desktop/mobile screenshots were captured for each ticket.
+- Tickets 13–14 are complete: compatibility-aware template switching, renderer-backed gallery/examples, and Atlas Market as a second shared-block preset. The library now has eight designs; sample content replacement remains explicit and undoable.
 - Server menu validation now uses the template registry as its allowlist, so registered config-only templates can be saved.
 - Persistence is still file-backed JSON and intended for one durable app instance. No relational database migration has been done.
 
 ## Latest changes
+
+### Ticket 14 and requested 13–14 sequence completed — 2026-11-18
+
+- Replaced hand-drawn thumbnails with isolated 800px example viewports using the actual renderer and CSS, plus full responsive example links, loading/error/retry feedback and keyboard-named actions. Example routes never load owner data. Registry metadata now declares representative content and verified formats separately from planned outputs; unqualified presets may start with no verified formats.
+- Added Atlas Market as a configuration-only café preset: shared blocks, two default section columns, photo cards, aligned prices and bounded customization. Atlas Simple has editable representative samples; existing Moroccan collections/localized samples are preserved. All eight designs offer separate explicit sample loading, retaining restaurant/design data and existing replacement confirmation/history. Added [template authoring instructions](docs/TEMPLATE_AUTHORING.md).
+- Final verification: `npx tsc --noEmit`, `npm run build` and all **41 tests** passed (31 workspace, 8 renderer, 2 HTTP integration). Tests cover switching/reset/history and earlier edits, example isolation, preset discovery/rendering, eight-ID save/public preservation, malformed metadata, unknown example 404s, loading/error/retry feedback and sample confirm/cancel/undo.
+- Browser: eight renderer-backed desktop gallery previews loaded without error states. Chrome checked 390px mobile gallery keyboard selection, all eight previews and zero page horizontal overflow. Atlas Market's complete example showed two columns at 1280px and one at 390px; all five example prices/headings remained visible. Saved owner publication preserved branding, eight dishes, layout choices and the stable link at desktop/mobile sizes, without editor markers or page overflow. Screenshots: [13 desktop](.scratch/template-engine/evidence/13-switching-desktop.jpg), [13 mobile](.scratch/template-engine/evidence/13-switching-mobile.jpg), [14 desktop](.scratch/template-engine/evidence/14-gallery-desktop.jpg), [14 mobile](.scratch/template-engine/evidence/14-gallery-mobile.jpg), [14 example desktop](.scratch/template-engine/evidence/14-market-example-desktop.jpg), [14 example mobile](.scratch/template-engine/evidence/14-market-example-mobile.jpg), [14 published mobile](.scratch/template-engine/evidence/14-market-public-mobile.jpg).
+- Browser limitation: native sample-confirmation automation stalled the embedded browser. Chrome completed mobile gallery checks; confirmation/cancel/replacement/undo is verified by the DOM test, not a completed native-dialog browser sequence. Standards reviews found no hard violations; optional future consolidation of compatibility resolution/shared preset capabilities remains. Spec reviews found no static gaps. Existing module/baseline build notices and a legacy Medina SSR key warning were observed. Photos still use the existing illustrative Unsplash sources; print/PDF, TV and full Arabic typography remain unqualified.
+- Tickets 01–14 are resolved. Next: [15 — migrate Classic](.scratch/template-engine/issues/15-migrate-classic.md), preserving its existing ID, content and visual parity. The normal-data dev server is restored on port 3000 after final checks. No push was requested.
 
 ### Ticket 13 — safe template switching completed — 2026-11-18
 
@@ -163,13 +173,13 @@
 
 - `npx tsc --noEmit` — passed.
 - `npm run build` — passed.
-- `npm test` — all 38 tests passed, including appearance/styles/layout, lifecycle/movement/image DOM cases, rendering and temporary isolated HTTP storage.
-- Browser: desktop and 390px mobile appearance/style/layout controls, save/reload, public output and long-heading wrapping — passed with no final public browser errors or horizontal page overflow. Browser fixtures used an isolated directory outside the owner's data.
-- Review: standards/spec reviews completed per ticket; compatibility, contrast, CSS and typography findings fixed. Ticket 12 had no static blockers. Passing source items directly to photo targets instead of looking them up by object identity is an optional future maintenance improvement.
+- `npm test` — all 41 tests passed, including switching/gallery/examples, appearance/styles/layout, lifecycle/movement/image DOM cases, rendering and temporary isolated HTTP storage.
+- Browser: desktop/mobile switching notices, saved design persistence, eight real gallery previews, mobile keyboard selection and Atlas Market example/public layouts passed without page horizontal overflow. Native confirmation automation was incomplete; DOM tests cover confirm/cancel/undo. Browser fixtures used an isolated directory outside the owner's data.
+- Review: standards/spec reviews completed for tickets 13–14 with no material blockers. Future shared capability/resolution helpers are optional maintenance work; the legacy Medina SSR key warning remains recorded above.
 
 ## Next
 
-1. Tickets 01–13 are resolved. Continue with [14 — gallery and presets](.scratch/template-engine/issues/14-gallery-and-template-presets.md) in the [approved 21-ticket plan](.scratch/template-engine/spec.md); gallery/preset authoring and individual migrations follow their blockers.
+1. Tickets 01–14 are resolved. Continue with [15 — migrate Classic](.scratch/template-engine/issues/15-migrate-classic.md) in the [approved 21-ticket plan](.scratch/template-engine/spec.md); the remaining individual migrations follow their blockers.
 2. Complete the approved shared editor/engine behaviors and convert the six legacy templates individually when their blockers are complete, preserving IDs and visual/behavior parity. Keep specialized hooks only where configuration cannot express the design cleanly.
 3. Grow the template library in quality-reviewed batches, starting with Morocco-relevant restaurant types and styles.
 4. Build Playwright PDF export from the shared renderer (A4/A5 first, then pagination and multi-page output).
