@@ -1,8 +1,8 @@
 import { mkdir, readFile, rename, unlink, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { randomUUID } from 'node:crypto';
-import type { Menu, MenuItem, MenuSection, MenuSubsection, TemplateType } from '@/lib/types/menu';
-import { TEMPLATE_CONFIGS } from '@/lib/templates/config';
+import type { Menu, MenuItem, MenuSection, MenuSubsection } from '@/lib/types/menu';
+import { isTemplateId } from '@/lib/templates/config';
 
 export type MenuInput = Omit<Menu, 'ownerId' | 'createdAt' | 'updatedAt' | 'originalLanguage'> &
   Partial<Pick<Menu, 'ownerId' | 'createdAt' | 'updatedAt' | 'originalLanguage'>>;
@@ -52,12 +52,6 @@ function isMenuSection(value: unknown): value is MenuSection {
     (value.description === undefined || typeof value.description === 'string');
 }
 
-function isTemplateType(value: unknown): value is TemplateType {
-  // The library registry is the allowlist: adding a config makes a new design
-  // valid for saving instead of requiring a second hardcoded server list.
-  return typeof value === 'string' && Object.hasOwn(TEMPLATE_CONFIGS, value);
-}
-
 export function isMenuInput(value: unknown): value is MenuInput {
   if (!isRecord(value) || !isRecord(value.customization)) return false;
   const customization = value.customization;
@@ -66,7 +60,7 @@ export function isMenuInput(value: unknown): value is MenuInput {
     (value.originalLanguage === undefined || value.originalLanguage === 'ar' || value.originalLanguage === 'fr' || value.originalLanguage === 'en') &&
     (value.description === undefined || typeof value.description === 'string') &&
     Array.isArray(value.sections) && value.sections.every(isMenuSection) &&
-    isTemplateType(value.template) &&
+    isTemplateId(value.template) &&
     typeof customization.primaryColor === 'string' &&
     typeof customization.secondaryColor === 'string' &&
     typeof customization.fontFamily === 'string' &&
@@ -131,6 +125,7 @@ export async function getPublicMenuById(menuId: string): Promise<Menu | null> {
 /** Save the owner's menu, preserving its ID and creation time on later saves. */
 export function saveMenuForOwner(ownerId: string, input: MenuInput): Promise<Menu> {
   if (!ownerId) return Promise.reject(new Error('An owner must be signed in to save a menu.'));
+  if (!isMenuInput(input)) return Promise.reject(new Error('The menu details or selected design are invalid.'));
 
   const save = async (): Promise<Menu> => {
     const store = await readMenuStore();

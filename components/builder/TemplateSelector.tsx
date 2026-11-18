@@ -3,19 +3,20 @@
 import React from 'react';
 import { TemplateType } from '@/lib/types/menu';
 import { templateInfo } from '@/lib/templates';
+import { getTemplateOptions, TEMPLATE_CONFIGS } from '@/lib/templates/config';
+import { hasSampleMenu, type SampleTemplateType } from '@/lib/templates/sampleMenus';
 
 interface TemplateSelectorProps {
   selectedTemplate: TemplateType;
   onSelect: (template: TemplateType) => void;
   /** Load an editable example only for legacy Moroccan collections;
    * configurable new templates select directly. */
-  onUseSample: (template: MoroccanTemplateType) => void;
+  onUseSample: (template: SampleTemplateType) => void;
 }
 
-const moroccanTemplates = ['medina-cafe', 'moroccan-fine-dining', 'modern-moroccan-garden', 'atlas-simple'] as const satisfies readonly TemplateType[];
-const sampleTemplates = ['medina-cafe', 'moroccan-fine-dining', 'modern-moroccan-garden'] as const satisfies readonly TemplateType[];
-type MoroccanTemplateType = typeof sampleTemplates[number];
-const originalTemplates: TemplateType[] = ['classic', 'modern', 'minimal'];
+const availableTemplates = getTemplateOptions(TEMPLATE_CONFIGS);
+const moroccanTemplates = availableTemplates.filter((definition) => definition.category === 'Moroccan').map((definition) => definition.id);
+const originalTemplates = availableTemplates.filter((definition) => definition.category !== 'Moroccan').map((definition) => definition.id);
 
 const demoPhotos = {
   tagine: 'https://images.unsplash.com/photo-1517314597476-e1788060b6cb?auto=format&fit=crop&w=900&q=80',
@@ -97,8 +98,8 @@ function useSampleForTemplate(
   template: TemplateType,
   onUseSample: TemplateSelectorProps['onUseSample'],
 ): (() => void) | undefined {
-  if (!sampleTemplates.includes(template as MoroccanTemplateType)) return undefined;
-  return () => onUseSample(template as MoroccanTemplateType);
+  if (!hasSampleMenu(template)) return undefined;
+  return () => onUseSample(template);
 }
 
 export const TemplateSelector: React.FC<TemplateSelectorProps> = ({ selectedTemplate, onSelect, onUseSample }) => (

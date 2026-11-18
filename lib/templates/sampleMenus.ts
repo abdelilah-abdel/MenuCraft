@@ -6,6 +6,7 @@ type SampleSubsection = { name: Copy; description?: Copy; items: SampleItem[] };
 type SampleSection = { name: Copy; description: Copy; subsections: SampleSubsection[] };
 
 type MoroccanTemplateType = Extract<TemplateType, 'medina-cafe' | 'moroccan-fine-dining' | 'modern-moroccan-garden'>;
+export type SampleTemplateType = MoroccanTemplateType;
 
 const photos = {
   tagine: 'https://images.unsplash.com/photo-1572282981354-f371f859a22a?auto=format&fit=crop&w=900&q=80',
@@ -159,6 +160,10 @@ const sampleMenus: Record<MoroccanTemplateType, SampleSection[]> = {
     },
   ],
 };
+
+export function hasSampleMenu(template: TemplateType): template is SampleTemplateType {
+  return Object.hasOwn(sampleMenus, template);
+}
 
 function localized(value: Copy, language: MenuLanguage): string {
   return value[language];

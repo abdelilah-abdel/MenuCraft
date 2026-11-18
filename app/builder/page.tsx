@@ -11,7 +11,7 @@ import { QRCodeDisplay } from '@/components/preview/QRCodeDisplay';
 import { Button } from '@/components/ui/Button';
 import Link from 'next/link';
 import { useMenuHistory } from '@/lib/hooks/useMenuHistory';
-import { createSampleMenuSections } from '@/lib/templates/sampleMenus';
+import { createSampleMenuSections, type SampleTemplateType } from '@/lib/templates/sampleMenus';
 
 type ViewMode = 'edit' | 'template' | 'daily' | 'share';
 
@@ -70,7 +70,7 @@ function BuilderContent() {
     update((prev) => ({ ...prev, template }));
   };
 
-  const handleUseSampleMenu = (template: Extract<typeof menu.template, 'medina-cafe' | 'moroccan-fine-dining' | 'modern-moroccan-garden'>) => {
+  const handleUseSampleMenu = (template: SampleTemplateType) => {
     const hasCurrentMenuContent = menu.sections.some((section) =>
       Boolean(section.name.trim() || section.description?.trim() || section.items.length || section.subsections?.length),
     );

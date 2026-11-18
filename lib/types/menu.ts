@@ -1,3 +1,5 @@
+import type { TEMPLATE_CONFIGS } from '../templates/config';
+
 // Core menu data types
 
 export interface MenuItem {
@@ -53,14 +55,7 @@ export interface Menu {
 
 export type MenuLanguage = 'ar' | 'fr' | 'en';
 
-export type TemplateType =
-  | 'classic'
-  | 'modern'
-  | 'minimal'
-  | 'medina-cafe'
-  | 'moroccan-fine-dining'
-  | 'modern-moroccan-garden'
-  | 'atlas-simple';
+export type TemplateType = keyof typeof TEMPLATE_CONFIGS;
 
 export interface MenuExport {
   version: string;

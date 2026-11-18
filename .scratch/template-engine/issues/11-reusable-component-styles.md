@@ -1,0 +1,30 @@
+# 11: Customize reusable Component Styles
+
+**Status:** ready-for-agent
+
+**Blocked by:** 10: Customize the menu's overall appearance
+
+**What to build:** A Restaurant Owner chooses a reusable treatment for all components of a type, such as section headings, dish rows/cards, or price labels, instead of styling every dish separately.
+
+## Acceptance criteria
+
+- [ ] Offer bounded reusable choices for section headings, dish rows/cards, and price labels, including ruled/plain headings and aligned/dotted-leader prices where supported.
+- [ ] Apply each Component Style consistently to all instances of its type and to entries added later.
+- [ ] Resolve Component Styles predictably with template defaults and menu-wide appearance overrides.
+- [ ] Preserve content, tags, Availability, and visibility behavior when changing component presentation.
+- [ ] Expose only supported choices, with a clear selected state and explicit reset; retain settings through save/reload and undo/redo.
+- [ ] Verify the same Component Styles appear in Live Preview and the Published Menu with readable desktop/mobile output.
+
+## Demonstration
+
+Change every section heading to a ruled treatment and every price to an aligned treatment, then add another section/dish and verify the styles apply automatically.
+
+## Delivery requirements
+
+- Include the model, API/persistence, renderer, and editing changes needed for this delivery; use additive defaults for existing JSON-backed menus.
+- Preserve structured content independently from design settings. Live Preview reflects unsaved edits; only a successful explicit save updates the Published Menu.
+- Run focused behavior checks, TypeScript, and the build. Check affected desktop/mobile rendering and record actual outcomes and limitations in the project handoff.
+
+## Comments
+
+- Approved by the owner on 2026-11-17 as part of the revised 21-ticket template-engine and editor plan. Implementation has not started.

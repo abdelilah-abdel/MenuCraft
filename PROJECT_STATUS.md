@@ -2,7 +2,7 @@
 
 > **Always update this file before finishing a development task.** Record the active branch, what changed, checks run, decisions/risks, and the next concrete step. Keep `idea.md` as the product vision; this file is the execution log and handoff.
 
-**Last updated:** 2026-11-16  
+**Last updated:** 2026-11-18
 **Current branch:** `feat/template-engine-roadmap`  
 **Product source of truth:** [`idea.md`](./idea.md)  
 **Build order and accepted decisions:** [`docs/IMPLEMENTATION_ROADMAP.md`](./docs/IMPLEMENTATION_ROADMAP.md)  
@@ -14,11 +14,36 @@
 - Six hand-built menu templates exist: Classic, Modern, Minimal, Medina Café, Moroccan Fine Dining, and Modern Moroccan Garden.
 - Builder supports menu content editing, sample menus, undo/redo, image upload, preview, public links, QR codes, and a description-suggestion endpoint. AI suggestions require an API key; no AI budget/provider is currently selected.
 - Direction B — The Wall — has been ported to the app chrome: self-hosted Bricolage Grotesque, paper/ink/stamp tokens, landing-page motion, and restyled builder/auth UI.
-- Phase 1, Step 1 has started: a structured template configuration registry and reusable `TemplateFromConfig` renderer are added. The six legacy templates remain on their existing renderers for compatibility; `atlas-simple` is the first configuration-only template.
+- Phase 1, Step 1 is in progress. Ticket 01 is complete: Atlas Simple uses a validated composition of reusable header, section/subsection, and dish blocks. The six legacy templates retain their existing renderers for compatibility.
 - Server menu validation now uses the template registry as its allowlist, so registered config-only templates can be saved.
 - Persistence is still file-backed JSON and intended for one durable app instance. No relational database migration has been done.
 
 ## Latest changes
+
+### Ticket 01 — reusable Atlas blocks completed — 2026-11-18
+
+- Resolved [ticket 01](.scratch/template-engine/issues/01-atlas-reusable-menu-blocks.md) on `feat/template-engine-roadmap`.
+- Added validated template definitions with explicit legacy-renderer or block-composition references. Shared allowed-value lists supply runtime validation and TypeScript types.
+- Derived template IDs, gallery discovery/metadata, renderer dispatch, and server save validation from one registry. New configurable presets need no additional gallery/rendering allowlists; sample availability follows the existing sample-data catalog.
+- Extracted reusable restaurant-header, section/subsection-heading, section-list, and dish-row components. Composition binds to the existing structured Menu; persisted menu data and all six legacy rendering components remain unchanged.
+- Unknown template IDs now fail explicitly rather than falling back to Classic. Invalid save attempts are rejected before writing and preserve the existing publication.
+- Verification passed: `npx tsc --noEmit`, `npm run build`, and the full `npm test` suite (6 tests: 4 registry/render checks, 2 HTTP integration checks). New checks cover definition-only fixture registration, composition ordering, invalid definitions/references, all seven IDs, compatibility, and rejected-save publication preservation.
+- Browser verification with an isolated disposable owner/data directory passed gallery selection, Live Preview, save, builder reload, and public rendering. Checked the public renderer at 1440×900 and 390×844 and the mobile builder preview; no runtime errors or horizontal overflow. Evidence: [desktop](.scratch/template-engine/evidence/01-atlas-desktop.jpg), [mobile](.scratch/template-engine/evidence/01-atlas-mobile.jpg).
+- Standards/spec reviews found no blockers. Fixed the optional duplicated-enumeration maintenance finding. Existing non-blocking baseline-mapping/module-format build notices and a smooth-scroll browser warning remain outside this change.
+- Limits: this completes the composition/registration slice. Existing Atlas theme-override and broader content-fidelity work remains in later tickets; print/PDF and full Arabic typography are not qualified by these checks.
+- Next frontier: [02 — outline-and-detail workspace](.scratch/template-engine/issues/02-outline-and-detail-workspace.md) and [06 — complete menu rendering](.scratch/template-engine/issues/06-complete-menu-rendering.md). Neither has been claimed.
+
+### Template-engine plan approved and published — 2026-11-17
+
+- The user supplied two CV-builder screenshots to clarify the intended menu workflow: a collapsible content outline and focused editing beside a persistent live preview, simple add/move/visibility controls, and templates composed from the same reusable building blocks. Personal CV content and AI controls in the screenshots are reference material, not requested menu features.
+- The owner approved the revised 21-ticket proposal with its scope and blocking edges. It supersedes the earlier unpublished 12-ticket breakdown.
+- Published the [approved specification and ticket index](.scratch/template-engine/spec.md) and 21 separate numbered issues under `.scratch/template-engine/issues/`, each with acceptance criteria, a demonstration, explicit blockers, and Status: ready-for-agent.
+- Approved slices cover Atlas Simple as a validated block composition with one registry; outline/focused editing and preview selection; content lifecycle and movement; rendering fidelity; dish, restaurant-header, and section image slots; global and reusable component styles; constrained layouts; safe template switching; gallery/preset authoring; six individual legacy migrations; and final cleanup.
+- The approved architecture keeps structured menu content, template composition, and owner design overrides separate. Templates are presets of the same components exposed by the editor. Picture controls use explicit slots with crop/focal-position settings, and layout movement uses permitted regions rather than arbitrary coordinates.
+- Dependencies preserve the reviewed graph: the Atlas composition first; editor and shared behaviors next; photo controls shared across slots; Component Styles before layout controls and safe switching; individual template migrations after their own prerequisites. Cleanup waits for every remaining editor/gallery slice and migration.
+- No engine/editor implementation has started. PDF export remains its later roadmap milestone; the reference workflow does not change AI/provider, database, or deployment decisions.
+- Checks for this publication task: document/source inspection and tracker consistency checks for ticket count, numbering, status, links, and dependency order. TypeScript, build, and application tests were not rerun; the implementation results below are from the previous development task.
+- Next action: claim and implement [ticket 01 — Build Atlas Simple from reusable menu blocks](.scratch/template-engine/issues/01-atlas-reusable-menu-blocks.md), the sole initially unblocked ticket.
 
 ### Branch: `feat/template-engine-roadmap`
 
@@ -51,14 +76,14 @@
 
 - `npx tsc --noEmit` — passed.
 - `npm run build` — passed.
-- Integration parity smoke test: registered an owner, saved and publicly rendered each of the six legacy template IDs plus `atlas-simple` using the actual returned public menu ID. All showed the restaurant, dish, and price; no browser exceptions.
-- Smoke-test fixtures were written to local `.menucraft-data/`, which is gitignored.
-- `idea.md` is included in this branch's history from the previous design commit; the roadmap and status link back to it rather than forking the product vision.
+- `npm test` — all 6 tests passed, using temporary isolated HTTP storage.
+- Browser: Atlas selection/preview/save/reload/public flow, 1440×900 desktop output, 390×844 mobile output and builder preview — passed with no runtime errors or horizontal overflow. Temporary browser fixtures used an isolated directory outside the owner's data.
+- Review: no standards or spec blockers; optional enumeration-drift finding addressed.
 
 ## Next
 
-1. Review the config schema/renderer against actual print, web, and mobile needs; fix gaps before converting templates.
-2. Convert the six legacy templates to config incrementally, with visual/behavior parity checks after each conversion. Keep specialized renderer hooks only where configuration cannot express the design cleanly.
+1. Ticket 01 is resolved. Claim either [02 — outline-and-detail workspace](.scratch/template-engine/issues/02-outline-and-detail-workspace.md) or [06 — complete menu rendering](.scratch/template-engine/issues/06-complete-menu-rendering.md), the newly unblocked frontier in the [approved 21-ticket plan](.scratch/template-engine/spec.md).
+2. Complete the approved shared editor/engine behaviors and convert the six legacy templates individually when their blockers are complete, preserving IDs and visual/behavior parity. Keep specialized hooks only where configuration cannot express the design cleanly.
 3. Grow the template library in quality-reviewed batches, starting with Morocco-relevant restaurant types and styles.
 4. Build Playwright PDF export from the shared renderer (A4/A5 first, then pagination and multi-page output).
 5. Before Phase 2 persistence features, migrate JSON storage to Prisma + SQLite; then add menu versions/history and field-level translations/RTL.

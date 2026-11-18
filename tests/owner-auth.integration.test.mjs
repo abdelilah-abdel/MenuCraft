@@ -235,3 +235,52 @@ test('owner menu changes persist across sign-out, device sign-in, and the public
   });
   assert.equal(badPassword.status, 401);
 });
+
+test('all registered designs preserve the owner menu and an unknown design cannot replace publication', async () => {
+  const registration = await fetch(`${appUrl}/api/auth/register`, {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email: 'templates@example.com', password: 'template-owner-password' }),
+  });
+  assert.equal(registration.status, 201);
+  const owner = (await registration.json()).owner;
+  const headers = { 'Content-Type': 'application/json', Cookie: registration.headers.get('set-cookie').split(';')[0] };
+  const original = {
+    id: 'stable-template-menu', restaurantName: 'Atlas Registry Kitchen', description: 'Owner-supplied menu',
+    sections: [{ id: 'section', name: 'Dinner', order: 0,
+      subsections: [{ id: 'subsection', name: 'Tagines', order: 0 }],
+      items: [{ id: 'dish', subsectionId: 'subsection', name: 'Vegetable tagine', price: 72, currency: 'MAD', available: false }],
+    }],
+    customization: { primaryColor: '#123456', secondaryColor: '#654321', fontFamily: 'Georgia, serif', logoImage: 'data:image/png;base64,ZmFrZQ==', showImages: false, showPrices: true, showDescriptions: true },
+  };
+  let saved;
+  for (const template of ['classic', 'modern', 'minimal', 'medina-cafe', 'moroccan-fine-dining', 'modern-moroccan-garden', 'atlas-simple']) {
+    const response = await fetch(`${appUrl}/api/menus/current`, { method: 'POST', headers, body: JSON.stringify({ ...original, template }) });
+    assert.equal(response.status, 200, template);
+    const next = (await response.json()).menu;
+    assert.equal(next.id, 'stable-template-menu');
+    assert.equal(next.ownerId, owner.id);
+    assert.equal(next.originalLanguage, 'en', 'old menus without Original Language still load');
+    assert.equal(next.template, template);
+    assert.deepEqual(next.customization, original.customization);
+    assert.deepEqual(next.sections, original.sections);
+    if (saved) assert.equal(next.createdAt, saved.createdAt);
+    saved = next;
+    const restored = await fetch(`${appUrl}/api/menus/current`, { headers });
+    assert.deepEqual((await restored.json()).menu, saved);
+    const published = (await (await fetch(`${appUrl}/api/menus/${saved.id}`)).json()).menu;
+    const { ownerId: _ownerId, ...expectedPublic } = saved;
+    assert.deepEqual(published, expectedPublic);
+  }
+  for (const template of ['missing-template', 'constructor']) {
+    const response = await fetch(`${appUrl}/api/menus/current`, {
+      method: 'POST', headers, body: JSON.stringify({ ...original, template, restaurantName: 'Must not replace publication' }),
+    });
+    assert.equal(response.status, 400);
+    assert.match((await response.json()).error, /design is unavailable/);
+    const restored = await fetch(`${appUrl}/api/menus/current`, { headers });
+    assert.deepEqual((await restored.json()).menu, saved);
+  }
+  const published = (await (await fetch(`${appUrl}/api/menus/${saved.id}`)).json()).menu;
+  assert.equal(published.template, 'atlas-simple');
+  assert.equal(published.restaurantName, 'Atlas Registry Kitchen');
+});

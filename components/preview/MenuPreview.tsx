@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { Menu } from '@/lib/types/menu';
-import { getTemplate } from '@/lib/templates';
+import { MenuTemplate } from '@/lib/templates';
 
 interface MenuPreviewProps {
   menu: Menu;
@@ -10,11 +10,9 @@ interface MenuPreviewProps {
 }
 
 export const MenuPreview: React.FC<MenuPreviewProps> = ({ menu, className = '' }) => {
-  const TemplateComponent = getTemplate(menu.template);
-
   return (
     <div className={`bg-white rounded-lg shadow-lg overflow-hidden ${className}`}>
-      <TemplateComponent menu={menu} />
+      <MenuTemplate menu={menu} />
     </div>
   );
 };
