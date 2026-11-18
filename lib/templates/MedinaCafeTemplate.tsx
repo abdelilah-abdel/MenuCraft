@@ -17,7 +17,7 @@ interface TemplateProps { menu: Menu }
 export const MedinaCafeTemplate: React.FC<TemplateProps> = ({ menu }) => {
   const { customization } = menu;
   const sections = getVisibleMenuSections(menu);
-  const heroItem = sections.flatMap((section) => section.items).find((item) => item.image);
+  const heroItem = sections.flatMap(section => getMenuSectionGroups(section).flatMap(group => group.items)).find((item) => item.image);
   const previewTarget = usePreviewTarget();
 
   const renderItem = (item: MenuItem, sectionId: string) => (

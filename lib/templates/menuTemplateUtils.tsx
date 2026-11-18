@@ -8,18 +8,19 @@ export interface MenuSectionGroup {
   items: MenuItem[];
 }
 
-export function getMenuSectionGroups(section: MenuSection): MenuSectionGroup[] {
-  const subsections = [...(section.subsections || [])].sort((left, right) => left.order - right.order);
-  const subsectionIds = new Set(subsections.map((subsection) => subsection.id));
+export function getMenuSectionGroups(section: MenuSection, includeHidden = false): MenuSectionGroup[] {
+  const allSubsections = section.subsections || [];
+  const subsections = [...allSubsections].filter(group => includeHidden || !group.hidden).sort((left, right) => left.order - right.order);
+  const subsectionIds = new Set(allSubsections.map((subsection) => subsection.id));
   const groups: MenuSectionGroup[] = [];
-  const ungroupedItems = section.items.filter((item) => !item.subsectionId || !subsectionIds.has(item.subsectionId));
+  const ungroupedItems = section.items.filter((item) => (includeHidden || !item.hidden) && (!item.subsectionId || !subsectionIds.has(item.subsectionId)));
 
   if (ungroupedItems.length > 0) {
     groups.push({ subsection: null, items: ungroupedItems });
   }
 
   for (const subsection of subsections) {
-    const items = section.items.filter((item) => item.subsectionId === subsection.id);
+    const items = section.items.filter((item) => item.subsectionId === subsection.id && (includeHidden || !item.hidden));
     if (items.length > 0) groups.push({ subsection, items });
   }
 
@@ -27,7 +28,7 @@ export function getMenuSectionGroups(section: MenuSection): MenuSectionGroup[] {
 }
 
 export function getVisibleMenuSections(menu: Menu): MenuSection[] {
-  return menu.sections.filter((section) => getMenuSectionGroups(section).some((group) => group.items.length > 0));
+  return [...menu.sections].sort((a, b) => a.order - b.order).filter((section) => !section.hidden && getMenuSectionGroups(section).some((group) => group.items.length > 0));
 }
 
 export function menuDirection(menu: Menu): 'rtl' | 'ltr' {

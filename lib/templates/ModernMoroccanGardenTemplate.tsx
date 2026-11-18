@@ -17,7 +17,7 @@ interface TemplateProps { menu: Menu }
 export const ModernMoroccanGardenTemplate: React.FC<TemplateProps> = ({ menu }) => {
   const { customization } = menu;
   const sections = getVisibleMenuSections(menu);
-  const imageItems = sections.flatMap((section) => section.items).filter((item) => item.image).slice(0, 3);
+  const imageItems = sections.flatMap(section => getMenuSectionGroups(section).flatMap(group => group.items)).filter((item) => item.image).slice(0, 3);
   const heroImage = customization.showImages ? imageItems[0]?.image : undefined;
   const previewTarget = usePreviewTarget();
 

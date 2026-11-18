@@ -4,6 +4,7 @@ import { Button } from '../ui/Button';
 import { selectionKey, type DragPayload, type EditorSelection } from './editorSelection';
 
 interface OutlineActions {
+  lifecycle: (selection: EditorSelection, action: 'duplicate' | 'visibility' | 'remove') => void;
   edit: (selection: EditorSelection) => void;
   addSection: () => void;
   addSubsection: (sectionId: string) => void;
@@ -32,6 +33,18 @@ export function MenuOutline({
   useEffect(() => {
     if (focusedSectionId) setExpanded((previous) => new Set([...previous, focusedSectionId]));
   }, [focusedSectionId]);
+
+  const entryActions = (target: EditorSelection, label: string, hidden?: boolean) => (
+    <details className="relative shrink-0 text-xs">
+      <summary className="cursor-pointer p-2" aria-label={`Actions for ${label}`}>•••</summary>
+      <div className="absolute right-0 z-30 min-w-40 border bg-menu-paper-50 p-2 shadow-lg">
+        {(['duplicate', 'visibility', 'remove'] as const).map(action => {
+          const verb = action === 'duplicate' ? 'Duplicate' : action === 'remove' ? 'Remove' : hidden ? 'Show' : 'Hide';
+          return <button key={action} type="button" className="block w-full p-2 text-left hover:bg-menu-paper-200" aria-label={`${verb} ${label}`} onClick={event => { event.currentTarget.closest('details')?.removeAttribute('open'); actions.lifecycle(target, action); }}>{verb}</button>;
+        })}
+      </div>
+    </details>
+  );
 
   const itemRow = (section: MenuSection, item: MenuItem, siblings: MenuItem[]) => (
     <li
@@ -67,10 +80,11 @@ export function MenuOutline({
         </span>
         <span className="block truncate text-xs text-menu-ink-500">
           {item.currency} {item.price.toFixed(2)}
-          {!item.available ? ' · Sold out' : ''}
+          {item.hidden ? ' · Hidden' : !item.available ? ' · Sold out' : ''}
           {item.description ? ` · ${item.description}` : ''}
         </span>
       </button>
+      {entryActions({ kind: 'item', sectionId: section.id, itemId: item.id }, `dish ${item.name}`, item.hidden)}
       <div className="flex shrink-0 gap-1">
         <button
           type="button"
@@ -160,7 +174,7 @@ export function MenuOutline({
                   {section.name || 'Untitled section'}
                 </span>
                 <span className="text-xs text-menu-ink-500">
-                  {section.items.length} dishes · {isExpanded ? '−' : '+'}
+                  {section.hidden ? 'Hidden · ' : ''}{section.items.length} dishes · {isExpanded ? '−' : '+'}
                 </span>
               </button>
               <button
@@ -190,6 +204,7 @@ export function MenuOutline({
               >
                 ↓
               </button>
+              {entryActions({ kind: 'section', sectionId: section.id }, `section ${section.name}`, section.hidden)}
             </div>
             <div id={`outline-section-${section.id}`} hidden={!isExpanded}>
               <ul>{ungrouped.map((item) => itemRow(section, item, ungrouped))}</ul>
@@ -213,6 +228,8 @@ export function MenuOutline({
                       {group.name || 'Untitled subsection'}{' '}
                       <span className="float-right text-menu-stamp-600">Edit</span>
                     </button>
+                    {entryActions({ kind: 'subsection', sectionId: section.id, subsectionId: group.id }, `subsection ${group.name}`, group.hidden)}
+                    {group.hidden && <p className="px-4 text-xs">Hidden</p>}
                     <ul>{siblings.map((item) => itemRow(section, item, siblings))}</ul>
                     <button
                       type="button"

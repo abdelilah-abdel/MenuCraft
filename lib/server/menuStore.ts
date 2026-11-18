@@ -25,6 +25,7 @@ function isMenuItem(value: unknown): value is MenuItem {
   if (!isRecord(value)) return false;
   return typeof value.id === 'string' &&
     typeof value.name === 'string' &&
+    (value.hidden === undefined || typeof value.hidden === 'boolean') &&
     typeof value.price === 'number' && Number.isFinite(value.price) &&
     typeof value.currency === 'string' &&
     typeof value.available === 'boolean' &&
@@ -38,6 +39,7 @@ function isMenuSubsection(value: unknown): value is MenuSubsection {
   if (!isRecord(value)) return false;
   return typeof value.id === 'string' &&
     typeof value.name === 'string' &&
+    (value.hidden === undefined || typeof value.hidden === 'boolean') &&
     typeof value.order === 'number' && Number.isFinite(value.order) &&
     (value.description === undefined || typeof value.description === 'string');
 }
@@ -46,6 +48,7 @@ function isMenuSection(value: unknown): value is MenuSection {
   if (!isRecord(value)) return false;
   return typeof value.id === 'string' &&
     typeof value.name === 'string' &&
+    (value.hidden === undefined || typeof value.hidden === 'boolean') &&
     typeof value.order === 'number' && Number.isFinite(value.order) &&
     Array.isArray(value.items) && value.items.every(isMenuItem) &&
     (value.subsections === undefined || (Array.isArray(value.subsections) && value.subsections.every(isMenuSubsection))) &&

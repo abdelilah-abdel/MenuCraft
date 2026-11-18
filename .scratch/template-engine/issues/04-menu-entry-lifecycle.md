@@ -1,6 +1,6 @@
 # 04: Add, duplicate, hide, and remove menu entries
 
-**Status:** ready-for-agent
+**Status:** resolved
 
 **Blocked by:** 02: Create the outline-and-detail editing workspace
 
@@ -8,12 +8,12 @@
 
 ## Acceptance criteria
 
-- [ ] Provide add, duplicate, hide/show, and remove actions for sections, subsections, and dishes where each operation is meaningful for that entry type.
-- [ ] Generate unique identities when duplicating nested content and remap subsection references correctly; preserve the copied entry's pictures and supported design settings.
-- [ ] Model hidden content separately from Availability. Hidden entries remain editable and are omitted from rendered output, while unavailable visible dishes remain present with a sold-out label.
-- [ ] Treat absent visibility fields in existing menus as visible and retain hidden content through save/reload and template changes.
-- [ ] Make add, duplicate, visibility, and removal actions reversible through the existing Editor History, including restoration of nested entries and their associations.
-- [ ] A hidden or empty group does not leave orphan headings in preview or public rendering; surface the appropriate empty state if nothing is visible.
+- [x] Provide add, duplicate, hide/show, and remove actions for sections, subsections, and dishes where each operation is meaningful for that entry type.
+- [x] Generate unique identities when duplicating nested content and remap subsection references correctly; preserve the copied entry's pictures and supported design settings.
+- [x] Model hidden content separately from Availability. Hidden entries remain editable and are omitted from rendered output, while unavailable visible dishes remain present with a sold-out label.
+- [x] Treat absent visibility fields in existing menus as visible and retain hidden content through save/reload and template changes.
+- [x] Make add, duplicate, visibility, and removal actions reversible through the existing Editor History, including restoration of nested entries and their associations.
+- [x] A hidden or empty group does not leave orphan headings in preview or public rendering; surface the appropriate empty state if nothing is visible.
 
 ## Demonstration
 
@@ -28,3 +28,7 @@ Duplicate a section containing subsections and photos, hide one copy, mark a vis
 ## Comments
 
 - Approved by the owner on 2026-11-17 as part of the revised 21-ticket template-engine and editor plan. Implementation has not started.
+
+## Answer
+
+Completed 2026-11-18. Outline actions duplicate, hide/show and remove all entry types. Copies remap nested IDs; subsection removal keeps its dishes ungrouped, matching the existing editor. Optional visibility fields default to visible and server validation retains them. Hidden groups/photos are excluded from all seven renderers. Undo restores removals. TypeScript, build and 21 workspace checks passed; desktop/mobile duplicate-hide-save checked with isolated data. Evidence: [desktop](../evidence/04-lifecycle-desktop.jpg), [mobile](../evidence/04-lifecycle-mobile.jpg). Standards/spec review consistency finding fixed.

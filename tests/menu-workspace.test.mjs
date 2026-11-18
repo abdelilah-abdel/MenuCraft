@@ -402,3 +402,28 @@ for (const template of ['medina-cafe', 'moroccan-fine-dining', 'modern-moroccan-
     assert.equal(document.activeElement.getAttribute('data-editor-image-control'), 'item');
   });
 }
+
+
+test('outline duplicates nested content, hides independently of sold out, and restores removal', async () => {
+  let submitted;
+  await mount(async value => { submitted = value; return value; });
+  await click('Duplicate section Dinner');
+  await click('Hide section Dinner (copy)');
+  assert.equal(container.querySelectorAll('[aria-label="Edit dish Vegetable tagine in preview"]').length, 1);
+  await click('Expand Dinner');
+  await click('Edit Vegetable tagine');
+  await act(() => container.querySelector('input[type="checkbox"]').click());
+  assert.match(container.querySelector('[aria-label="Live menu preview"]').textContent, /Sold out/);
+  await click('Done');
+  await click('Remove section Dinner');
+  assert.equal(container.querySelectorAll('[aria-label="Edit dish Vegetable tagine in preview"]').length, 0);
+  await click('Undo menu change');
+  await click('Save menu');
+  const [original, copy] = submitted.sections;
+  assert.equal(copy.hidden, true);
+  assert.notEqual(copy.id, original.id);
+  assert.notEqual(copy.items[0].id, original.items[0].id);
+  assert.notEqual(copy.subsections[0].id, original.subsections[0].id);
+  assert.equal(copy.items[0].subsectionId, copy.subsections[0].id);
+  assert.equal(copy.items[0].available, true);
+});

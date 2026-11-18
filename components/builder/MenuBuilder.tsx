@@ -3,6 +3,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Menu, MenuSection, MenuSubsection, MenuItem, MenuLanguage } from '@/lib/types/menu';
 import { MenuService } from '@/lib/services/menuService';
+import { editMenuEntry } from '@/lib/menuEntries';
 import { imageService } from '@/lib/services/imageService';
 import { Button } from '../ui/Button';
 import { Input, Textarea } from '../ui/Input';
@@ -36,7 +37,7 @@ function normalizeSectionOrder(sections: MenuSection[]): MenuSection[] {
 
 function getItemSiblings(section: MenuSection, itemId: string): MenuItem[] {
   return (
-    getMenuSectionGroups(section).find((group) => group.items.some((item) => item.id === itemId))?.items || []
+    getMenuSectionGroups(section, true).find((group) => group.items.some((item) => item.id === itemId))?.items || []
   );
 }
 
@@ -110,7 +111,7 @@ export const MenuBuilder: React.FC<MenuBuilderProps> = ({
 
   const addSection = () => {
     const newSection: MenuSection = {
-      id: `section-${Date.now()}`,
+      id: crypto.randomUUID(),
       name: 'New Section',
       description: '',
       items: [],
@@ -224,7 +225,7 @@ export const MenuBuilder: React.FC<MenuBuilderProps> = ({
 
   const addItem = (sectionId: string, subsectionId?: string) => {
     const newItem: MenuItem = {
-      id: `item-${Date.now()}`,
+      id: crypto.randomUUID(),
       name: 'New Item',
       description: '',
       price: 0,
@@ -522,6 +523,7 @@ export const MenuBuilder: React.FC<MenuBuilderProps> = ({
           dropTarget={dropTarget}
           actions={{
             edit: onSelect,
+            lifecycle: (target, action) => onMenuChange(current => editMenuEntry(current, target, action)),
             addSection,
             addSubsection,
             addItem,

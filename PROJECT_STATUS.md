@@ -22,6 +22,12 @@
 
 ## Latest changes
 
+### Ticket 04 — lifecycle completed — 2026-11-18
+
+- Added nested duplication with fresh IDs, independent hidden state, and reversible outline actions. Subsection removal preserves dishes ungrouped. Shared visibility filtering also excludes hidden hero source photos.
+- TypeScript, build and focused workspace checks passed. Desktop and 390px mobile duplicate/hide/save checked with isolated data; screenshots `04-lifecycle-desktop.jpg` and `04-lifecycle-mobile.jpg` are in `.scratch/template-engine/evidence/`. Review consistency issue fixed.
+- Next: ticket 05 movement, followed by requested 06–09. Print/Arabic qualification remains deferred.
+
 ### Ticket 03 — preview selection to editing completed — 2026-11-18
 
 - Resolved [ticket 03](.scratch/template-engine/issues/03-preview-selection-to-editing.md) on `feat/template-engine-roadmap`.

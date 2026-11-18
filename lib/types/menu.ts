@@ -5,6 +5,7 @@ import type { TEMPLATE_CONFIGS } from '../templates/config';
 export interface MenuItem {
   id: string;
   name: string;
+  hidden?: boolean;
   description?: string;
   price: number;
   currency: string;
@@ -17,6 +18,7 @@ export interface MenuItem {
 export interface MenuSubsection {
   id: string;
   name: string;
+  hidden?: boolean;
   description?: string;
   order: number;
 }
@@ -24,6 +26,7 @@ export interface MenuSubsection {
 export interface MenuSection {
   id: string;
   name: string;
+  hidden?: boolean;
   description?: string;
   items: MenuItem[];
   subsections?: MenuSubsection[];
