@@ -14,7 +14,9 @@ export function editMenuEntry(menu: Menu, target: EditorSelection, action: 'dupl
     const copy = { ...source, id: id(), name: `${source.name} (copy)`, subsections: source.subsections?.map(group => ({ ...group, id: groups.get(group.id)! })), items: source.items.map(item => ({ ...copyItem(item), subsectionId: item.subsectionId ? groups.get(item.subsectionId) : undefined })) };
     const sections = [...menu.sections];
     sections.splice(sections.indexOf(source) + 1, 0, copy);
-    return { ...menu, sections: sections.map((section, order) => ({ ...section, order })) };
+    const placement = menu.design?.layout?.sectionRegions?.[source.id];
+    const design = placement ? { ...menu.design, layout: { ...menu.design?.layout, sectionRegions: { ...menu.design?.layout?.sectionRegions, [copy.id]: placement } } } : menu.design;
+    return { ...menu, design, sections: sections.map((section, order) => ({ ...section, order })) };
   }
   let section = source;
   if (target.kind === 'item') {

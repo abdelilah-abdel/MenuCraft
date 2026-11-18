@@ -187,3 +187,13 @@ test('empty and hidden groups render truthful empty states with supplied languag
     assert.match(html,/being updated|mise à jour|تحديث/);
   }
 });
+
+
+test('configured styles and section regions preserve content and render through the public interface', () => {
+  const fixture=structuredClone(menu); fixture.design={componentStyles:{headings:'plain',dishes:'outlined',prices:'aligned'},layout:{columns:3,spacing:'compact',alignment:'center',sectionRegions:{lunch:'column-3'}}};
+  fixture.sections[0].image='data:image/png;base64,photo';
+  const before=structuredClone(fixture);
+  const html=renderToStaticMarkup(React.createElement(rendering.MenuTemplate,{menu:fixture}));
+  for (const text of ['data-columns="3"','data-heading-treatment="plain"','data-dish-treatment="outlined"','data-price-treatment="aligned"','data-menu-region="column-3"','Vegetable tagine','Tagines','MAD 72.00','Lunch photo']) assert.ok(html.includes(text),text);
+  assert.deepEqual(fixture,before);
+});

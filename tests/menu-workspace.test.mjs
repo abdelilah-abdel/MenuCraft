@@ -542,3 +542,23 @@ test('component styles apply to every dish including new entries and reset with 
   await click('Undo menu change');
   assert.equal(container.querySelectorAll('[data-price-treatment="aligned"]').length,2);
 });
+
+
+test('layout regions move sections without changing content order and deletion prunes references', async () => {
+  const menu = structuredClone(initialMenu); menu.template = 'atlas-simple';
+  menu.sections.push({id:'lunch',name:'Lunch',order:1,items:[{id:'tea',name:'Mint tea',price:20,currency:'MAD',available:true}]});
+  let saved;
+  await mount(async value => {saved=value;return value;},menu); await click('Customize');
+  const columns = container.querySelector('[aria-label="Menu columns"]');
+  assert.ok(columns,'supported layout choices exist');
+  await act(() => {columns.value='2';columns.dispatchEvent(new window.Event('change',{bubbles:true}));});
+  const region=container.querySelector('[aria-label="Place section Dinner"]');
+  await act(() => {region.value='column-2';region.dispatchEvent(new window.Event('change',{bubbles:true}));});
+  assert.match(container.querySelector('[data-menu-region="column-2"]').textContent,/Vegetable tagine/);
+  await click('Save menu'); assert.deepEqual(saved.sections,menu.sections);
+  assert.equal(saved.design.layout.sectionRegions.dinner,'column-2');
+  await click('Content'); await click('Remove section Dinner'); await click('Save menu');
+  assert.equal(saved.design.layout.sectionRegions.dinner,undefined);
+  await click('Undo menu change');
+  assert.match(container.querySelector('[data-menu-region="column-2"]').textContent,/Vegetable tagine/);
+});

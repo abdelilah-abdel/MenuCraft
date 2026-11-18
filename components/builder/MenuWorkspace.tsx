@@ -11,6 +11,7 @@ import { MenuPreviewPane } from './MenuPreviewPane';
 import { TemplateSelector } from './TemplateSelector';
 import { QRCodeDisplay } from '../preview/QRCodeDisplay';
 import { Button } from '../ui/Button';
+import { pruneLayoutReferences } from '@/lib/menuDesign';
 import { selectionExists, type EditorSelection } from './editorSelection';
 
 type WorkspaceView = 'content' | 'customize' | 'template' | 'daily' | 'share';
@@ -31,7 +32,8 @@ export function MenuWorkspace({
   initiallyPublished: boolean;
   saveMenu?: (menu: Menu) => Promise<Menu>;
 }) {
-  const { menu, update, undo, redo, canUndo, canRedo, saved } = useMenuHistory(initialMenu);
+  const { menu, update: recordUpdate, undo, redo, canUndo, canRedo, saved } = useMenuHistory(initialMenu);
+  const update = (change: Menu | ((menu: Menu) => Menu), groupKey?: string) => recordUpdate(current => pruneLayoutReferences(typeof change === 'function' ? change(current) : change), groupKey);
   const publication = useMenuSave({ menu, initialMenu, initiallyPublished, saveMenu, onSaved: saved });
   const [view, setView] = useState<WorkspaceView>('content');
   const [selection, setSelection] = useState<EditorSelection | null>(null);

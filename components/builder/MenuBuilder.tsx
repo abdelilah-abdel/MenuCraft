@@ -6,6 +6,7 @@ import { MenuService } from '@/lib/services/menuService';
 import { editMenuEntry } from '@/lib/menuEntries';
 import { Button } from '../ui/Button';
 import { Input, Textarea } from '../ui/Input';
+import { MenuLayoutPanel } from './MenuLayoutPanel';
 import { MenuDesignPanel } from './MenuDesignPanel';
 import { ImageSlotEditor } from './ImageSlotEditor';
 import { getTemplateConfig } from '@/lib/templates/config';
@@ -1161,6 +1162,7 @@ export const MenuBuilder: React.FC<MenuBuilderProps> = ({
               </div>
 
               <MenuDesignPanel menu={menu} onChange={onMenuChange} />
+              <MenuLayoutPanel menu={menu} onChange={onMenuChange} />
             </div>
           </div>
         </>

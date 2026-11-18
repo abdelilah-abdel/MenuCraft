@@ -68,7 +68,7 @@ export function isMenuInput(value: unknown): value is MenuInput {
     (value.description === undefined || typeof value.description === 'string') &&
     Array.isArray(value.sections) && value.sections.every(isMenuSection) &&
     isTemplateId(value.template) &&
-    isMenuDesign(value.design) &&
+    isMenuDesign(value.design, (value.sections as MenuSection[]).map(section => section.id)) &&
     typeof customization.primaryColor === 'string' &&
     typeof customization.secondaryColor === 'string' &&
     typeof customization.fontFamily === 'string' &&

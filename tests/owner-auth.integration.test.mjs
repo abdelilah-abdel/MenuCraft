@@ -245,7 +245,7 @@ test('all registered designs preserve the owner menu and an unknown design canno
   const owner = (await registration.json()).owner;
   const headers = { 'Content-Type': 'application/json', Cookie: registration.headers.get('set-cookie').split(';')[0] };
   const original = {
-    design: { appearance: { primaryColor: '#174f54', backgroundColor: '#fff5df', fontFamily: 'Georgia, serif', textSize: 'large' } },
+    design: { appearance: { primaryColor: '#174f54', backgroundColor: '#fff5df', fontFamily: 'Georgia, serif', textSize: 'large' }, componentStyles: { headings: 'ruled', dishes: 'outlined', prices: 'aligned' }, layout: { columns: 3, spacing: 'compact', alignment: 'center', sectionRegions: { section: 'column-3' } } },
     id: 'stable-template-menu', restaurantName: 'Atlas Registry Kitchen', description: 'Owner-supplied menu',
     sections: [{ id: 'section', name: 'Dinner', order: 0,
       subsections: [{ id: 'subsection', name: 'Tagines', order: 0, hidden: false }],
@@ -273,6 +273,10 @@ test('all registered designs preserve the owner menu and an unknown design canno
     const published = (await (await fetch(`${appUrl}/api/menus/${saved.id}`)).json()).menu;
     const { ownerId: _ownerId, ...expectedPublic } = saved;
     assert.deepEqual(published, expectedPublic);
+  }
+  for (const design of [{ componentStyles: { prices: 'freeform' } }, { layout: { columns: 4 } }, { layout: { columns: '2' } }, { layout: { columns: 2, sectionRegions: { missing: 'column-1' } } }, { layout: { columns: 1, sectionRegions: { section: 'column-2' } } }, { layout: { spacing: '999px' } }, { layout: { position: 'absolute' } }]) {
+    const response = await fetch(`${appUrl}/api/menus/current`, { method: 'POST', headers, body: JSON.stringify({ ...saved, design }) });
+    assert.equal(response.status, 400, 'invalid styles/layout or dangling placements are rejected');
   }
   for (const appearance of [{ primaryColor: 'red;position:fixed' }, { backgroundColor: 'url(javascript:alert(1))' }, { fontFamily: 'arbitrary-font' }, { textSize: 100 }, { unknown: 'value' }]) {
     const response = await fetch(`${appUrl}/api/menus/current`, { method: 'POST', headers, body: JSON.stringify({ ...saved, design: { appearance } }) });

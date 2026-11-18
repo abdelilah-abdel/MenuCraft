@@ -128,6 +128,7 @@ export const TEMPLATE_CONFIGS = defineTemplateRegistry({
   },
   'atlas-simple': {
     id: 'atlas-simple',
+    layoutOptions: { columns: [1, 2, 3], regions: ['column-1', 'column-2', 'column-3'], spacing: ['compact', 'comfortable', 'airy'], alignment: ['start', 'center'], header: 'full-width' },
     componentStyles: { headings: ['ruled', 'plain'], dishes: ['plain', 'outlined'], prices: ['aligned', 'dotted'] },
     sectionPhotoPlacements: ['banner', 'heading-side'],
     headerImagePlacements: { defaultLogoSize: 64, logo: ['above'], banner: ['above', 'below'] },

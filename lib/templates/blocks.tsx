@@ -1,7 +1,7 @@
 import { SectionPhoto } from './SectionPhoto';
 import { RestaurantLogo, RestaurantBanner } from './RestaurantImages';
 import React from 'react';
-import { resolveComponentStyles } from '../menuDesign';
+import { resolveLayout, resolveComponentStyles } from '../menuDesign';
 import type { Menu, MenuItem, MenuSection, MenuSubsection } from '../types/menu';
 import type { TemplateConfig } from './config';
 import { PreviewHeading, usePreviewTarget } from './previewSelection';
@@ -50,7 +50,9 @@ export function RestaurantHeaderBlock({ menu, config }: MenuBlockProps) {
 }
 
 export function MenuSectionsBlock({ menu, config }: MenuBlockProps) {
-  const { theme, layout } = config;
+  const { theme } = config;
+  const layout = resolveLayout(menu, config);
+  const sections = getVisibleMenuSections(menu);
   return (
     <>
       {getVisibleMenuSections(menu).length === 0 && (
@@ -59,10 +61,10 @@ export function MenuSectionsBlock({ menu, config }: MenuBlockProps) {
         </p>
       )}
 
-      <div className={layout.columns === 2 ? 'grid gap-x-12 gap-y-12 md:grid-cols-2' : 'space-y-12'}>
-        {getVisibleMenuSections(menu).map((section) => (
-          <MenuSectionBlock key={section.id} section={section} menu={menu} config={config} />
-        ))}
+      <div className="menu-regions" data-columns={layout.columns} data-spacing={layout.spacing} data-alignment={layout.alignment}>
+        {layout.regions.map(region => <div key={region} data-menu-region={region} role="group" aria-label={region.replace('-', ' ')}>
+          {sections.filter((section, index) => layout.regionFor(section.id, index) === region).map(section => <MenuSectionBlock key={section.id} section={section} menu={menu} config={config} />)}
+        </div>)}
       </div>
     </>
   );
@@ -77,7 +79,7 @@ export function SectionHeadingBlock({ menu, section, config, showDescriptions }:
       data-heading-treatment={ruled ? 'ruled' : 'plain'}
       style={ruled ? { borderBottom: `1px solid ${theme.primaryColor}` } : undefined}
     >
-      <div>
+      <div className="w-full">
         <SectionPhoto menu={menu} section={section} placements={config.sectionPhotoPlacements} />
         <PreviewHeading
           as="h2"

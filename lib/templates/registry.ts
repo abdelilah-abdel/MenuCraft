@@ -1,4 +1,4 @@
-import { COMPONENT_STYLES, type ComponentCapabilities } from '../menuDesign';
+import { COMPONENT_STYLES, LAYOUT_REGIONS, LAYOUT_SPACING, LAYOUT_ALIGNMENT, type LayoutCapabilities, type ComponentCapabilities } from '../menuDesign';
 export const LEGACY_RENDERER_IDS = [
   'classic',
   'modern',
@@ -53,6 +53,7 @@ export type TemplateBlockType = (typeof TEMPLATE_BLOCK_TYPES)[number];
 export const DISH_PHOTO_PLACEMENTS = ['thumbnail', 'card-top', 'text-side'] as const;
 
 interface TemplateMetadata {
+  layoutOptions?: LayoutCapabilities;
   componentStyles?: ComponentCapabilities;
   sectionPhotoPlacements: readonly ('banner' | 'heading-side')[];
   headerImagePlacements: { defaultLogoSize: number; logo: readonly ['above']; banner: readonly ('above' | 'below')[] };
@@ -113,6 +114,16 @@ function validateDefinition(id: string, value: unknown): asserts value is Templa
     for (const [key, choices] of Object.entries(COMPONENT_STYLES)) {
       check(Array.isArray(capabilities[key]) && (capabilities[key] as unknown[]).length > 0 && (capabilities[key] as unknown[]).every(style => (choices as readonly unknown[]).includes(style)), `invalid ${key} styles`);
     }
+  }
+  if (value.layoutOptions !== undefined) {
+    check(isRecord(value.layoutOptions), 'invalid layout capabilities');
+    const options = value.layoutOptions as Record<string, unknown>;
+    check(options.header === 'full-width', 'header must stay full width');
+    for (const [key, choices] of Object.entries({ columns: [1, 2, 3], regions: LAYOUT_REGIONS, spacing: LAYOUT_SPACING, alignment: LAYOUT_ALIGNMENT })) {
+      check(Array.isArray(options[key]) && (options[key] as unknown[]).length > 0 && (options[key] as unknown[]).every(choice => (choices as readonly unknown[]).includes(choice)), `invalid layout ${key}`);
+    }
+    const maxColumns = Math.max(...options.columns as number[]);
+    check((options.regions as unknown[]).length >= maxColumns && LAYOUT_REGIONS.slice(0, maxColumns).every(region => (options.regions as unknown[]).includes(region)), 'missing column regions');
   }
   const theme = value.theme;
   const layout = value.layout;

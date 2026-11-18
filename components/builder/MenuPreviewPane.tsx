@@ -1,6 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react';
 import type { Menu } from '@/lib/types/menu';
 import { MenuPreview } from '../preview/MenuPreview';
+import { resolveLayout } from '@/lib/menuDesign';
+import { getTemplateConfig } from '@/lib/templates/config';
 import { PreviewSelectionProvider } from '@/lib/templates/previewSelection';
 import type { EditorSelection } from '@/lib/types/editorSelection';
 
@@ -12,6 +14,7 @@ export function MenuPreviewPane({ menu, dirty, selection, onSelect }: {
   selection: EditorSelection | null;
   onSelect: (selection: EditorSelection) => void;
 }) {
+  const canvasWidth = resolveLayout(menu, getTemplateConfig(menu.template)).columns === 3 ? 1200 : CANVAS_WIDTH;
   const viewport = useRef<HTMLDivElement>(null);
   const canvas = useRef<HTMLDivElement>(null);
   const [availableWidth, setAvailableWidth] = useState(CANVAS_WIDTH);
@@ -33,7 +36,7 @@ export function MenuPreviewPane({ menu, dirty, selection, onSelect }: {
       contentObserver.disconnect();
     };
   }, []);
-  const scale = zoom === 'fit' ? Math.min(1, availableWidth / CANVAS_WIDTH) : Number(zoom);
+  const scale = zoom === 'fit' ? Math.min(1, availableWidth / canvasWidth) : Number(zoom);
 
   return (
     <>
@@ -71,10 +74,10 @@ export function MenuPreviewPane({ menu, dirty, selection, onSelect }: {
         tabIndex={0}
         aria-label="Scrollable menu preview"
       >
-      <div className="mx-auto overflow-hidden" style={{ width: CANVAS_WIDTH * scale, height: height * scale }}>
+      <div className="mx-auto overflow-hidden" style={{ width: canvasWidth * scale, height: height * scale }}>
           <div
             ref={canvas}
-            style={{ width: CANVAS_WIDTH, transform: `scale(${scale})`, transformOrigin: 'top left' }}
+            style={{ width: canvasWidth, transform: `scale(${scale})`, transformOrigin: 'top left' }}
           >
             <PreviewSelectionProvider menu={menu} selection={selection} onSelect={onSelect}>
               <MenuPreview menu={menu} />

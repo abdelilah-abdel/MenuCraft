@@ -34,3 +34,5 @@ Change every section heading to a ruled treatment and every price to an aligned 
 Completed 2026-11-18. Atlas declares reusable ruled/plain section headings, plain/outlined dish treatments and aligned/dotted-leader prices. Shared resolution applies to every current/new entry, preserving content, hidden/Availability/tags/photos. Styles resolve independently from appearance and reset explicitly with history. Legacy templates expose their signature choices until migrations.
 
 TypeScript/build and 34 focused tests passed. Browser confirmed eight outlined/aligned dishes and three ruled headings, saved state and mobile controls without overflow. [Desktop](../evidence/11-component-styles-desktop.jpg), [mobile](../evidence/11-component-styles-mobile.jpg). Preserved existing card typography after review. Full batch public/save-reload checks continue with ticket 12.
+
+Batch completion with ticket 12: all 38 tests, TypeScript and the production build passed. Saved/reloaded combined settings rendered eight outlined dishes with aligned prices in both preview and actual public desktop/mobile output.

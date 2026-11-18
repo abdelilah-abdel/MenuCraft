@@ -18,10 +18,20 @@
 - Ticket 02 is complete: the owner workspace has a collapsible outline, focused detail forms, persistent desktop Live Preview with independent scrolling and view-only fit/zoom, mobile edit/preview switching, and explicit save/failure status.
 - Ticket 03 is complete: visible restaurant, section/subsection, dish, logo, dish photo, and dish-sourced hero areas in all seven Live Preview designs open ID-matched editor controls. Selection has keyboard actions and visible markers while Published Menus remain clean.
 - Tickets 04–09 are complete: nested lifecycle and visibility, movement into groups, complete content rendering, reusable photo controls, independent logo/banner, and section photo slots. Screenshots were captured for every ticket.
+- Tickets 10–12 are complete: overall appearance, reusable Component Styles, and constrained section regions/columns/spacing/alignment. Atlas exposes the new style/layout capabilities; legacy templates retain signature styles/layouts until their individual migrations. Desktop/mobile screenshots were captured for each ticket.
 - Server menu validation now uses the template registry as its allowlist, so registered config-only templates can be saved.
 - Persistence is still file-backed JSON and intended for one durable app instance. No relational database migration has been done.
 
 ## Latest changes
+
+### Ticket 12 and requested 10–12 sequence completed — 2026-11-18
+
+- Added registry-declared Atlas layouts with one/two/three columns, permitted section regions, compact/comfortable/airy spacing and start/center alignment. The header stays full width. Placement changes only design settings; canonical content order, IDs and photos stay intact. Section deletion prunes stale references within the same undoable update; duplication copies explicit placement. API validation rejects dangling/out-of-range regions, arbitrary positioning and unsupported style values.
+- Columns stack in region order below 768px; three become two from 768px to 1099px. Automatic two-column A,B,C,D placement therefore stacks A,C,B,D on mobile. This deliberate whole-column flow and future print pagination gates are recorded in the roadmap. Preview fit width accommodates the wider three-column canvas.
+- Final verification: `npx tsc --noEmit`, `npm run build`, and all **38 tests** passed (29 workspace, 7 renderer, 2 HTTP integration). Persistence checks carry appearance, Component Styles and layout across all seven IDs; invalid saves preserve publication. Workspace/render checks cover immediate preview, reset/history, inherited styles on new entries, content preservation and reference pruning/undo.
+- Browser used isolated disposable data. Saved/reloaded the combined appearance, eight outlined/aligned dishes and three section regions. Public desktop rendered three columns; public 390px mobile rendered one with no horizontal overflow or editor markers. A 190-character unbroken heading wrapped without overflow at both widths; wide banner/section/dish images stayed within their regions. No final public browser errors were recorded. Evidence: [10 desktop](.scratch/template-engine/evidence/10-appearance-desktop.jpg), [11 desktop](.scratch/template-engine/evidence/11-component-styles-desktop.jpg), [12 desktop](.scratch/template-engine/evidence/12-layout-desktop.jpg), [12 public desktop](.scratch/template-engine/evidence/12-layout-public-desktop.jpg), [12 public mobile](.scratch/template-engine/evidence/12-layout-public-mobile.jpg). Matching mobile editor screenshots are in the same directory.
+- Standards/spec reviews ran per ticket. Findings about saved legacy appearance compatibility, theme reset contrast, relative typography, CSS specificity and card typography were fixed; ticket 12 had no static blockers. Photo-free renderer fixtures and browser photo layouts passed. Print/PDF and full Arabic typography remain unqualified; existing non-blocking build notices remain. No paid AI calls or storage migration were introduced.
+- Tickets 01–12 are resolved. Next: [13 — safe template switching](.scratch/template-engine/issues/13-safe-template-switching.md), followed by gallery/preset authoring and dependency-ready legacy migrations. Normal-data dev server is restored on port 3000 after verification.
 
 ### Ticket 11 — Component Styles completed — 2026-11-18
 
@@ -147,13 +157,13 @@
 
 - `npx tsc --noEmit` — passed.
 - `npm run build` — passed.
-- `npm test` — all 34 tests passed, including lifecycle/movement/image DOM cases, rendering and temporary isolated HTTP storage.
-- Browser: desktop and 390px mobile selection, hero photo and editor focus, and published route separation — passed with no browser alerts or horizontal page overflow. Browser fixtures used an isolated directory outside the owner's data.
-- Review: standards/spec findings fixed and re-reviewed without remaining blockers. Passing source items directly to photo targets instead of looking them up by object identity is an optional future maintenance improvement.
+- `npm test` — all 38 tests passed, including appearance/styles/layout, lifecycle/movement/image DOM cases, rendering and temporary isolated HTTP storage.
+- Browser: desktop and 390px mobile appearance/style/layout controls, save/reload, public output and long-heading wrapping — passed with no final public browser errors or horizontal page overflow. Browser fixtures used an isolated directory outside the owner's data.
+- Review: standards/spec reviews completed per ticket; compatibility, contrast, CSS and typography findings fixed. Ticket 12 had no static blockers. Passing source items directly to photo targets instead of looking them up by object identity is an optional future maintenance improvement.
 
 ## Next
 
-1. Tickets 01–09 are resolved. Continue with [10 — overall appearance](.scratch/template-engine/issues/10-menu-wide-appearance.md) in the [approved 21-ticket plan](.scratch/template-engine/spec.md); 11–14 and individual migrations follow their blockers.
+1. Tickets 01–12 are resolved. Continue with [13 — safe template switching](.scratch/template-engine/issues/13-safe-template-switching.md) in the [approved 21-ticket plan](.scratch/template-engine/spec.md); gallery/preset authoring and individual migrations follow their blockers.
 2. Complete the approved shared editor/engine behaviors and convert the six legacy templates individually when their blockers are complete, preserving IDs and visual/behavior parity. Keep specialized hooks only where configuration cannot express the design cleanly.
 3. Grow the template library in quality-reviewed batches, starting with Morocco-relevant restaurant types and styles.
 4. Build Playwright PDF export from the shared renderer (A4/A5 first, then pagination and multi-page output).

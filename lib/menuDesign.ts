@@ -19,7 +19,23 @@ export interface MenuAppearance {
 export const COMPONENT_STYLES = { headings: ['ruled', 'plain'], dishes: ['plain', 'outlined'], prices: ['aligned', 'dotted'] } as const;
 export type ComponentStyles = { [K in keyof typeof COMPONENT_STYLES]?: typeof COMPONENT_STYLES[K][number] };
 export type ComponentCapabilities = { [K in keyof typeof COMPONENT_STYLES]: readonly typeof COMPONENT_STYLES[K][number][] };
-export interface MenuDesign { appearance?: MenuAppearance; componentStyles?: ComponentStyles }
+export const LAYOUT_REGIONS = ['column-1', 'column-2', 'column-3'] as const;
+export const LAYOUT_SPACING = ['compact', 'comfortable', 'airy'] as const;
+export const LAYOUT_ALIGNMENT = ['start', 'center'] as const;
+export interface MenuLayout {
+  columns?: 1 | 2 | 3;
+  spacing?: typeof LAYOUT_SPACING[number];
+  alignment?: typeof LAYOUT_ALIGNMENT[number];
+  sectionRegions?: Record<string, typeof LAYOUT_REGIONS[number]>;
+}
+export interface LayoutCapabilities {
+  columns: readonly (1 | 2 | 3)[];
+  regions: readonly typeof LAYOUT_REGIONS[number][];
+  spacing: readonly typeof LAYOUT_SPACING[number][];
+  alignment: readonly typeof LAYOUT_ALIGNMENT[number][];
+  header: 'full-width';
+}
+export interface MenuDesign { layout?: MenuLayout; appearance?: MenuAppearance; componentStyles?: ComponentStyles }
 
 export const isColor = (value: unknown): value is string => typeof value === 'string' && /^#[0-9a-f]{6}$/i.test(value);
 export const isMenuFont = (value: unknown): value is string => MENU_FONTS.some(font => font.value === value);
@@ -28,9 +44,23 @@ function record(value: unknown): value is Record<string, unknown> {
   return Boolean(value) && typeof value === 'object' && !Array.isArray(value);
 }
 
-export function isMenuDesign(value: unknown): value is MenuDesign | undefined {
+export function isMenuDesign(value: unknown, sectionIds?: readonly string[]): value is MenuDesign | undefined {
   if (value === undefined) return true;
-  if (!record(value) || Object.keys(value).some(key => !['appearance', 'componentStyles'].includes(key))) return false;
+  if (!record(value) || Object.keys(value).some(key => !['appearance', 'componentStyles', 'layout'].includes(key))) return false;
+  if (value.layout !== undefined) {
+    const layout = value.layout;
+    if (!record(layout) || Object.keys(layout).some(key => !['columns', 'spacing', 'alignment', 'sectionRegions'].includes(key))) return false;
+    if (layout.columns !== undefined && ![1, 2, 3].includes(layout.columns as number)) return false;
+    if (layout.spacing !== undefined && !LAYOUT_SPACING.some(choice => choice === layout.spacing)) return false;
+    if (layout.alignment !== undefined && !LAYOUT_ALIGNMENT.some(choice => choice === layout.alignment)) return false;
+    if (layout.sectionRegions !== undefined) {
+      if (!record(layout.sectionRegions)) return false;
+      for (const [id, region] of Object.entries(layout.sectionRegions)) {
+        if (sectionIds && !sectionIds.includes(id)) return false;
+        if (!(LAYOUT_REGIONS.slice(0, (layout.columns as number | undefined) || 1) as readonly unknown[]).includes(region)) return false;
+      }
+    }
+  }
   if (value.componentStyles !== undefined) {
     if (!record(value.componentStyles)) return false;
     for (const [key, style] of Object.entries(value.componentStyles)) {
@@ -73,4 +103,31 @@ export function resolveComponentStyles(menu: Menu, config: TemplateConfig): Requ
     const value = overrides?.[kind];
     return [key, value && (config.componentStyles?.[kind] as readonly string[] | undefined)?.includes(value) ? value : fallback];
   })) as Required<ComponentStyles>;
+}
+
+export function resolveLayout(menu: Menu, config: TemplateConfig) {
+  const capabilities = config.layoutOptions;
+  const requested = menu.design?.layout;
+  const columns = requested?.columns && capabilities?.columns.includes(requested.columns) ? requested.columns : config.layout.columns;
+  const regions = capabilities?.regions.slice(0, columns) || LAYOUT_REGIONS.slice(0, columns);
+  return {
+    columns,
+    regions,
+    spacing: requested?.spacing && capabilities?.spacing.includes(requested.spacing) ? requested.spacing : 'comfortable',
+    alignment: requested?.alignment && capabilities?.alignment.includes(requested.alignment) ? requested.alignment : 'start',
+    regionFor(sectionId: string, index: number) {
+      const assigned = requested?.sectionRegions?.[sectionId];
+      return assigned && regions.includes(assigned) ? assigned : regions[index % regions.length];
+    },
+  };
+}
+
+/** Content deletion/sample replacement cleans only references to sections that no longer exist. */
+export function pruneLayoutReferences(menu: Menu): Menu {
+  const placements = menu.design?.layout?.sectionRegions;
+  if (!placements) return menu;
+  const valid = new Set(menu.sections.map(section => section.id));
+  const entries = Object.entries(placements).filter(([id]) => valid.has(id));
+  if (entries.length === Object.keys(placements).length) return menu;
+  return { ...menu, design: { ...menu.design, layout: { ...menu.design?.layout, sectionRegions: Object.fromEntries(entries) } } };
 }
