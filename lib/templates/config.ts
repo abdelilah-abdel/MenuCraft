@@ -19,6 +19,7 @@ const legacyTheme = (
 export const TEMPLATE_CONFIGS = defineTemplateRegistry({
   classic: {
     id: 'classic',
+    headerImagePlacements: { defaultLogoSize: 96, logo: ['above'], banner: ['above', 'below'] },
     dishPhotoPlacements: ['thumbnail'],
     name: 'Classic',
     category: 'Original',
@@ -35,6 +36,7 @@ export const TEMPLATE_CONFIGS = defineTemplateRegistry({
   },
   modern: {
     id: 'modern',
+    headerImagePlacements: { defaultLogoSize: 80, logo: ['above'], banner: ['above', 'below'] },
     dishPhotoPlacements: ['card-top'],
     name: 'Modern',
     category: 'Original',
@@ -51,6 +53,7 @@ export const TEMPLATE_CONFIGS = defineTemplateRegistry({
   },
   minimal: {
     id: 'minimal',
+    headerImagePlacements: { defaultLogoSize: 64, logo: ['above'], banner: ['above', 'below'] },
     dishPhotoPlacements: ['text-side'],
     name: 'Minimal',
     category: 'Original',
@@ -67,6 +70,7 @@ export const TEMPLATE_CONFIGS = defineTemplateRegistry({
   },
   'medina-cafe': {
     id: 'medina-cafe',
+    headerImagePlacements: { defaultLogoSize: 64, logo: ['above'], banner: ['above', 'below'] },
     dishPhotoPlacements: ['thumbnail'],
     name: 'Medina Café',
     category: 'Moroccan',
@@ -84,6 +88,7 @@ export const TEMPLATE_CONFIGS = defineTemplateRegistry({
   },
   'moroccan-fine-dining': {
     id: 'moroccan-fine-dining',
+    headerImagePlacements: { defaultLogoSize: 64, logo: ['above'], banner: ['above', 'below'] },
     dishPhotoPlacements: ['card-top'],
     name: 'Moroccan Fine Dining',
     category: 'Moroccan',
@@ -100,6 +105,7 @@ export const TEMPLATE_CONFIGS = defineTemplateRegistry({
   },
   'modern-moroccan-garden': {
     id: 'modern-moroccan-garden',
+    headerImagePlacements: { defaultLogoSize: 64, logo: ['above'], banner: ['above', 'below'] },
     dishPhotoPlacements: ['card-top'],
     name: 'Modern Moroccan Garden',
     category: 'Moroccan',
@@ -116,6 +122,7 @@ export const TEMPLATE_CONFIGS = defineTemplateRegistry({
   },
   'atlas-simple': {
     id: 'atlas-simple',
+    headerImagePlacements: { defaultLogoSize: 64, logo: ['above'], banner: ['above', 'below'] },
     dishPhotoPlacements: ['thumbnail', 'text-side', 'card-top'],
     name: 'Atlas Simple',
     category: 'Moroccan',

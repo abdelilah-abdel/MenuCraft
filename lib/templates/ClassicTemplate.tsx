@@ -1,3 +1,4 @@
+import { RestaurantLogo, RestaurantBanner } from './RestaurantImages';
 import React from 'react';
 import { Menu, MenuItem as MenuItemType } from '../types/menu';
 import { MenuEmptyState, getMenuSectionGroups, getVisibleMenuSections, localizedMenuText, MenuItemPhoto, MenuItemTags, menuDirection, SoldOutLabel, formatMenuPrice } from './menuTemplateUtils';
@@ -13,10 +14,12 @@ export const ClassicTemplate: React.FC<TemplateProps> = ({ menu }) => {
   return (
     <main dir={menuDirection(menu)} lang={menu.originalLanguage} className="min-h-screen bg-[#faf9f6] p-6 sm:p-8" style={{ fontFamily: customization.fontFamily }}>
       <header className="mx-auto mb-12 max-w-4xl text-center">
-        {customization.logoImage && <img {...previewTarget({ kind: 'restaurant' }, 'Edit restaurant logo in preview', true)} src={customization.logoImage} alt={`${restaurantName} logo`} className="mx-auto mb-6 h-24 max-w-48 object-contain" />}
+        <RestaurantBanner menu={menu} position="above" />
+        <RestaurantLogo menu={menu} className="mx-auto mb-6 h-24 max-w-48 object-contain" />
         <PreviewHeading as="h1" target={{ kind: 'restaurant' }} editLabel={`Edit restaurant ${restaurantName} in preview`} className="mb-4 font-serif text-4xl font-bold sm:text-5xl" style={{ color: customization.primaryColor }}>{restaurantName}</PreviewHeading>
         {customization.showDescriptions && description && <p className="mx-auto max-w-2xl text-lg text-gray-600">{description}</p>}
         <div className="mx-auto mt-4 h-1 w-32" style={{ backgroundColor: customization.primaryColor }} />
+      <RestaurantBanner menu={menu} position="below" />
       </header>
 
       <div className="mx-auto max-w-4xl space-y-12">

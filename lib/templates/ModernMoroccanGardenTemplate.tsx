@@ -1,3 +1,4 @@
+import { RestaurantLogo, RestaurantBanner } from './RestaurantImages';
 import React from 'react';
 import { imageStyle } from '../imagePresentation';
 import { Menu, MenuItem } from '../types/menu';
@@ -53,19 +54,21 @@ export const ModernMoroccanGardenTemplate: React.FC<TemplateProps> = ({ menu }) 
   return (
     <main dir={menuDirection(menu)} lang={menu.originalLanguage} className="min-h-screen bg-[#f7f8f1] text-[#2f3b2c]" style={{ fontFamily: customization.fontFamily }}>
       <header className="relative isolate overflow-hidden bg-[#526d49] text-white">
+        <RestaurantBanner menu={menu} position="above" />
         {heroImage && <img style={imageStyle(imageItems[0]?.imagePresentation)} src={heroImage} alt="" className="absolute inset-0 -z-20 h-full w-full object-cover opacity-35" />}
         {heroImage && imageItems[0] && <PreviewHeroImageTarget item={imageItems[0]} />}
         <div aria-hidden="true" className="absolute inset-0 -z-10 bg-[linear-gradient(105deg,rgba(27,47,31,.9),rgba(49,78,54,.58),rgba(35,55,36,.78))]" />
         {customization.showImages && imageItems.length > 1 && <div className="absolute bottom-0 right-0 hidden h-28 w-1/3 gap-2 p-3 opacity-70 lg:flex">{imageItems.slice(1).map((item) => <MenuItemPhoto key={item.id} item={item} showImages className="h-full min-w-0 flex-1 rounded-t-xl object-cover" />)}</div>}
         <div className="pointer-events-none relative z-10 mx-auto max-w-7xl px-6 py-14 sm:px-10 sm:py-20">
           <div className="max-w-2xl">
-            {customization.logoImage && <img {...previewTarget({ kind: 'restaurant' }, 'Edit restaurant logo in preview', true)} src={customization.logoImage} alt={`${menu.restaurantName} logo`} className="pointer-events-auto mb-6 h-16 max-w-40 object-contain" />}
+            <RestaurantLogo menu={menu} className="mb-6 h-16 max-w-40 object-contain" />
             <p className="mb-3 text-[11px] font-semibold uppercase tracking-[0.35em] text-[#e5d4a8]">{localizedMenuText(menu.originalLanguage, 'Welcome', 'Bienvenue', 'مرحباً')}</p>
             <PreviewHeading as="h1" target={{ kind: 'restaurant' }} editLabel={`Edit restaurant ${menu.restaurantName} in preview`} className="font-serif text-5xl font-semibold leading-tight sm:text-7xl">{menu.restaurantName}</PreviewHeading>
             {customization.showDescriptions && menu.description && <p className="mt-5 max-w-xl text-base leading-7 text-white/85">{menu.description}</p>}
             <div className="mt-7 inline-flex items-center gap-3 rounded-full border border-white/30 bg-white/10 px-4 py-2 text-xs uppercase tracking-widest text-[#f5edcf]">{localizedMenuText(menu.originalLanguage, 'Our menu', 'Notre carte', 'قائمتنا')}</div>
           </div>
         </div>
+      <RestaurantBanner menu={menu} position="below" />
       </header>
 
       {sections.length > 1 && <nav aria-label="Menu sections" className="border-b border-[#dbe3d2] bg-white"><div className="mx-auto flex max-w-7xl gap-2 overflow-x-auto px-5 py-3">{sections.map((section, index) => <a key={section.id} href={`#garden-section-${index}`} className="shrink-0 rounded-full px-4 py-2 text-xs font-semibold text-[#526d49] hover:bg-[#eef2e6]">{section.name}</a>)}</div></nav>}

@@ -47,6 +47,10 @@ export interface MenuCustomization {
   secondaryColor: string;
   fontFamily: string;
   logoImage?: string; // base64 or URL
+  logoPresentation?: ImagePresentation;
+  logoSize?: number;
+  bannerImage?: string;
+  bannerPresentation?: ImagePresentation;
   showPrices: boolean;
   showDescriptions: boolean;
   showImages: boolean;

@@ -73,6 +73,9 @@ export function isMenuInput(value: unknown): value is MenuInput {
     typeof customization.showDescriptions === 'boolean' &&
     typeof customization.showImages === 'boolean' &&
     (customization.logoImage === undefined || typeof customization.logoImage === 'string') &&
+    (customization.bannerImage === undefined || typeof customization.bannerImage === 'string') &&
+    isImagePresentation(customization.logoPresentation) && isImagePresentation(customization.bannerPresentation) &&
+    (customization.logoSize === undefined || (typeof customization.logoSize === 'number' && Number.isFinite(customization.logoSize) && customization.logoSize >= 32 && customization.logoSize <= 160)) &&
     (value.createdAt === undefined || typeof value.createdAt === 'string') &&
     (value.updatedAt === undefined || typeof value.updatedAt === 'string');
 }

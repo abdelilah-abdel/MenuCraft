@@ -4,7 +4,6 @@ import React, { useEffect, useRef, useState } from 'react';
 import { Menu, MenuSection, MenuSubsection, MenuItem, MenuLanguage } from '@/lib/types/menu';
 import { MenuService } from '@/lib/services/menuService';
 import { editMenuEntry } from '@/lib/menuEntries';
-import { imageService } from '@/lib/services/imageService';
 import { Button } from '../ui/Button';
 import { Input, Textarea } from '../ui/Input';
 import { ImageSlotEditor } from './ImageSlotEditor';
@@ -50,7 +49,6 @@ export const MenuBuilder: React.FC<MenuBuilderProps> = ({
   selection,
   onSelect,
 }) => {
-  const [uploading, setUploading] = useState(false);
   const [descriptionDrafts, setDescriptionDrafts] = useState<Record<string, DescriptionDraft>>({});
   const [dropTarget, setDropTarget] = useState('');
   const dragPayload = useRef<DragPayload | null>(null);
@@ -63,9 +61,9 @@ export const MenuBuilder: React.FC<MenuBuilderProps> = ({
     if (view !== 'content') return;
     if (selection) {
       const editor = detailHeading.current?.closest<HTMLElement>('[aria-label="Menu editor"]');
-      if ('focus' in selection && selection.focus === 'image') {
+      if ('focus' in selection && (selection.focus === 'image' || selection.focus === 'banner')) {
         const imageControl = editor?.querySelector<HTMLInputElement>(
-          `[data-editor-image-control="${selection.kind === 'restaurant' ? 'restaurant' : 'item'}"]`
+          `[data-editor-image-control="${selection.kind === 'restaurant' ? selection.focus === 'banner' ? 'banner' : 'restaurant' : 'item'}"]`
         );
         imageControl?.focus({ preventScroll: true });
         if (editor && imageControl) {
@@ -481,22 +479,6 @@ export const MenuBuilder: React.FC<MenuBuilderProps> = ({
     });
   };
 
-  const handleLogoUpload = async (file: File) => {
-    setUploading(true);
-    try {
-      const result = await imageService.uploadImage(file);
-      if (result.success) {
-        updateCustomization({ logoImage: result.url });
-      } else {
-        alert(result.error || 'Failed to upload logo');
-      }
-    } catch (error) {
-      alert('Failed to upload logo');
-    } finally {
-      setUploading(false);
-    }
-  };
-
   const selectedSection =
     selection && selection.kind !== 'restaurant'
       ? menu.sections.find((section) => section.id === selection.sectionId)
@@ -615,57 +597,10 @@ export const MenuBuilder: React.FC<MenuBuilderProps> = ({
                     rows={3}
                   />
 
-                  <div>
-                    <label className="block text-xs font-semibold text-menu-ink-700 uppercase tracking-wider mb-2">
-                      Restaurant Logo (Optional)
-                    </label>
-                    <div className="flex items-center gap-4">
-                      {menu.customization.logoImage && (
-                        <div className="relative">
-                          <img
-                            src={menu.customization.logoImage}
-                            alt="Logo"
-                            className="h-20 w-20 object-contain border border-menu-ink-200/60"
-                          />
-                          <button
-                            onClick={() => updateCustomization({ logoImage: '' })}
-                            className="absolute -top-2 -right-2 w-6 h-6 bg-red-600 text-white rounded-full flex items-center justify-center text-xs hover:bg-red-700"
-                          >
-                            ×
-                          </button>
-                        </div>
-                      )}
-                      <label className="flex-1 cursor-pointer">
-                        <div className="border border-dashed border-menu-ink-300/60 p-6 hover:border-menu-stamp-500 hover:bg-white focus-within:outline focus-within:outline-2 focus-within:outline-menu-stamp-500 transition-all text-center bg-menu-paper-200">
-                          <svg
-                            className="w-8 h-8 mx-auto mb-2 text-menu-ink-500"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={2}
-                              d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
-                            />
-                          </svg>
-                          <span className="text-sm text-menu-ink-700 font-semibold">Upload Logo</span>
-                          <p className="text-xs text-menu-ink-500 mt-1">PNG, JPG up to 5MB</p>
-                          <input
-                            data-editor-image-control="restaurant"
-                            type="file"
-                            accept="image/*"
-                            onChange={(e) => {
-                              const file = e.target.files?.[0];
-                              if (file) handleLogoUpload(file);
-                            }}
-                            className="sr-only"
-                          />
-                        </div>
-                      </label>
-                    </div>
-                  </div>
+                  <ImageSlotEditor key="restaurant-logo" label="Restaurant logo" image={menu.customization.logoImage} settings={{ fit: 'contain', ...menu.customization.logoPresentation }} placements={getTemplateConfig(menu.template).headerImagePlacements.logo} focusTarget="restaurant" onChange={(logoImage, logoPresentation) => updateCustomization({ logoImage, logoPresentation })} />
+                  <label className="block text-sm">Logo size · {menu.customization.logoSize || getTemplateConfig(menu.template).headerImagePlacements.defaultLogoSize}px<input aria-label="Logo size" className="block w-full" type="range" min="32" max="160" value={menu.customization.logoSize || getTemplateConfig(menu.template).headerImagePlacements.defaultLogoSize} onChange={event => updateCustomization({ logoSize: Number(event.target.value) })} /></label>
+                  <ImageSlotEditor key="restaurant-banner" label="Restaurant banner" image={menu.customization.bannerImage} settings={menu.customization.bannerPresentation} placements={getTemplateConfig(menu.template).headerImagePlacements.banner} focusTarget="banner" onChange={(bannerImage, bannerPresentation) => updateCustomization({ bannerImage, bannerPresentation })} />
+
                 </div>
               </div>
             </>

@@ -22,6 +22,11 @@
 
 ## Latest changes
 
+### Ticket 08 — logo and banner completed — 2026-11-18
+
+- Added independent restaurant image slots with reusable controls, explicit visibility, logo sizing/contain defaults and above/below banners. Existing logo defaults and each template alignment retained; dish image visibility does not hide either header slot.
+- TypeScript/build and 24 workspace tests passed; browser uploaded separate logo/banner, saved both and confirmed banner focus. Screenshots `08-header-images-desktop.jpg` / `08-header-images-mobile.jpg`. Review compatibility finding fixed. Next: ticket 09 section photos.
+
 ### Ticket 07 — dish photo controls completed — 2026-11-18
 
 - Added reusable validated photo slot editor, source-independent focal/fit/visibility settings, remove/replace, inline errors and upload feedback. Atlas exposes thumbnail/text-side/card-top; legacy designs keep their declared fixed placement. All dish-sourced hero images honor focal/fit and visibility.

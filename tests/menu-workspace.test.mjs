@@ -466,3 +466,17 @@ test('dish photo crop and placement are undoable and preserve the source on fail
   await click('Undo menu change');
   assert.ok(container.querySelector('[aria-label="Edit photo for Vegetable tagine in preview"]'));
 });
+
+
+test('logo and banner controls stay independent and undo retains both sources', async () => {
+  const menu = structuredClone(initialMenu); menu.customization.logoImage = 'data:image/png;base64,logo'; menu.customization.bannerImage = 'data:image/png;base64,banner';
+  await mount(async value => value, menu);
+  await click('Edit restaurant information');
+  await click('Remove restaurant logo');
+  assert.ok(container.querySelector('[aria-label="Edit restaurant banner in preview"]'));
+  assert.equal(container.querySelector('[aria-label="Edit restaurant logo in preview"]'),null);
+  await click('Undo menu change');
+  assert.ok(container.querySelector('[aria-label="Edit restaurant logo in preview"]'));
+  await act(() => container.querySelector('[aria-label="Edit restaurant banner in preview"]').click());
+  assert.equal(document.activeElement.getAttribute('data-editor-image-control'),'banner');
+});

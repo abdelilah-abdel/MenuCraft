@@ -1,3 +1,4 @@
+import { RestaurantLogo, RestaurantBanner } from './RestaurantImages';
 import React from 'react';
 import type { Menu, MenuItem, MenuSection, MenuSubsection } from '../types/menu';
 import type { TemplateConfig } from './config';
@@ -25,9 +26,8 @@ export function RestaurantHeaderBlock({ menu, config }: MenuBlockProps) {
       className={`mb-14 pb-8 text-center ${layout.showSectionRules ? 'border-b-2' : ''}`}
       style={{ borderColor: theme.primaryColor }}
     >
-      {menu.customization.logoImage && (
-        <img {...previewTarget({ kind: 'restaurant' }, 'Edit restaurant logo in preview', true)} src={menu.customization.logoImage} alt="" className="mx-auto mb-4 h-16 w-auto object-contain" />
-      )}
+      <RestaurantBanner menu={menu} position="above" />
+      <RestaurantLogo menu={menu} className="mx-auto mb-4 h-16 w-auto object-contain" />
       <PreviewHeading
         as="h1"
         target={{ kind: 'restaurant' }}
@@ -42,7 +42,8 @@ export function RestaurantHeaderBlock({ menu, config }: MenuBlockProps) {
           {menu.description}
         </p>
       )}
-    </header>
+    <RestaurantBanner menu={menu} position="below" />
+      </header>
   );
 }
 

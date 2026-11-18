@@ -1,3 +1,4 @@
+import { RestaurantLogo, RestaurantBanner } from './RestaurantImages';
 import React from 'react';
 import { imageStyle } from '../imagePresentation';
 import { Menu, MenuItem } from '../types/menu';
@@ -41,17 +42,19 @@ export const MoroccanFineDiningTemplate: React.FC<TemplateProps> = ({ menu }) =>
   return (
     <main dir={menuDirection(menu)} lang={menu.originalLanguage} className="min-h-screen bg-[#f7f4ee] text-[#352b2b]" style={{ fontFamily: customization.fontFamily }}>
       <header className="relative overflow-hidden bg-[#332323] text-[#f7f1e7]">
+        <RestaurantBanner menu={menu} position="above" />
         {customization.showImages && heroItem?.image ? <img style={imageStyle(heroItem.imagePresentation)} src={heroItem.image} alt="" onError={(event) => { event.currentTarget.style.display = 'none'; }} className="absolute inset-0 h-full w-full object-cover opacity-25" /> : <div aria-hidden="true" className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(176,134,74,.32),transparent_48%),linear-gradient(120deg,#332323,#241919)]" />}
         {customization.showImages && heroItem?.image && <PreviewHeroImageTarget item={heroItem} />}
         <div className="pointer-events-none relative z-10 mx-auto max-w-6xl px-6 py-12 sm:px-10 sm:py-16">
           <div className="mx-auto max-w-3xl border-y border-[#c6a66d]/60 py-8 text-center">
-            {customization.logoImage && <img {...previewTarget({ kind: 'restaurant' }, 'Edit restaurant logo in preview', true)} src={customization.logoImage} alt={`${menu.restaurantName} logo`} className="pointer-events-auto mx-auto mb-5 h-16 max-w-40 object-contain" />}
+            <RestaurantLogo menu={menu} className="mx-auto mb-5 h-16 max-w-40 object-contain" />
             <p className="mb-4 text-[10px] font-semibold uppercase tracking-[0.45em] text-[#d8bd8a]">{localizedMenuText(menu.originalLanguage, 'The art of hospitality · Moroccan cuisine', 'L’art de recevoir · Cuisine marocaine', 'فن الضيافة · المطبخ المغربي')}</p>
             <PreviewHeading as="h1" target={{ kind: 'restaurant' }} editLabel={`Edit restaurant ${menu.restaurantName} in preview`} className="font-serif text-4xl font-light tracking-wide sm:text-6xl">{menu.restaurantName}</PreviewHeading>
             {customization.showDescriptions && menu.description && <p className="mx-auto mt-5 max-w-2xl text-sm leading-7 text-[#eee4d3]/80 sm:text-base">{menu.description}</p>}
             <div className="mt-6 text-[#d8bd8a]" aria-hidden="true">✦　✦　✦</div>
           </div>
         </div>
+      <RestaurantBanner menu={menu} position="below" />
       </header>
 
       <div className="mx-auto max-w-6xl px-5 py-10 sm:px-8 sm:py-14">

@@ -52,6 +52,7 @@ export type TemplateBlockType = (typeof TEMPLATE_BLOCK_TYPES)[number];
 export const DISH_PHOTO_PLACEMENTS = ['thumbnail', 'card-top', 'text-side'] as const;
 
 interface TemplateMetadata {
+  headerImagePlacements: { defaultLogoSize: number; logo: readonly ['above']; banner: readonly ('above' | 'below')[] };
   dishPhotoPlacements: readonly (typeof DISH_PHOTO_PLACEMENTS)[number][];
   id: string;
   name: string;
@@ -101,6 +102,7 @@ function validateDefinition(id: string, value: unknown): asserts value is Templa
     throw new Error(`Invalid template "${id}": theme and layout are required.`);
   }
   check(Array.isArray(value.dishPhotoPlacements) && value.dishPhotoPlacements.length > 0 && value.dishPhotoPlacements.every((placement: unknown) => DISH_PHOTO_PLACEMENTS.some(allowed => allowed === placement)), 'invalid dish photo capabilities');
+  check(isRecord(value.headerImagePlacements) && Array.isArray(value.headerImagePlacements.logo) && value.headerImagePlacements.logo.length === 1 && value.headerImagePlacements.logo[0] === 'above' && Array.isArray(value.headerImagePlacements.banner) && value.headerImagePlacements.banner.length > 0 && value.headerImagePlacements.banner.every((placement: unknown) => placement === 'above' || placement === 'below'), 'invalid header image capabilities');
   const theme = value.theme;
   const layout = value.layout;
   for (const field of [

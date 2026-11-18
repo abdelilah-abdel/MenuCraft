@@ -1,7 +1,7 @@
 import type { Menu } from './menu';
 
 export type EditorSelection =
-  | { kind: 'restaurant'; focus?: 'image' }
+  | { kind: 'restaurant'; focus?: 'image' | 'banner' }
   | { kind: 'section'; sectionId: string }
   | { kind: 'subsection'; sectionId: string; subsectionId: string }
   | { kind: 'item'; sectionId: string; itemId: string; focus?: 'image' };
