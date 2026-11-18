@@ -54,8 +54,8 @@ const ModernMenuItem: React.FC<{ sectionId: string; item: MenuItemType; customiz
     <MenuItemPhoto item={item} showImages={customization.showImages} className="h-48 w-full object-cover" />
     <div className="p-5">
       <div className="flex items-start justify-between gap-4">
-        <div className="min-w-0"><h3 className="text-xl font-bold text-white">{item.name || 'Untitled dish'}</h3><MenuItemTags item={item} className="mt-2 text-white" /></div>
-        {customization.showPrices && <span className="shrink-0 text-xl font-bold" style={{ color: customization.primaryColor }}>{formatMenuPrice(item)}</span>}
+        <div className="min-w-0"><h3 data-menu-role="dish-name" className="text-xl font-bold text-white">{item.name || 'Untitled dish'}</h3><MenuItemTags item={item} className="mt-2 text-white" /></div>
+        {customization.showPrices && <span data-menu-role="price" className="shrink-0 text-xl font-bold" style={{ color: customization.primaryColor }}>{formatMenuPrice(item)}</span>}
       </div>
       {customization.showDescriptions && item.description && <p className="mt-3 leading-relaxed text-gray-400">{item.description}</p>}
       {!item.available && <SoldOutLabel className="mt-3" language={language} />}

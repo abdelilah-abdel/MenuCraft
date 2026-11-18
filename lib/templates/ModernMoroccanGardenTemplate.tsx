@@ -40,8 +40,8 @@ export const ModernMoroccanGardenTemplate: React.FC<TemplateProps> = ({ menu }) 
       )}
       <div className="p-5 sm:p-6">
         <div className="flex items-start justify-between gap-4">
-          <h3 className="font-serif text-xl font-semibold leading-snug text-[#2f3b2c]">{item.name || 'Untitled dish'}</h3>
-          {customization.showPrices && <span className="shrink-0 rounded-full bg-[#f1f3e8] px-3 py-1.5 text-sm font-bold text-[#647c4e]">{formatMenuPrice(item)}</span>}
+          <h3 data-menu-role="dish-name" className="font-serif text-xl font-semibold leading-snug text-[#2f3b2c]">{item.name || 'Untitled dish'}</h3>
+          {customization.showPrices && <span data-menu-role="price" className="shrink-0 rounded-full bg-[#f1f3e8] px-3 py-1.5 text-sm font-bold text-[#647c4e]">{formatMenuPrice(item)}</span>}
         </div>
         {customization.showDescriptions && item.description && <p className="mt-3 text-sm leading-6 text-[#687164]">{item.description}</p>}
         <div className="mt-4 flex flex-wrap items-center justify-between gap-2">

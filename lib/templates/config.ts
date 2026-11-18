@@ -47,7 +47,7 @@ export const TEMPLATE_CONFIGS = defineTemplateRegistry({
     formats: ['WEB', 'MOBILE', 'TV_HORIZONTAL'],
     renderer: 'legacy',
     legacyRenderer: 'modern',
-    theme: legacyTheme('#F4F1E8', '#141414', 'system-ui, sans-serif'),
+    theme: { ...legacyTheme('#2563EB', '#0F0F0F', 'system-ui, sans-serif'), secondaryColor: '#1E40AF', inkColor: '#FFFFFF' },
     layout: {
       kind: 'cards', columns: 2, imageStyle: 'cards',
       showSectionRules: false, showPricesWithLeaders: false, cornerRadius: 8,

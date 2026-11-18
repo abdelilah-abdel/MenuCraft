@@ -1,3 +1,5 @@
+import { resolveAppearance } from '../menuDesign';
+import { MenuAppearanceFrame } from './MenuAppearanceFrame';
 import { ClassicTemplate } from './ClassicTemplate';
 import { ModernTemplate } from './ModernTemplate';
 import { MinimalTemplate } from './MinimalTemplate';
@@ -38,9 +40,11 @@ export function getTemplate(
   registry: TemplateRegistry = TEMPLATE_CONFIGS
 ): React.FC<{ menu: Menu }> {
   const definition = getTemplateConfig(templateType, registry);
-  if (definition.renderer === 'legacy') return legacyRenderers[definition.legacyRenderer];
-  return function ConfiguredTemplate({ menu }) {
-    return <TemplateFromConfig menu={menu} config={definition} />;
+  return function RegisteredTemplate({ menu }) {
+    const theme = resolveAppearance(menu, definition);
+    const effectiveMenu = { ...menu, customization: { ...menu.customization, primaryColor: theme.primaryColor, secondaryColor: theme.secondaryColor, fontFamily: theme.bodyFont } };
+    const Legacy = definition.renderer === 'legacy' ? legacyRenderers[definition.legacyRenderer] : null;
+    return <MenuAppearanceFrame menu={menu} config={definition}>{Legacy ? <Legacy menu={effectiveMenu} /> : <TemplateFromConfig menu={menu} config={definition as Extract<typeof definition, { renderer: 'configurable' }>} />}</MenuAppearanceFrame>;
   };
 }
 
@@ -58,7 +62,7 @@ export function MenuTemplate({ menu }: { menu: Menu }) {
     );
   }
   const Template = templates[menu.template];
-  return <div className="menu-content"><Template menu={menu} /></div>;
+  return <Template menu={menu} />;
 }
 
 export { TEMPLATE_CONFIGS, getTemplateConfig } from './config';

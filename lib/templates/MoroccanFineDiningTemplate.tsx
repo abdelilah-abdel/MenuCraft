@@ -29,10 +29,10 @@ export const MoroccanFineDiningTemplate: React.FC<TemplateProps> = ({ menu }) =>
       <div className="p-5 sm:p-6">
         <div className="flex items-start justify-between gap-4">
           <div className="min-w-0">
-            <h3 className="font-serif text-xl font-semibold leading-snug text-[#352b2b]">{item.name || 'Untitled dish'}</h3>
+            <h3 data-menu-role="dish-name" className="font-serif text-xl font-semibold leading-snug text-[#352b2b]">{item.name || 'Untitled dish'}</h3>
             <MenuItemTags item={item} className="mt-2 text-[#8b6a38]" />
           </div>
-          {customization.showPrices && <span className="shrink-0 border-b border-[#a98956] pb-1 font-serif text-base text-[#8b6a38]">{formatMenuPrice(item)}</span>}
+          {customization.showPrices && <span data-menu-role="price" className="shrink-0 border-b border-[#a98956] pb-1 font-serif text-base text-[#8b6a38]">{formatMenuPrice(item)}</span>}
         </div>
         {customization.showDescriptions && item.description && <p className="mt-3 max-w-xl text-sm leading-7 text-[#716c65]">{item.description}</p>}
         {!item.available && <SoldOutLabel className="mt-3" language={menu.originalLanguage} />}

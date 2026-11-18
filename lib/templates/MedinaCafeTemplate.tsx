@@ -28,8 +28,8 @@ export const MedinaCafeTemplate: React.FC<TemplateProps> = ({ menu }) => {
       <MenuItemPhoto item={item} showImages={customization.showImages} className="h-20 w-20 shrink-0 rounded-sm object-cover shadow-sm" />
       <div className="min-w-0 flex-1">
         <div className="flex flex-wrap items-start justify-between gap-x-4 gap-y-1">
-          <h3 className="font-serif text-lg font-semibold text-[#352b22]">{item.name || 'Untitled dish'}</h3>
-          {customization.showPrices && <span className="shrink-0 font-semibold text-[#8b4b2b]">{formatMenuPrice(item)}</span>}
+          <h3 data-menu-role="dish-name" className="font-serif text-lg font-semibold text-[#352b22]">{item.name || 'Untitled dish'}</h3>
+          {customization.showPrices && <span data-menu-role="price" className="shrink-0 font-semibold text-[#8b4b2b]">{formatMenuPrice(item)}</span>}
         </div>
         {customization.showDescriptions && item.description && <p className="mt-1 max-w-2xl text-sm leading-relaxed text-[#74685a]">{item.description}</p>}
         <div className="mt-2 flex flex-wrap items-center gap-2">

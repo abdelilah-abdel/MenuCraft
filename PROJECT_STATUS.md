@@ -23,6 +23,11 @@
 
 ## Latest changes
 
+### Ticket 10 — overall appearance completed — 2026-11-18
+
+- Added design.appearance overrides with template/legacy inheritance, constrained colors/fonts/text scale, and explicit undoable reset. Preserves old saved values and content; Atlas now honors owner appearance. Scoped legacy output keeps design structure.
+- TypeScript/build and 33 focused workspace/renderer checks passed. Browser Atlas edits/save/reset/undo and 390px controls passed; screenshots `10-appearance-desktop.jpg` / `10-appearance-mobile.jpg`. Review findings on legacy validation, CSS specificity, relative sizing and Modern reset corrected. Next: ticket 11 Component Styles. Print/Arabic qualification remains deferred.
+
 ### Ticket 09 and requested 04–09 sequence completed — 2026-11-18
 
 - Added optional section photo content/presentation with registry-declared banner/heading-side layouts across all seven templates. Reused image validation, upload feedback, replace/remove, fit/focal/visibility and existing history/persistence. Stable sections carry photo metadata through duplication/reorder/hiding. Custom registries pass active capabilities to the photo component.

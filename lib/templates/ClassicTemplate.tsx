@@ -54,10 +54,10 @@ const ClassicMenuItem: React.FC<{ sectionId: string; item: MenuItemType; customi
     <div className="min-w-0 flex-1">
       <div className="flex items-start justify-between gap-4">
         <div className="min-w-0">
-          <h3 className="font-serif text-xl font-semibold text-gray-900">{item.name || 'Untitled dish'}</h3>
+          <h3 data-menu-role="dish-name" className="font-serif text-xl font-semibold text-gray-900">{item.name || 'Untitled dish'}</h3>
           <MenuItemTags item={item} className="mt-1" />
         </div>
-        {customization.showPrices && <span className="shrink-0 text-lg font-semibold" style={{ color: customization.primaryColor }}>{formatMenuPrice(item)}</span>}
+        {customization.showPrices && <span data-menu-role="price" className="shrink-0 text-lg font-semibold" style={{ color: customization.primaryColor }}>{formatMenuPrice(item)}</span>}
       </div>
       {customization.showDescriptions && item.description && <p className="mt-1 leading-relaxed text-gray-600">{item.description}</p>}
       {!item.available && <SoldOutLabel className="mt-2" language={language} />}

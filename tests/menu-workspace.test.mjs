@@ -509,3 +509,20 @@ test('dropping the last dish on its own group does not create a history step', a
   await act(() => { const drop = new window.Event('drop',{bubbles:true}); Object.defineProperty(drop,'dataTransfer',{value:transfer}); button('Edit subsection Tagines').parentElement.dispatchEvent(drop); });
   assert.equal(button('Undo menu change').disabled,true);
 });
+
+
+test('appearance edits preview immediately and resetting is undoable without changing content', async () => {
+  const menu = structuredClone(initialMenu); menu.template = 'atlas-simple';
+  let saved;
+  await mount(async value => { saved = value; return value; }, menu);
+  await click('Customize');
+  await fill('Primary color', '#174f54');
+  assert.match(container.querySelector('[aria-label="Live menu preview"]').innerHTML, /#174f54/);
+  await click('Reset appearance');
+  assert.equal(field('Primary color').value.toLowerCase(),'#873e25');
+  await click('Undo menu change');
+  assert.equal(field('Primary color').value.toLowerCase(),'#174f54');
+  await click('Save menu');
+  assert.deepEqual(saved.sections,menu.sections);
+  assert.equal(saved.design.appearance.primaryColor,'#174f54');
+});

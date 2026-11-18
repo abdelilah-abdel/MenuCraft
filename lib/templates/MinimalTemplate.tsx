@@ -51,8 +51,8 @@ const MinimalMenuItem: React.FC<{ sectionId: string; item: MenuItemType; customi
     <MenuItemPhoto item={item} showImages={customization.showImages} className="h-24 w-24 shrink-0 rounded-sm object-cover sm:h-28 sm:w-28" />
     <div className="min-w-0 flex-1">
       <div className="flex items-baseline justify-between gap-4">
-        <h3 className="text-xl font-light text-black">{item.name || 'Untitled dish'}</h3>
-        {customization.showPrices && <span className="shrink-0 text-lg font-light text-black">{formatMenuPrice(item)}</span>}
+        <h3 data-menu-role="dish-name" className="text-xl font-light text-black">{item.name || 'Untitled dish'}</h3>
+        {customization.showPrices && <span data-menu-role="price" className="shrink-0 text-lg font-light text-black">{formatMenuPrice(item)}</span>}
       </div>
       <MenuItemTags item={item} className="mt-2 text-gray-500" />
       {customization.showDescriptions && item.description && <p className="mt-3 font-light leading-relaxed text-gray-500">{item.description}</p>}

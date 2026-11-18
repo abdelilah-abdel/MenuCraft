@@ -1,3 +1,4 @@
+import type { MenuDesign } from '../menuDesign';
 import type { TEMPLATE_CONFIGS } from '../templates/config';
 
 export interface ImagePresentation {
@@ -59,6 +60,7 @@ export interface MenuCustomization {
 }
 
 export interface Menu {
+  design?: MenuDesign;
   id: string;
   ownerId?: string;
   restaurantName: string;

@@ -245,6 +245,7 @@ test('all registered designs preserve the owner menu and an unknown design canno
   const owner = (await registration.json()).owner;
   const headers = { 'Content-Type': 'application/json', Cookie: registration.headers.get('set-cookie').split(';')[0] };
   const original = {
+    design: { appearance: { primaryColor: '#174f54', backgroundColor: '#fff5df', fontFamily: 'Georgia, serif', textSize: 'large' } },
     id: 'stable-template-menu', restaurantName: 'Atlas Registry Kitchen', description: 'Owner-supplied menu',
     sections: [{ id: 'section', name: 'Dinner', order: 0,
       subsections: [{ id: 'subsection', name: 'Tagines', order: 0, hidden: false }],
@@ -263,6 +264,7 @@ test('all registered designs preserve the owner menu and an unknown design canno
     assert.equal(next.originalLanguage, 'en', 'old menus without Original Language still load');
     assert.equal(next.template, template);
     assert.deepEqual(next.customization, original.customization);
+    assert.deepEqual(next.design, original.design);
     assert.deepEqual(next.sections, original.sections);
     if (saved) assert.equal(next.createdAt, saved.createdAt);
     saved = next;
@@ -271,6 +273,10 @@ test('all registered designs preserve the owner menu and an unknown design canno
     const published = (await (await fetch(`${appUrl}/api/menus/${saved.id}`)).json()).menu;
     const { ownerId: _ownerId, ...expectedPublic } = saved;
     assert.deepEqual(published, expectedPublic);
+  }
+  for (const appearance of [{ primaryColor: 'red;position:fixed' }, { backgroundColor: 'url(javascript:alert(1))' }, { fontFamily: 'arbitrary-font' }, { textSize: 100 }, { unknown: 'value' }]) {
+    const response = await fetch(`${appUrl}/api/menus/current`, { method: 'POST', headers, body: JSON.stringify({ ...saved, design: { appearance } }) });
+    assert.equal(response.status, 400, 'unsupported appearance is rejected');
   }
   for (const imagePresentation of [{ focalX: -1 }, { focalY: 101 }, { placement: ['thumbnail'] }, { hidden: 'true' }]) {
     const response = await fetch(`${appUrl}/api/menus/current`, { method: 'POST', headers, body: JSON.stringify({ ...saved, sections: [{ ...saved.sections[0], imagePresentation }] }) });

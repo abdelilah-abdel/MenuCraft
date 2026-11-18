@@ -2,6 +2,7 @@ import React from 'react';
 import type { Menu } from '../types/menu';
 import type { TemplateConfig } from './config';
 import type { TemplateBlockType } from './registry';
+import { resolveAppearance } from '../menuDesign';
 import { menuDirection } from './menuTemplateUtils';
 import { RestaurantHeaderBlock, MenuSectionsBlock, type MenuBlockProps } from './blocks';
 
@@ -18,6 +19,7 @@ export function TemplateFromConfig({
   menu: Menu;
   config: Extract<TemplateConfig, { renderer: 'configurable' }>;
 }) {
+  config = { ...config, theme: resolveAppearance(menu, config) };
   const { theme, layout } = config;
   return (
     <main

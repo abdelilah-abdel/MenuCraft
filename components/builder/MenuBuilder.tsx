@@ -6,6 +6,7 @@ import { MenuService } from '@/lib/services/menuService';
 import { editMenuEntry } from '@/lib/menuEntries';
 import { Button } from '../ui/Button';
 import { Input, Textarea } from '../ui/Input';
+import { MenuDesignPanel } from './MenuDesignPanel';
 import { ImageSlotEditor } from './ImageSlotEditor';
 import { getTemplateConfig } from '@/lib/templates/config';
 import { MenuOutline } from './MenuOutline';
@@ -1159,61 +1160,7 @@ export const MenuBuilder: React.FC<MenuBuilderProps> = ({
                 </div>
               </div>
 
-              <div className="grid md:grid-cols-2 gap-5">
-                <div>
-                  <label className="block text-xs font-semibold text-menu-ink-700 uppercase tracking-wider mb-2">
-                    Primary Color
-                  </label>
-                  <div className="flex gap-3 items-stretch">
-                    <input
-                      type="color"
-                      value={menu.customization.primaryColor}
-                      onChange={(e) =>
-                        updateCustomization({ primaryColor: e.target.value }, 'customization:primary-color')
-                      }
-                      className="h-auto w-16 cursor-pointer border border-menu-ink-200/60 rounded-none"
-                    />
-                    <Input
-                      value={menu.customization.primaryColor}
-                      onChange={(e) =>
-                        updateCustomization({ primaryColor: e.target.value }, 'customization:primary-color')
-                      }
-                      className="flex-1"
-                      placeholder="#000000"
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-xs font-semibold text-menu-ink-700 uppercase tracking-wider mb-2">
-                    Secondary Color
-                  </label>
-                  <div className="flex gap-3 items-stretch">
-                    <input
-                      type="color"
-                      value={menu.customization.secondaryColor}
-                      onChange={(e) =>
-                        updateCustomization(
-                          { secondaryColor: e.target.value },
-                          'customization:secondary-color'
-                        )
-                      }
-                      className="h-auto w-16 cursor-pointer border border-menu-ink-200/60 rounded-none"
-                    />
-                    <Input
-                      value={menu.customization.secondaryColor}
-                      onChange={(e) =>
-                        updateCustomization(
-                          { secondaryColor: e.target.value },
-                          'customization:secondary-color'
-                        )
-                      }
-                      className="flex-1"
-                      placeholder="#000000"
-                    />
-                  </div>
-                </div>
-              </div>
+              <MenuDesignPanel menu={menu} onChange={onMenuChange} />
             </div>
           </div>
         </>

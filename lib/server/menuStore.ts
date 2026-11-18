@@ -2,6 +2,7 @@ import { mkdir, readFile, rename, unlink, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { randomUUID } from 'node:crypto';
 import type { Menu, MenuItem, MenuSection, MenuSubsection } from '@/lib/types/menu';
+import { isMenuDesign } from '@/lib/menuDesign';
 import { isImagePresentation } from '@/lib/imagePresentation';
 import { isTemplateId } from '@/lib/templates/config';
 
@@ -67,6 +68,7 @@ export function isMenuInput(value: unknown): value is MenuInput {
     (value.description === undefined || typeof value.description === 'string') &&
     Array.isArray(value.sections) && value.sections.every(isMenuSection) &&
     isTemplateId(value.template) &&
+    isMenuDesign(value.design) &&
     typeof customization.primaryColor === 'string' &&
     typeof customization.secondaryColor === 'string' &&
     typeof customization.fontFamily === 'string' &&
