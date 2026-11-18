@@ -559,3 +559,10 @@ canvas {
     flex-direction: column;
   }
 }
+
+/* Shared content safety across templates, including long unbroken owner text. */
+.menu-content { overflow-wrap: anywhere; }
+.menu-content :where(article,section,header,h1,h2,h3,p,div) { min-width: 0; }
+.menu-content :where(h1,h2,h3,p) { white-space: normal; }
+.menu-content img { max-width: 100%; }
+.menu-content article > div > div:has(> h3) { flex-wrap: wrap; }

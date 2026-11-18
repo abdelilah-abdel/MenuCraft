@@ -1,7 +1,7 @@
 import React from 'react';
 import { Menu, MenuItem, MenuLanguage, MenuSection, MenuSubsection } from '../types/menu';
 import { imageService } from '../services/imageService';
-import { usePreviewItemTarget, usePreviewTarget } from './previewSelection';
+import { useIsMenuPreview, usePreviewItemTarget, usePreviewTarget } from './previewSelection';
 
 export interface MenuSectionGroup {
   subsection: MenuSubsection | null;
@@ -91,4 +91,11 @@ export function SoldOutLabel({ className = '', language = 'en' }: { className?: 
 export function formatMenuPrice(item: MenuItem): string {
   const price = Number.isFinite(item.price) ? item.price.toFixed(2) : '0.00';
   return `${item.currency}${item.currency.trim() ? ' ' : ''}${price}`;
+}
+
+export function MenuEmptyState({ language }: { language: MenuLanguage }) {
+  const preview = useIsMenuPreview();
+  return <>{preview
+    ? localizedMenuText(language, 'Add visible dishes to preview your menu.', 'Ajoutez des plats visibles pour prévisualiser votre menu.', 'أضف أطباقًا ظاهرة لمعاينة قائمتك.')
+    : localizedMenuText(language, 'This menu is being updated. Please check back soon.', 'Cette carte est en cours de mise à jour.', 'يجري تحديث هذه القائمة. يرجى العودة قريبًا.')}</>;
 }

@@ -58,7 +58,7 @@ export function MenuTemplate({ menu }: { menu: Menu }) {
     );
   }
   const Template = templates[menu.template];
-  return <Template menu={menu} />;
+  return <div className="menu-content"><Template menu={menu} /></div>;
 }
 
 export { TEMPLATE_CONFIGS, getTemplateConfig } from './config';

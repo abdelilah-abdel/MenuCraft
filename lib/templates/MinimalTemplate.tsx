@@ -1,6 +1,6 @@
 import React from 'react';
 import { Menu, MenuItem as MenuItemType } from '../types/menu';
-import { getMenuSectionGroups, getVisibleMenuSections, localizedMenuText, MenuItemPhoto, MenuItemTags, menuDirection, SoldOutLabel, formatMenuPrice } from './menuTemplateUtils';
+import { MenuEmptyState, getMenuSectionGroups, getVisibleMenuSections, localizedMenuText, MenuItemPhoto, MenuItemTags, menuDirection, SoldOutLabel, formatMenuPrice } from './menuTemplateUtils';
 import { PreviewHeading, usePreviewTarget } from './previewSelection';
 
 interface TemplateProps { menu: Menu }
@@ -15,21 +15,21 @@ export const MinimalTemplate: React.FC<TemplateProps> = ({ menu }) => {
       <header className="mx-auto mb-14 max-w-3xl">
         {customization.logoImage && <img {...previewTarget({ kind: 'restaurant' }, 'Edit restaurant logo in preview', true)} src={customization.logoImage} alt={`${restaurantName} logo`} className="mb-8 h-16 max-w-40 object-contain" />}
         <PreviewHeading as="h1" target={{ kind: 'restaurant' }} editLabel={`Edit restaurant ${restaurantName} in preview`} className="font-sans text-5xl font-light tracking-tight sm:text-6xl">{restaurantName}</PreviewHeading>
-        {description && <p className="mt-5 text-lg font-light leading-relaxed text-gray-500">{description}</p>}
+        {customization.showDescriptions && description && <p className="mt-5 text-lg font-light leading-relaxed text-gray-500">{description}</p>}
       </header>
       <div className="mx-auto max-w-3xl space-y-16">
-        {sections.length === 0 && <p className="py-12 text-center text-lg text-gray-500">{localizedMenuText(menu.originalLanguage, 'Menu coming soon', 'Menu bientôt disponible', 'قائمة الطعام قريباً')}</p>}
+        {sections.length === 0 && <p className="py-12 text-center text-lg text-gray-500">{<MenuEmptyState language={menu.originalLanguage} />}</p>}
         {sections.map((section) => (
           <section key={section.id}>
             <header className="mb-7">
               <PreviewHeading as="h2" target={{ kind: 'section', sectionId: section.id }} editLabel={`Edit section ${section.name} in preview`} className="text-xl font-medium uppercase tracking-[0.22em]" style={{ color: customization.primaryColor }}>{section.name}</PreviewHeading>
-              {section.description && <p className="mt-2 text-sm font-light text-gray-500">{section.description}</p>}
+              {customization.showDescriptions && section.description && <p className="mt-2 text-sm font-light text-gray-500">{section.description}</p>}
             </header>
             <div className="space-y-8">
               {getMenuSectionGroups(section).map((group) => (
                 <div key={group.subsection?.id || 'section-items'}>
                   {group.subsection && <PreviewHeading as="h3" target={{ kind: 'subsection', sectionId: section.id, subsectionId: group.subsection.id }} editLabel={`Edit subsection ${group.subsection.name} in preview`} className="mb-5 border-b border-gray-100 pb-2 text-xs font-semibold uppercase tracking-[0.2em] text-gray-500">{group.subsection.name}</PreviewHeading>}
-                  {group.subsection?.description && <p className="mb-4 text-sm font-light text-gray-500">{group.subsection.description}</p>}
+                  {customization.showDescriptions && group.subsection?.description && <p className="mb-4 text-sm font-light text-gray-500">{group.subsection.description}</p>}
                   <div className="space-y-7">{group.items.map((item) => <MinimalMenuItem key={item.id} sectionId={section.id} item={item} customization={customization} language={menu.originalLanguage} />)}</div>
                 </div>
               ))}

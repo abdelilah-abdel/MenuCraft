@@ -1,7 +1,7 @@
 import React from 'react';
 import { Menu, MenuItem } from '../types/menu';
 import {
-  getMenuSectionGroups,
+  MenuEmptyState, getMenuSectionGroups,
   getVisibleMenuSections,
   localizedMenuText,
   MenuItemPhoto,
@@ -51,7 +51,7 @@ export const MedinaCafeTemplate: React.FC<TemplateProps> = ({ menu }) => {
           {customization.logoImage && <img {...previewTarget({ kind: 'restaurant' }, 'Edit restaurant logo in preview', true)} src={customization.logoImage} alt={`${menu.restaurantName} logo`} className="pointer-events-auto mb-5 h-16 max-w-40 object-contain" />}
           <span className="mb-3 text-[11px] font-semibold uppercase tracking-[0.42em] text-[#f1d29a]">{localizedMenuText(menu.originalLanguage, 'Moroccan hospitality · Since always', 'Cuisine du Maroc · Depuis toujours', 'الضيافة المغربية · منذ الأزل')}</span>
           <PreviewHeading as="h1" target={{ kind: 'restaurant' }} editLabel={`Edit restaurant ${menu.restaurantName} in preview`} className="font-serif text-4xl font-bold sm:text-6xl" style={{ color: '#fff' }}>{menu.restaurantName}</PreviewHeading>
-          {menu.description && <p className="mt-4 max-w-2xl text-sm leading-relaxed text-white/85 sm:text-base">{menu.description}</p>}
+          {customization.showDescriptions && menu.description && <p className="mt-4 max-w-2xl text-sm leading-relaxed text-white/85 sm:text-base">{menu.description}</p>}
           <div className="mt-6 flex items-center gap-3 text-[#f1d29a]" aria-hidden="true"><span className="h-px w-10 bg-current" /><span>✦</span><span className="h-px w-10 bg-current" /></div>
         </div>
       </header>
@@ -65,12 +65,12 @@ export const MedinaCafeTemplate: React.FC<TemplateProps> = ({ menu }) => {
       )}
 
       <div className="mx-auto max-w-5xl px-5 py-10 sm:px-8 sm:py-14">
-        {sections.length === 0 ? <p className="py-16 text-center font-serif text-xl text-[#74685a]">{localizedMenuText(menu.originalLanguage, 'Menu coming soon', 'Menu bientôt disponible', 'قائمة الطعام قريباً')}</p> : sections.map((section, sectionIndex) => (
+        {sections.length === 0 ? <p className="py-16 text-center font-serif text-xl text-[#74685a]">{<MenuEmptyState language={menu.originalLanguage} />}</p> : sections.map((section, sectionIndex) => (
           <section id={`medina-section-${sectionIndex}`} key={section.id} className="mb-12 scroll-mt-20 rounded-sm border border-[#d8c8a5] bg-[#fbf8f0] px-5 py-7 shadow-[0_8px_30px_rgba(53,43,34,.06)] sm:px-9 sm:py-9">
             <div className="mb-6 text-center">
               <p className="mb-2 text-[10px] font-bold uppercase tracking-[0.3em] text-[#1e6b70]">{localizedMenuText(menu.originalLanguage, 'Menu', 'Carte', 'قائمة الطعام')} · {String(sectionIndex + 1).padStart(2, '0')}</p>
               <PreviewHeading as="h2" target={{ kind: 'section', sectionId: section.id }} editLabel={`Edit section ${section.name} in preview`} className="font-serif text-3xl font-semibold sm:text-4xl" style={{ color: customization.primaryColor }}>{section.name}</PreviewHeading>
-              {section.description && <p className="mx-auto mt-2 max-w-2xl text-sm italic leading-relaxed text-[#74685a]">{section.description}</p>}
+              {customization.showDescriptions && section.description && <p className="mx-auto mt-2 max-w-2xl text-sm italic leading-relaxed text-[#74685a]">{section.description}</p>}
               <div className="mx-auto mt-4 h-px w-20 bg-[#c98b48]" />
             </div>
 
@@ -78,7 +78,7 @@ export const MedinaCafeTemplate: React.FC<TemplateProps> = ({ menu }) => {
               {getMenuSectionGroups(section).map((group) => (
                 <div key={group.subsection?.id || 'section-items'}>
                   {group.subsection && <div className="mb-2 flex items-center gap-3"><PreviewHeading as="h3" target={{ kind: 'subsection', sectionId: section.id, subsectionId: group.subsection.id }} editLabel={`Edit subsection ${group.subsection.name} in preview`} className="font-serif text-xl font-semibold text-[#8b4b2b]">{group.subsection.name}</PreviewHeading><span aria-hidden="true" className="h-px flex-1 bg-[#e1d5c0]" /></div>}
-                  {group.subsection?.description && <p className="mb-3 text-sm text-[#74685a]">{group.subsection.description}</p>}
+                  {customization.showDescriptions && group.subsection?.description && <p className="mb-3 text-sm text-[#74685a]">{group.subsection.description}</p>}
                   <div>{group.items.map((item) => renderItem(item, section.id))}</div>
                 </div>
               ))}

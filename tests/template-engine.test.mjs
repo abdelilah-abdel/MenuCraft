@@ -156,3 +156,32 @@ test('unknown template IDs render a clear error instead of a substitute design',
   assert.match(html, /design is unavailable/);
   assert.doesNotMatch(html, /Vegetable tagine/);
 });
+
+
+test('all templates retain orphan dishes and complete content while honoring visibility', () => {
+  const fixture = structuredClone(menu);
+  fixture.sections[0].description = 'Section detail';
+  fixture.sections[0].subsections[0].description = 'Subsection detail';
+  fixture.sections[0].items[0].tags = ['Owner supplied'];
+  fixture.sections[0].items[0].available = false;
+  fixture.sections[0].items.push({ ...fixture.sections[0].items[0], id: 'orphan', name: 'Orphan dish', subsectionId: 'obsolete' });
+  for (const template of Object.keys(config.TEMPLATE_CONFIGS)) {
+    const Template = rendering.getTemplate(template);
+    const html = renderToStaticMarkup(React.createElement(Template,{menu:{...fixture,template}}));
+    for (const text of ['Subsection detail','Owner supplied','Orphan dish','Épuisé']) assert.ok(html.includes(text),template + ': ' + text);
+    const hidden = renderToStaticMarkup(React.createElement(Template,{menu:{...fixture,template,customization:{...fixture.customization,showDescriptions:false,showPrices:false}}}));
+    assert.doesNotMatch(hidden,/Subsection detail|Section detail|Seasonal plates|MAD 72/);
+  }
+});
+
+
+test('empty and hidden groups render truthful empty states with supplied language direction', () => {
+  for (const language of ['en','fr','ar']) for (const template of Object.keys(config.TEMPLATE_CONFIGS)) {
+    const fixture = structuredClone(menu); fixture.originalLanguage = language; fixture.template = template;
+    fixture.sections[0].subsections[0].hidden = true;
+    const html = renderToStaticMarkup(React.createElement(rendering.MenuTemplate,{menu:fixture}));
+    assert.match(html,new RegExp('dir="'+(language==='ar'?'rtl':'ltr')+'"'));
+    assert.doesNotMatch(html,/Vegetable tagine/);
+    assert.match(html,/being updated|mise à jour|تحديث/);
+  }
+});

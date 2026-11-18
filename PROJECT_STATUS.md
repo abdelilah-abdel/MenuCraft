@@ -22,6 +22,11 @@
 
 ## Latest changes
 
+### Ticket 06 — content rendering completed — 2026-11-18
+
+- Filled Atlas tags/subsection descriptions, made description settings consistent across seven designs, and added shared long-text wrapping. Orphan dishes remain ungrouped; hidden/empty groups render empty states.
+- TypeScript/build and 6 renderer checks passed, including supplied EN/FR/AR direction and hidden empty groups. Desktop/mobile screenshots: `06-content-desktop.jpg` and `06-content-mobile.jpg`. Full Arabic typography, print/PDF remain unqualified. Next: ticket 07 photos.
+
 ### Ticket 05 — movement completed — 2026-11-18
 
 - Reused existing history and drag operations; added explicit section/subsection destination selector and empty subsection drop areas. Group reordering sorts stored order, invalid groups and self drops are ignored, and photo/data IDs stay attached.

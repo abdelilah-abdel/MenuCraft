@@ -4,10 +4,11 @@ import type { TemplateConfig } from './config';
 import { PreviewHeading, usePreviewTarget } from './previewSelection';
 import {
   formatMenuPrice,
-  getMenuSectionGroups,
+  MenuEmptyState, getMenuSectionGroups,
   getVisibleMenuSections,
   localizedMenuText,
   MenuItemPhoto,
+  MenuItemTags,
   SoldOutLabel,
 } from './menuTemplateUtils';
 
@@ -36,7 +37,7 @@ export function RestaurantHeaderBlock({ menu, config }: MenuBlockProps) {
       >
         {menu.restaurantName}
       </PreviewHeading>
-      {menu.description && (
+      {menu.customization.showDescriptions && menu.description && (
         <p className="mx-auto mt-4 max-w-xl text-base" style={{ color: theme.secondaryColor }}>
           {menu.description}
         </p>
@@ -51,7 +52,7 @@ export function MenuSectionsBlock({ menu, config }: MenuBlockProps) {
     <>
       {getVisibleMenuSections(menu).length === 0 && (
         <p className="text-center text-lg" style={{ color: theme.secondaryColor }}>
-          {localizedMenuText(menu.originalLanguage, 'Menu coming soon', 'Menu à venir', 'القائمة قريبًا')}
+          {<MenuEmptyState language={menu.originalLanguage} />}
         </p>
       )}
 
@@ -64,7 +65,7 @@ export function MenuSectionsBlock({ menu, config }: MenuBlockProps) {
   );
 }
 
-export function SectionHeadingBlock({ section, config }: { section: MenuSection; config: TemplateConfig }) {
+export function SectionHeadingBlock({ section, config, showDescriptions }: { section: MenuSection; config: TemplateConfig; showDescriptions: boolean }) {
   const { theme, layout } = config;
   return (
     <header
@@ -82,7 +83,7 @@ export function SectionHeadingBlock({ section, config }: { section: MenuSection;
         >
           {section.name}
         </PreviewHeading>
-        {section.description && (
+        {showDescriptions && section.description && (
           <p className="mt-1 text-sm" style={{ color: theme.secondaryColor }}>
             {section.description}
           </p>
@@ -121,11 +122,12 @@ function MenuSectionBlock({
   const { layout } = config;
   return (
     <section aria-labelledby={`config-section-${section.id}`}>
-      <SectionHeadingBlock section={section} config={config} />
+      <SectionHeadingBlock section={section} config={config} showDescriptions={menu.customization.showDescriptions} />
 
       {getMenuSectionGroups(section).map((group) => (
         <div key={group.subsection?.id || 'all'} className="mb-4 last:mb-0">
           {group.subsection && <SubsectionHeadingBlock sectionId={section.id} subsection={group.subsection} config={config} />}
+          {menu.customization.showDescriptions && group.subsection?.description && <p className="mb-3 text-sm">{group.subsection.description}</p>}
           <div className={layout.kind === 'cards' ? 'grid gap-5 sm:grid-cols-2' : undefined}>
             {group.items.map((item) => (
               <DishRowBlock key={item.id} sectionId={section.id} item={item} menu={menu} config={config} />
@@ -170,6 +172,7 @@ export function DishRowBlock({ sectionId, item, menu, config }: { sectionId: str
               {item.description}
             </p>
           )}
+          <MenuItemTags item={item} className="mt-2" />
           {!visible && <SoldOutLabel className="mt-3" language={menu.originalLanguage} />}
         </div>
       </article>
@@ -206,6 +209,7 @@ export function DishRowBlock({ sectionId, item, menu, config }: { sectionId: str
               {item.description}
             </p>
           )}
+          <MenuItemTags item={item} className="mt-2" />
           {!visible && <SoldOutLabel className="mt-2" language={menu.originalLanguage} />}
         </div>
       </div>

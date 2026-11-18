@@ -120,3 +120,5 @@ export function PreviewHeroImageTarget({ item }: { item: MenuItem }) {
     />
   );
 }
+
+export function useIsMenuPreview() { return useContext(PreviewContext) !== null; }

@@ -1,7 +1,7 @@
 import React from 'react';
 import { Menu, MenuItem } from '../types/menu';
 import {
-  getMenuSectionGroups,
+  MenuEmptyState, getMenuSectionGroups,
   getVisibleMenuSections,
   localizedMenuText,
   MenuItemPhoto,
@@ -59,10 +59,10 @@ export const ModernMoroccanGardenTemplate: React.FC<TemplateProps> = ({ menu }) 
         <div className="pointer-events-none relative z-10 mx-auto max-w-7xl px-6 py-14 sm:px-10 sm:py-20">
           <div className="max-w-2xl">
             {customization.logoImage && <img {...previewTarget({ kind: 'restaurant' }, 'Edit restaurant logo in preview', true)} src={customization.logoImage} alt={`${menu.restaurantName} logo`} className="pointer-events-auto mb-6 h-16 max-w-40 object-contain" />}
-            <p className="mb-3 text-[11px] font-semibold uppercase tracking-[0.35em] text-[#e5d4a8]">{localizedMenuText(menu.originalLanguage, 'From the garden to the table', 'Du jardin à la table', 'من الحديقة إلى المائدة')}</p>
+            <p className="mb-3 text-[11px] font-semibold uppercase tracking-[0.35em] text-[#e5d4a8]">{localizedMenuText(menu.originalLanguage, 'Welcome', 'Bienvenue', 'مرحباً')}</p>
             <PreviewHeading as="h1" target={{ kind: 'restaurant' }} editLabel={`Edit restaurant ${menu.restaurantName} in preview`} className="font-serif text-5xl font-semibold leading-tight sm:text-7xl">{menu.restaurantName}</PreviewHeading>
-            {menu.description && <p className="mt-5 max-w-xl text-base leading-7 text-white/85">{menu.description}</p>}
-            <div className="mt-7 inline-flex items-center gap-3 rounded-full border border-white/30 bg-white/10 px-4 py-2 text-xs uppercase tracking-widest text-[#f5edcf]">{localizedMenuText(menu.originalLanguage, 'Fresh · Local · Moroccan', 'Frais · Local · Marocain', 'طازج · محلي · مغربي')}</div>
+            {customization.showDescriptions && menu.description && <p className="mt-5 max-w-xl text-base leading-7 text-white/85">{menu.description}</p>}
+            <div className="mt-7 inline-flex items-center gap-3 rounded-full border border-white/30 bg-white/10 px-4 py-2 text-xs uppercase tracking-widest text-[#f5edcf]">{localizedMenuText(menu.originalLanguage, 'Our menu', 'Notre carte', 'قائمتنا')}</div>
           </div>
         </div>
       </header>
@@ -70,13 +70,13 @@ export const ModernMoroccanGardenTemplate: React.FC<TemplateProps> = ({ menu }) 
       {sections.length > 1 && <nav aria-label="Menu sections" className="border-b border-[#dbe3d2] bg-white"><div className="mx-auto flex max-w-7xl gap-2 overflow-x-auto px-5 py-3">{sections.map((section, index) => <a key={section.id} href={`#garden-section-${index}`} className="shrink-0 rounded-full px-4 py-2 text-xs font-semibold text-[#526d49] hover:bg-[#eef2e6]">{section.name}</a>)}</div></nav>}
 
       <div className="mx-auto max-w-7xl px-5 py-10 sm:px-8 sm:py-14">
-        {sections.length === 0 ? <p className="py-16 text-center font-serif text-xl text-[#687164]">{localizedMenuText(menu.originalLanguage, 'Menu coming soon', 'Menu bientôt disponible', 'قائمة الطعام قريباً')}</p> : sections.map((section, sectionIndex) => (
+        {sections.length === 0 ? <p className="py-16 text-center font-serif text-xl text-[#687164]">{<MenuEmptyState language={menu.originalLanguage} />}</p> : sections.map((section, sectionIndex) => (
           <section id={`garden-section-${sectionIndex}`} key={section.id} className="mb-14 scroll-mt-20">
             <div className="mb-6 flex items-end justify-between gap-4">
               <div>
                 <p className="mb-2 text-[10px] font-bold uppercase tracking-[0.34em] text-[#8b9b6a]">{localizedMenuText(menu.originalLanguage, 'To share', 'À partager', 'للمشاركة')} · {String(sectionIndex + 1).padStart(2, '0')}</p>
                 <PreviewHeading as="h2" target={{ kind: 'section', sectionId: section.id }} editLabel={`Edit section ${section.name} in preview`} className="font-serif text-3xl font-semibold sm:text-4xl" style={{ color: customization.primaryColor }}>{section.name}</PreviewHeading>
-                {section.description && <p className="mt-2 max-w-2xl text-sm leading-relaxed text-[#687164]">{section.description}</p>}
+                {customization.showDescriptions && section.description && <p className="mt-2 max-w-2xl text-sm leading-relaxed text-[#687164]">{section.description}</p>}
               </div>
               <span aria-hidden="true" className="mb-2 hidden h-px flex-1 bg-[#dbe3d2] sm:block" />
             </div>
@@ -84,7 +84,7 @@ export const ModernMoroccanGardenTemplate: React.FC<TemplateProps> = ({ menu }) 
               {getMenuSectionGroups(section).map((group) => (
                 <div key={group.subsection?.id || 'section-items'}>
                   {group.subsection && <div className="mb-4 flex items-center gap-3"><PreviewHeading as="h3" target={{ kind: 'subsection', sectionId: section.id, subsectionId: group.subsection.id }} editLabel={`Edit subsection ${group.subsection.name} in preview`} className="rounded-full bg-[#e9efe0] px-4 py-2 font-serif text-lg font-semibold text-[#526d49]">{group.subsection.name}</PreviewHeading><span aria-hidden="true" className="h-px flex-1 bg-[#dbe3d2]" /></div>}
-                  {group.subsection?.description && <p className="mb-4 text-sm text-[#687164]">{group.subsection.description}</p>}
+                  {customization.showDescriptions && group.subsection?.description && <p className="mb-4 text-sm text-[#687164]">{group.subsection.description}</p>}
                   <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">{group.items.map((item, index) => renderItem(item, index, section.id))}</div>
                 </div>
               ))}
@@ -92,7 +92,7 @@ export const ModernMoroccanGardenTemplate: React.FC<TemplateProps> = ({ menu }) 
           </section>
         ))}
       </div>
-      <footer className="bg-[#e8eddf] px-6 py-7 text-center text-xs uppercase tracking-[0.28em] text-[#526d49]">{localizedMenuText(menu.originalLanguage, 'Seasonal ingredients · generous hospitality', 'Produits de saison · accueil généreux', 'مكونات موسمية · ضيافة كريمة')}</footer>
+      <footer className="bg-[#e8eddf] px-6 py-7 text-center text-xs uppercase tracking-[0.28em] text-[#526d49]">{localizedMenuText(menu.originalLanguage, 'Welcome to our table', 'Bienvenue à notre table', 'أهلاً بكم على مائدتنا')}</footer>
     </main>
   );
 };

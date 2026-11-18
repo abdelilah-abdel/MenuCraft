@@ -1,7 +1,7 @@
 import React from 'react';
 import { Menu, MenuItem } from '../types/menu';
 import {
-  getMenuSectionGroups,
+  MenuEmptyState, getMenuSectionGroups,
   getVisibleMenuSections,
   localizedMenuText,
   MenuItemPhoto,
@@ -47,20 +47,20 @@ export const MoroccanFineDiningTemplate: React.FC<TemplateProps> = ({ menu }) =>
             {customization.logoImage && <img {...previewTarget({ kind: 'restaurant' }, 'Edit restaurant logo in preview', true)} src={customization.logoImage} alt={`${menu.restaurantName} logo`} className="pointer-events-auto mx-auto mb-5 h-16 max-w-40 object-contain" />}
             <p className="mb-4 text-[10px] font-semibold uppercase tracking-[0.45em] text-[#d8bd8a]">{localizedMenuText(menu.originalLanguage, 'The art of hospitality · Moroccan cuisine', 'L’art de recevoir · Cuisine marocaine', 'فن الضيافة · المطبخ المغربي')}</p>
             <PreviewHeading as="h1" target={{ kind: 'restaurant' }} editLabel={`Edit restaurant ${menu.restaurantName} in preview`} className="font-serif text-4xl font-light tracking-wide sm:text-6xl">{menu.restaurantName}</PreviewHeading>
-            {menu.description && <p className="mx-auto mt-5 max-w-2xl text-sm leading-7 text-[#eee4d3]/80 sm:text-base">{menu.description}</p>}
+            {customization.showDescriptions && menu.description && <p className="mx-auto mt-5 max-w-2xl text-sm leading-7 text-[#eee4d3]/80 sm:text-base">{menu.description}</p>}
             <div className="mt-6 text-[#d8bd8a]" aria-hidden="true">✦　✦　✦</div>
           </div>
         </div>
       </header>
 
       <div className="mx-auto max-w-6xl px-5 py-10 sm:px-8 sm:py-14">
-        {sections.length === 0 ? <p className="py-16 text-center font-serif text-xl text-[#716c65]">{localizedMenuText(menu.originalLanguage, 'Menu coming soon', 'Menu bientôt disponible', 'قائمة الطعام قريباً')}</p> : sections.map((section, sectionIndex) => (
+        {sections.length === 0 ? <p className="py-16 text-center font-serif text-xl text-[#716c65]">{<MenuEmptyState language={menu.originalLanguage} />}</p> : sections.map((section, sectionIndex) => (
           <section key={section.id} className="mb-14">
             <div className="mb-7 flex items-end gap-4 border-b border-[#d6c9b6] pb-4">
               <div>
                 <p className="mb-2 text-[10px] uppercase tracking-[0.32em] text-[#9a7844]">{localizedMenuText(menu.originalLanguage, 'Selection', 'Sélection', 'اختيار')} · {String(sectionIndex + 1).padStart(2, '0')}</p>
                 <PreviewHeading as="h2" target={{ kind: 'section', sectionId: section.id }} editLabel={`Edit section ${section.name} in preview`} className="font-serif text-3xl font-medium sm:text-4xl" style={{ color: customization.primaryColor }}>{section.name}</PreviewHeading>
-                {section.description && <p className="mt-2 max-w-2xl text-sm leading-relaxed text-[#716c65]">{section.description}</p>}
+                {customization.showDescriptions && section.description && <p className="mt-2 max-w-2xl text-sm leading-relaxed text-[#716c65]">{section.description}</p>}
               </div>
               <span aria-hidden="true" className="mb-2 hidden h-px flex-1 bg-[#d6c9b6] sm:block" />
             </div>
@@ -69,7 +69,7 @@ export const MoroccanFineDiningTemplate: React.FC<TemplateProps> = ({ menu }) =>
               {getMenuSectionGroups(section).map((group) => (
                 <div key={group.subsection?.id || 'section-items'}>
                   {group.subsection && <div className="mb-4 flex items-center gap-3"><PreviewHeading as="h3" target={{ kind: 'subsection', sectionId: section.id, subsectionId: group.subsection.id }} editLabel={`Edit subsection ${group.subsection.name} in preview`} className="font-serif text-xl italic text-[#765c3b]">{group.subsection.name}</PreviewHeading><span aria-hidden="true" className="h-px flex-1 bg-[#e4d9ca]" /></div>}
-                  {group.subsection?.description && <p className="mb-4 text-sm text-[#716c65]">{group.subsection.description}</p>}
+                  {customization.showDescriptions && group.subsection?.description && <p className="mb-4 text-sm text-[#716c65]">{group.subsection.description}</p>}
                   <div className="grid gap-4 md:grid-cols-2">{group.items.map((item) => renderItem(item, section.id))}</div>
                 </div>
               ))}
@@ -77,7 +77,7 @@ export const MoroccanFineDiningTemplate: React.FC<TemplateProps> = ({ menu }) =>
           </section>
         ))}
       </div>
-      <footer className="bg-[#332323] px-6 py-7 text-center text-[10px] uppercase tracking-[0.35em] text-[#d8bd8a]">{localizedMenuText(menu.originalLanguage, 'A generous table · Marrakech', 'Une table généreuse · Marrakech', 'مائدة عامرة · مراكش')}</footer>
+      <footer className="bg-[#332323] px-6 py-7 text-center text-[10px] uppercase tracking-[0.35em] text-[#d8bd8a]">{localizedMenuText(menu.originalLanguage, 'Welcome to our table', 'Bienvenue à notre table', 'أهلاً بكم على مائدتنا')}</footer>
     </main>
   );
 };
