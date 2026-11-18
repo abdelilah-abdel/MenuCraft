@@ -29,12 +29,11 @@ function createHistory(menu: Menu): HistoryState {
 function menuHistoryReducer(state: HistoryState, action: HistoryAction): HistoryState {
   switch (action.type) {
     case 'update': {
-      const nextMenu = typeof action.update === 'function'
-        ? action.update(state.present)
-        : action.update;
+      const nextMenu = typeof action.update === 'function' ? action.update(state.present) : action.update;
       if (nextMenu === state.present) return state;
 
-      const canGroup = Boolean(action.groupKey) &&
+      const canGroup =
+        Boolean(action.groupKey) &&
         action.groupKey === state.groupKey &&
         action.now - state.groupAt <= FIELD_GROUP_WINDOW_MS;
 
@@ -68,9 +67,28 @@ function menuHistoryReducer(state: HistoryState, action: HistoryAction): History
     }
     case 'reset':
       return createHistory(action.menu);
-    case 'saved':
-      if (JSON.stringify(state.present) !== JSON.stringify(action.submittedMenu)) return state;
-      return { ...state, present: action.menu, groupKey: null, groupAt: 0 };
+    case 'saved': {
+      // Keep newer content edits while accepting the server's menu identity.
+      // Undo must not rewind the public URL or owner metadata after a save.
+      const withSavedIdentity = (version: Menu): Menu => ({
+        ...version,
+        id: action.menu.id,
+        ownerId: action.menu.ownerId,
+        createdAt: action.menu.createdAt,
+        updatedAt: action.menu.updatedAt,
+      });
+      return {
+        ...state,
+        past: state.past.map(withSavedIdentity),
+        present:
+          JSON.stringify(state.present) === JSON.stringify(action.submittedMenu)
+            ? action.menu
+            : withSavedIdentity(state.present),
+        future: state.future.map(withSavedIdentity),
+        groupKey: null,
+        groupAt: 0,
+      };
+    }
   }
 }
 

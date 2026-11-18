@@ -15,10 +15,23 @@
 - Builder supports menu content editing, sample menus, undo/redo, image upload, preview, public links, QR codes, and a description-suggestion endpoint. AI suggestions require an API key; no AI budget/provider is currently selected.
 - Direction B — The Wall — has been ported to the app chrome: self-hosted Bricolage Grotesque, paper/ink/stamp tokens, landing-page motion, and restyled builder/auth UI.
 - Phase 1, Step 1 is in progress. Ticket 01 is complete: Atlas Simple uses a validated composition of reusable header, section/subsection, and dish blocks. The six legacy templates retain their existing renderers for compatibility.
+- Ticket 02 is complete: the owner workspace has a collapsible outline, focused detail forms, persistent desktop Live Preview with independent scrolling and view-only fit/zoom, mobile edit/preview switching, and explicit save/failure status.
 - Server menu validation now uses the template registry as its allowlist, so registered config-only templates can be saved.
 - Persistence is still file-backed JSON and intended for one durable app instance. No relational database migration has been done.
 
 ## Latest changes
+
+### Ticket 02 — outline and focused editing completed — 2026-11-18
+
+- Resolved [ticket 02](.scratch/template-engine/issues/02-outline-and-detail-workspace.md) on `feat/template-engine-roadmap`.
+- Separated authenticated loading from the persistent MenuWorkspace. Content and Customize keep the selected entry, unsaved menu, and Editor History; Done returns to the outline and restores keyboard focus. The outline shows restaurant information, sections, subsections, dish summaries, and existing add/move actions.
+- Added bounded independently scrolling editor/preview panes, fit width and 50/75/100/125% display zoom, and an accessible mobile edit/preview switch. Zoom affects only the view. Kept template choice, sample menus, export, Daily Special, sharing/QR, image uploads, and existing AI-draft controls available.
+- Added content-based publication state with unsaved/saving/saved/failure feedback and retry. Saving a submitted version does not overwrite edits made while it is in flight. Server menu identity is reconciled across history snapshots, preserving the public URL through undo.
+- Added jsdom as a development dependency and 7 DOM interaction/regression tests. Full suite: 13 tests passed (7 workspace, 4 registry/render, 2 HTTP integration); `npx tsc --noEmit` and `npm run build` passed.
+- Browser checks with isolated disposable data passed desktop and 390px mobile editing, tab retention, Done/reopen, undo/redo, fit/zoom, preview switching, save/reload, and stable public access. Public prices changed only after explicit saves. Independent scrolling and zero fit/page horizontal overflow were measured; 125% panning stayed inside the preview. No browser errors were recorded.
+- Evidence: [desktop outline](.scratch/template-engine/evidence/02-outline-desktop.jpg), [desktop detail](.scratch/template-engine/evidence/02-detail-desktop.jpg), [mobile outline](.scratch/template-engine/evidence/02-outline-mobile.jpg), [mobile detail](.scratch/template-engine/evidence/02-detail-mobile.jpg).
+- Standards/spec review found mobile-link, grouped-movement, and deletion/move-focus regressions; all were fixed and re-reviewed without remaining blockers. The large retained MenuBuilder form/action bundle remains an optional maintenance extraction. Existing build notices remain unchanged; print/PDF and full Arabic typography are not qualified.
+- Next frontier: tickets 03, 04, 05, 06, 07, and 10. Ticket 03 is the next interaction step: selecting a preview element to edit it. None of those tickets has been claimed.
 
 ### Ticket 01 — reusable Atlas blocks completed — 2026-11-18
 
@@ -76,13 +89,13 @@
 
 - `npx tsc --noEmit` — passed.
 - `npm run build` — passed.
-- `npm test` — all 6 tests passed, using temporary isolated HTTP storage.
-- Browser: Atlas selection/preview/save/reload/public flow, 1440×900 desktop output, 390×844 mobile output and builder preview — passed with no runtime errors or horizontal overflow. Temporary browser fixtures used an isolated directory outside the owner's data.
-- Review: no standards or spec blockers; optional enumeration-drift finding addressed.
+- `npm test` — all 13 tests passed, including DOM workspace interactions and temporary isolated HTTP storage.
+- Browser: desktop and 390px mobile outline/detail, Content/Customize retention, Done, history, view-only zoom, mobile preview, explicit publication, and public access — passed with no browser errors or page/Fit-width horizontal overflow. Browser fixtures used an isolated directory outside the owner's data.
+- Review: standards/spec findings fixed and re-reviewed without remaining blockers; optional extraction of the retained MenuBuilder bundle is a maintenance follow-up.
 
 ## Next
 
-1. Ticket 01 is resolved. Claim either [02 — outline-and-detail workspace](.scratch/template-engine/issues/02-outline-and-detail-workspace.md) or [06 — complete menu rendering](.scratch/template-engine/issues/06-complete-menu-rendering.md), the newly unblocked frontier in the [approved 21-ticket plan](.scratch/template-engine/spec.md).
+1. Tickets 01 and 02 are resolved. The unblocked frontier is 03, 04, 05, 06, 07, and 10 in the [approved 21-ticket plan](.scratch/template-engine/spec.md). Continue with [03 — preview selection to editing](.scratch/template-engine/issues/03-preview-selection-to-editing.md) for the next interaction step, or choose another unblocked ticket.
 2. Complete the approved shared editor/engine behaviors and convert the six legacy templates individually when their blockers are complete, preserving IDs and visual/behavior parity. Keep specialized hooks only where configuration cannot express the design cleanly.
 3. Grow the template library in quality-reviewed batches, starting with Morocco-relevant restaurant types and styles.
 4. Build Playwright PDF export from the shared renderer (A4/A5 first, then pagination and multi-page output).

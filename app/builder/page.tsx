@@ -1,40 +1,23 @@
 'use client';
 
-import React, { useState, useEffect, Suspense } from 'react';
+import React, { Suspense, useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { Menu } from '@/lib/types/menu';
+import type { Menu } from '@/lib/types/menu';
 import { MenuService } from '@/lib/services/menuService';
-import { MenuBuilder } from '@/components/builder/MenuBuilder';
-import { TemplateSelector } from '@/components/builder/TemplateSelector';
-import { MenuPreview } from '@/components/preview/MenuPreview';
-import { QRCodeDisplay } from '@/components/preview/QRCodeDisplay';
-import { Button } from '@/components/ui/Button';
-import Link from 'next/link';
-import { useMenuHistory } from '@/lib/hooks/useMenuHistory';
-import { createSampleMenuSections, type SampleTemplateType } from '@/lib/templates/sampleMenus';
-
-type ViewMode = 'edit' | 'template' | 'daily' | 'share';
+import { MenuWorkspace } from '@/components/builder/MenuWorkspace';
 
 function BuilderContent() {
-  const searchParams = useSearchParams();
-  const menuId = searchParams.get('id');
-
-  const [initialMenu] = useState<Menu>(() => MenuService.createDefaultMenu());
-  const { menu, update, undo, redo, canUndo, canRedo, reset, saved } = useMenuHistory(initialMenu);
-
-  const [viewMode, setViewMode] = useState<ViewMode>('edit');
-  const [mobilePane, setMobilePane] = useState<'edit' | 'preview'>('edit');
-  const [isSaved, setIsSaved] = useState(false);
+  const menuId = useSearchParams().get('id');
+  const [loaded, setLoaded] = useState<{ menu: Menu; initiallyPublished: boolean } | null>(null);
   const [isLoadingWorkspace, setIsLoadingWorkspace] = useState(true);
   const [workspaceError, setWorkspaceError] = useState('');
-
   useEffect(() => {
     let isMounted = true;
 
     async function loadOwnerWorkspace() {
       try {
         const response = await fetch('/api/auth/session', { cache: 'no-store' });
-        const result = await response.json() as { owner?: { id: string } | null };
+        const result = (await response.json()) as { owner?: { id: string } | null };
         if (!response.ok || !result.owner) {
           window.location.assign('/sign-in?next=%2Fbuilder');
           return;
@@ -43,7 +26,10 @@ function BuilderContent() {
         const currentMenu = await MenuService.loadOwnerMenu(result.owner.id);
 
         if (isMounted) {
-          reset(currentMenu || MenuService.createDefaultMenu(result.owner.id));
+          setLoaded({
+            menu: currentMenu || MenuService.createDefaultMenu(result.owner.id),
+            initiallyPublished: Boolean(currentMenu),
+          });
           setIsLoadingWorkspace(false);
         }
       } catch {
@@ -58,410 +44,43 @@ function BuilderContent() {
     return () => {
       isMounted = false;
     };
-  }, [menuId, reset]);
+  }, [menuId]);
 
-  const handleSave = (updatedMenu: Menu, submittedMenu: Menu) => {
-    saved(updatedMenu, submittedMenu);
-    setIsSaved(true);
-    setTimeout(() => setIsSaved(false), 3000);
-  };
-
-  const handleTemplateChange = (template: typeof menu.template) => {
-    update((prev) => ({ ...prev, template }));
-  };
-
-  const handleUseSampleMenu = (template: SampleTemplateType) => {
-    const hasCurrentMenuContent = menu.sections.some((section) =>
-      Boolean(section.name.trim() || section.description?.trim() || section.items.length || section.subsections?.length),
-    );
-
-    if (hasCurrentMenuContent && !window.confirm('Replace your current menu sections and items with this editable example menu? Your restaurant name, logo, and display settings will stay as they are.')) {
-      return;
-    }
-
-    update((prev) => ({
-      ...prev,
-      template,
-      sections: createSampleMenuSections(template, prev.originalLanguage),
-    }));
-    setViewMode('edit');
-    if (window.matchMedia('(min-width: 1024px)').matches) {
-      window.setTimeout(() => document.getElementById('menu-live-preview')?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 0);
-    } else {
-      setMobilePane('preview');
-    }
-  };
-
-  useEffect(() => {
-    const handleHistoryShortcut = (event: KeyboardEvent) => {
-      const target = event.target;
-      const isTextEntry = target instanceof HTMLElement && (
-        target.isContentEditable ||
-        target instanceof HTMLTextAreaElement ||
-        (target instanceof HTMLInputElement && ['text', 'search', 'url', 'tel', 'email', 'password', 'number'].includes(target.type))
-      );
-      if (isTextEntry || event.altKey || !(event.metaKey || event.ctrlKey)) return;
-
-      const key = event.key.toLowerCase();
-      if (key === 'z') {
-        event.preventDefault();
-        if (event.shiftKey) redo();
-        else undo();
-      } else if (key === 'y') {
-        event.preventDefault();
-        redo();
-      }
-    };
-
-    window.addEventListener('keydown', handleHistoryShortcut);
-    return () => window.removeEventListener('keydown', handleHistoryShortcut);
-  }, [redo, undo]);
-
-  const openPreview = () => {
-    setViewMode('edit');
-    if (window.matchMedia('(min-width: 1024px)').matches) {
-      window.setTimeout(() => document.getElementById('menu-live-preview')?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 0);
-    } else {
-      setMobilePane((current) => viewMode === 'edit' && current === 'preview' ? 'edit' : 'preview');
-    }
-  };
-
-  const handleExport = () => {
-    const json = MenuService.exportMenuAsJSON(menu);
-    const blob = new Blob([json], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = `${menu.restaurantName.toLowerCase().replace(/\s+/g, '-')}-menu.json`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(url);
-  };
-
-  if (isLoadingWorkspace || workspaceError) {
+  if (isLoadingWorkspace || !loaded || workspaceError)
     return (
-      <div className="min-h-screen flex items-center justify-center bg-menu-paper-200 px-6">
-        <div className="text-center max-w-md">
+      <div className="flex min-h-screen items-center justify-center bg-menu-paper-200 p-6">
+        <div className="text-center">
           {workspaceError ? (
             <>
-              <p role="alert" className="text-menu-ink-700">{workspaceError}</p>
-              <button
-                type="button"
-                onClick={() => window.location.reload()}
-                className="mt-4 text-sm font-semibold text-menu-stamp-700 underline underline-offset-2"
-              >
+              <p role="alert">{workspaceError}</p>
+              <button type="button" onClick={() => window.location.reload()} className="mt-3 underline">
                 Try again
               </button>
             </>
           ) : (
-            <>
-              <div className="menu-ornament mb-6 animate-pulse"></div>
-              <p className="font-display text-xl text-menu-ink-700">Loading your workspace…</p>
-            </>
+            <p role="status">Loading your workspace…</p>
           )}
         </div>
       </div>
     );
-  }
-
   return (
-    <div className="min-h-screen bg-menu-paper-200 flex flex-col">
-      {/* Top Bar */}
-      <header className="bg-menu-paper-200 border-b-[1.5px] border-menu-ink-900 sticky top-0 z-50">
-        <div className="px-6 py-4">
-          <div className="flex items-center justify-between">
-            {/* Left: Logo & Name */}
-            <div className="flex items-center gap-4">
-              <Link href="/" className="flex items-center gap-2 group">
-                <span className="text-xl font-display menu-title text-menu-ink-900">MenuCraft</span>
-                <span className="text-menu-stamp-500 text-sm">∗</span>
-              </Link>
-              <div className="h-6 w-px bg-menu-stamp-300 hidden sm:block"></div>
-              <div className="hidden sm:block">
-                <h1 className="font-display text-lg text-menu-ink-900">{menu.restaurantName}</h1>
-                <p className="text-xs text-menu-ink-500 uppercase tracking-wide">Menu Editor</p>
-              </div>
-            </div>
-
-            {/* Right: Actions */}
-            <div className="flex items-center gap-3">
-              {isSaved && (
-                <span className="hidden sm:flex items-center gap-1.5 text-sm text-menu-stamp-700 font-medium px-3 py-2 bg-menu-stamp-100">
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                  </svg>
-                  Saved
-                </span>
-              )}
-
-              <Button
-                variant="outline"
-                onClick={openPreview}
-                size="sm"
-                aria-label={viewMode === 'edit' && mobilePane === 'preview' ? 'Return to the menu editor' : 'Show the live menu preview'}
-              >
-                <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                </svg>
-                <span className="text-xs sm:text-sm">{viewMode === 'edit' && mobilePane === 'preview' ? 'Edit' : 'Preview'}</span>
-              </Button>
-
-              <div className="flex items-center gap-1">
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  onClick={undo}
-                  disabled={!canUndo}
-                  aria-label="Undo menu change"
-                  title="Undo (⌘Z / Ctrl+Z)"
-                  className="!px-2 sm:!px-3"
-                ><span aria-hidden="true" className="sm:hidden">↶</span><span className="hidden sm:inline">Undo</span><span className="sr-only sm:hidden">Undo</span></Button>
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  onClick={redo}
-                  disabled={!canRedo}
-                  aria-label="Redo menu change"
-                  title="Redo (⌘Shift+Z / Ctrl+Y)"
-                  className="!px-2 sm:!px-3"
-                ><span aria-hidden="true" className="sm:hidden">↷</span><span className="hidden sm:inline">Redo</span><span className="sr-only sm:hidden">Redo</span></Button>
-              </div>
-
-              <Button variant="outline" onClick={handleExport} size="sm" className="hidden md:inline-flex">
-                Export
-              </Button>
-
-              <Link href={`/menu/${menu.id}`}>
-                <Button variant="stamp" size="sm">
-                  <span className="hidden sm:inline">View Live</span>
-                  <svg className="w-4 h-4 sm:hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                  </svg>
-                </Button>
-              </Link>
-            </div>
-          </div>
-        </div>
-      </header>
-
-      {/* Navigation Tabs */}
-      <nav className="bg-white border-b-menu border-menu-ink-200 px-6">
-        <div className="max-w-7xl mx-auto">
-          <div className="flex gap-1 overflow-x-auto">
-            <button
-              onClick={() => { setViewMode('edit'); setMobilePane('edit'); }}
-              className={`flex items-center gap-2 px-6 py-4 transition-all whitespace-nowrap ${
-                viewMode === 'edit'
-                  ? 'border-b-4 border-menu-stamp-500 text-menu-ink-900 font-semibold'
-                  : 'border-b-4 border-transparent text-menu-ink-600 hover:text-menu-ink-900 hover:border-menu-stamp-200'
-              }`}
-            >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-              </svg>
-              <span className="text-sm uppercase tracking-wide">Edit Menu</span>
-            </button>
-
-            <button
-              onClick={() => setViewMode('template')}
-              className={`flex items-center gap-2 px-6 py-4 transition-all whitespace-nowrap ${
-                viewMode === 'template'
-                  ? 'border-b-4 border-menu-stamp-500 text-menu-ink-900 font-semibold'
-                  : 'border-b-4 border-transparent text-menu-ink-600 hover:text-menu-ink-900 hover:border-menu-stamp-200'
-              }`}
-            >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01" />
-              </svg>
-              <span className="text-sm uppercase tracking-wide">Template</span>
-            </button>
-
-            <button
-              onClick={() => setViewMode('daily')}
-              className={`flex items-center gap-2 px-6 py-4 transition-all whitespace-nowrap ${
-                viewMode === 'daily'
-                  ? 'border-b-4 border-menu-stamp-500 text-menu-ink-900 font-semibold'
-                  : 'border-b-4 border-transparent text-menu-ink-600 hover:text-menu-ink-900 hover:border-menu-stamp-200'
-              }`}
-            >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
-              </svg>
-              <span className="text-sm uppercase tracking-wide">Daily Special</span>
-            </button>
-
-            <button
-              onClick={() => setViewMode('share')}
-              className={`flex items-center gap-2 px-6 py-4 transition-all whitespace-nowrap ${
-                viewMode === 'share'
-                  ? 'border-b-4 border-menu-stamp-500 text-menu-ink-900 font-semibold'
-                  : 'border-b-4 border-transparent text-menu-ink-600 hover:text-menu-ink-900 hover:border-menu-stamp-200'
-              }`}
-            >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
-              </svg>
-              <span className="text-sm uppercase tracking-wide">Share & QR</span>
-            </button>
-          </div>
-        </div>
-      </nav>
-
-      {/* Main Content Area */}
-      <main className="flex-1 overflow-y-auto bg-menu-paper-200">
-        <div className="max-w-7xl mx-auto px-6 py-8">
-          <div className={viewMode === 'edit' ? 'animate-fade-in' : 'hidden'}>
-            <div className="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1.1fr)_minmax(320px,0.9fr)]">
-              <section className={`min-w-0 ${mobilePane === 'edit' ? 'block' : 'hidden'} lg:block`} aria-label="Menu editor">
-                <MenuBuilder menu={menu} onMenuChange={update} onSave={handleSave} />
-              </section>
-
-              <aside
-                id="menu-live-preview"
-                className={`min-w-0 ${mobilePane === 'preview' ? 'block' : 'hidden'} lg:block`}
-                aria-label="Live menu preview"
-              >
-                <div className="lg:sticky lg:top-28 lg:max-h-[calc(100vh-8rem)] lg:overflow-y-auto">
-                  <div className="mb-3 flex items-center justify-between gap-3">
-                    <div>
-                      <h2 className="font-display text-xl text-menu-ink-900">Live Preview</h2>
-                      <p className="text-xs text-menu-ink-500">Unsaved edits · {menu.template}</p>
-                    </div>
-                    <span className="border border-menu-stamp-300 bg-menu-stamp-50 px-2 py-1 text-[10px] font-semibold uppercase tracking-wide text-menu-stamp-700">Preview only</span>
-                  </div>
-                  <MenuPreview menu={menu} />
-                </div>
-              </aside>
-            </div>
-          </div>
-
-          {viewMode === 'template' && (
-            <div className="animate-fade-in">
-              <div className="mb-6">
-                <h2 className="text-2xl font-display menu-title text-menu-ink-900 mb-2">Choose Template</h2>
-                <p className="menu-description text-sm">Select the style that fits your restaurant</p>
-              </div>
-              <TemplateSelector
-                selectedTemplate={menu.template}
-                onSelect={handleTemplateChange}
-                onUseSample={handleUseSampleMenu}
-              />
-            </div>
-          )}
-
-          {viewMode === 'daily' && (
-            <div className="animate-fade-in">
-              <div className="mb-6">
-                <h2 className="text-2xl font-display menu-title text-menu-ink-900 mb-2">Daily Special</h2>
-                <p className="menu-description text-sm">Create today's special menu for social media</p>
-              </div>
-
-              <div className="space-y-6">
-                <div className="menu-card p-6">
-                  <h3 className="font-display text-lg text-menu-ink-900 mb-4">Today's Specials</h3>
-                  <div className="space-y-4">
-                    {[
-                      { name: 'Chef\'s Special', price: '24', tag: 'NEW' },
-                      { name: 'Seasonal Soup', price: '12', tag: 'LIMITED' },
-                      { name: 'Catch of the Day', price: '32', tag: 'FRESH' }
-                    ].map((item, i) => (
-                      <div key={i} className="flex justify-between items-baseline border-b border-menu-ink-100 pb-3">
-                        <div className="flex-1">
-                          <div className="flex items-baseline gap-2">
-                            <h4 className="font-display text-base text-menu-ink-900">{item.name}</h4>
-                            <span className="text-xs px-2 py-0.5 bg-menu-stamp-500 text-white uppercase tracking-wide">
-                              {item.tag}
-                            </span>
-                          </div>
-                        </div>
-                        <span className="menu-price ml-4">${item.price}</span>
-                      </div>
-                    ))}
-                  </div>
-
-                  <div className="mt-6 pt-6 border-t border-menu-stamp-300 space-y-3">
-                    <Button variant="primary" size="sm" className="w-full">
-                      Download Image
-                    </Button>
-                    <Button variant="outline" size="sm" className="w-full">
-                      Copy Shareable Link
-                    </Button>
-                  </div>
-                </div>
-
-                <div className="bg-menu-stamp-50 border border-menu-stamp-300 p-4">
-                  <div className="flex gap-3">
-                    <svg className="w-5 h-5 text-menu-stamp-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                    <div>
-                      <h4 className="font-semibold text-menu-ink-900 mb-1 text-sm">Pro Tip</h4>
-                      <p className="menu-description text-xs">
-                        Update daily to keep customers engaged. Share on social media with #DailySpecial
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {viewMode === 'share' && (
-            <div className="animate-fade-in">
-              <div className="mb-6">
-                <h2 className="text-2xl font-display menu-title text-menu-ink-900 mb-2">Share Your Menu</h2>
-                <p className="menu-description text-sm">Download QR codes and share links</p>
-              </div>
-
-              <div className="space-y-6">
-                <QRCodeDisplay
-                  menuId={menu.id}
-                  primaryColor={menu.customization.primaryColor}
-                />
-
-                <div className="menu-card p-6">
-                  <h4 className="font-display text-lg text-menu-ink-900 mb-4">How to Use</h4>
-                  <div className="space-y-3">
-                    {[
-                      { step: 'Download QR code above' },
-                      { step: 'Print on table tents or displays' },
-                      { step: 'Customers scan to view menu' },
-                      { step: 'Update anytime - QR stays same' }
-                    ].map((item, index) => (
-                      <div key={index} className="flex gap-3 items-start">
-                        <div className="w-6 h-6 border border-menu-stamp-500 flex items-center justify-center flex-shrink-0 font-display text-sm text-menu-stamp-600">
-                          {index + 1}
-                        </div>
-                        <p className="menu-description text-sm pt-0.5">{item.step}</p>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
-        </div>
-      </main>
-
-    </div>
+    <MenuWorkspace
+      key={loaded.menu.id}
+      initialMenu={loaded.menu}
+      initiallyPublished={loaded.initiallyPublished}
+    />
   );
 }
 
 export default function BuilderPage() {
   return (
-    <Suspense fallback={
-      <div className="min-h-screen flex items-center justify-center bg-menu-paper-200">
-        <div className="text-center">
-          <div className="menu-ornament mb-6 animate-pulse"></div>
-          <p className="font-display text-xl text-menu-ink-700">Loading Builder...</p>
-          <p className="menu-description mt-2">Preparing your workspace</p>
-        </div>
-      </div>
-    }>
+    <Suspense
+      fallback={
+        <p role="status" className="p-6">
+          Loading your workspace…
+        </p>
+      }
+    >
       <BuilderContent />
     </Suspense>
   );
