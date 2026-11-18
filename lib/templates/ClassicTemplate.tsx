@@ -1,3 +1,4 @@
+import { SectionPhoto } from './SectionPhoto';
 import { RestaurantLogo, RestaurantBanner } from './RestaurantImages';
 import React from 'react';
 import { Menu, MenuItem as MenuItemType } from '../types/menu';
@@ -27,7 +28,7 @@ export const ClassicTemplate: React.FC<TemplateProps> = ({ menu }) => {
         {sections.map((section) => (
           <section key={section.id} className="border-b border-gray-200 pb-8 last:border-0">
             <div className="mb-8 text-center">
-              <PreviewHeading as="h2" target={{ kind: 'section', sectionId: section.id }} editLabel={`Edit section ${section.name} in preview`} className="mb-2 font-serif text-3xl font-semibold" style={{ color: customization.secondaryColor }}>{section.name}</PreviewHeading>
+              <SectionPhoto menu={menu} section={section} /><PreviewHeading as="h2" target={{ kind: 'section', sectionId: section.id }} editLabel={`Edit section ${section.name} in preview`} className="mb-2 font-serif text-3xl font-semibold" style={{ color: customization.secondaryColor }}>{section.name}</PreviewHeading>
               {customization.showDescriptions && section.description && <p className="italic text-gray-600">{section.description}</p>}
             </div>
             <div className="space-y-7">

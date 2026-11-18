@@ -1,3 +1,4 @@
+import { SectionPhoto } from './SectionPhoto';
 import { RestaurantLogo, RestaurantBanner } from './RestaurantImages';
 import React from 'react';
 import { imageStyle } from '../imagePresentation';
@@ -73,7 +74,7 @@ export const MedinaCafeTemplate: React.FC<TemplateProps> = ({ menu }) => {
           <section id={`medina-section-${sectionIndex}`} key={section.id} className="mb-12 scroll-mt-20 rounded-sm border border-[#d8c8a5] bg-[#fbf8f0] px-5 py-7 shadow-[0_8px_30px_rgba(53,43,34,.06)] sm:px-9 sm:py-9">
             <div className="mb-6 text-center">
               <p className="mb-2 text-[10px] font-bold uppercase tracking-[0.3em] text-[#1e6b70]">{localizedMenuText(menu.originalLanguage, 'Menu', 'Carte', 'قائمة الطعام')} · {String(sectionIndex + 1).padStart(2, '0')}</p>
-              <PreviewHeading as="h2" target={{ kind: 'section', sectionId: section.id }} editLabel={`Edit section ${section.name} in preview`} className="font-serif text-3xl font-semibold sm:text-4xl" style={{ color: customization.primaryColor }}>{section.name}</PreviewHeading>
+              <SectionPhoto menu={menu} section={section} /><PreviewHeading as="h2" target={{ kind: 'section', sectionId: section.id }} editLabel={`Edit section ${section.name} in preview`} className="font-serif text-3xl font-semibold sm:text-4xl" style={{ color: customization.primaryColor }}>{section.name}</PreviewHeading>
               {customization.showDescriptions && section.description && <p className="mx-auto mt-2 max-w-2xl text-sm italic leading-relaxed text-[#74685a]">{section.description}</p>}
               <div className="mx-auto mt-4 h-px w-20 bg-[#c98b48]" />
             </div>

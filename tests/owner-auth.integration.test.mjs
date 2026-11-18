@@ -247,10 +247,11 @@ test('all registered designs preserve the owner menu and an unknown design canno
   const original = {
     id: 'stable-template-menu', restaurantName: 'Atlas Registry Kitchen', description: 'Owner-supplied menu',
     sections: [{ id: 'section', name: 'Dinner', order: 0,
-      subsections: [{ id: 'subsection', name: 'Tagines', order: 0 }],
-      items: [{ id: 'dish', subsectionId: 'subsection', name: 'Vegetable tagine', price: 72, currency: 'MAD', available: false }],
+      subsections: [{ id: 'subsection', name: 'Tagines', order: 0, hidden: false }],
+      image: 'data:image/png;base64,c2VjdGlvbg==', imagePresentation: { placement: 'heading-side', focalX: 25, focalY: 75 }, hidden: false,
+      items: [{ id: 'dish', subsectionId: 'subsection', name: 'Vegetable tagine', price: 72, currency: 'MAD', available: false, hidden: true, image: 'data:image/png;base64,ZGlzaA==', imagePresentation: { placement: 'thumbnail', fit: 'cover', focalX: 10, focalY: 90 } }],
     }],
-    customization: { primaryColor: '#123456', secondaryColor: '#654321', fontFamily: 'Georgia, serif', logoImage: 'data:image/png;base64,ZmFrZQ==', showImages: false, showPrices: true, showDescriptions: true },
+    customization: { primaryColor: '#123456', secondaryColor: '#654321', fontFamily: 'Georgia, serif', logoImage: 'data:image/png;base64,ZmFrZQ==', logoSize: 80, logoPresentation: { fit: 'contain', hidden: false }, bannerImage: 'data:image/png;base64,YmFubmVy', bannerPresentation: { placement: 'below', focalY: 60 }, showImages: false, showPrices: true, showDescriptions: true },
   };
   let saved;
   for (const template of ['classic', 'modern', 'minimal', 'medina-cafe', 'moroccan-fine-dining', 'modern-moroccan-garden', 'atlas-simple']) {
@@ -270,6 +271,10 @@ test('all registered designs preserve the owner menu and an unknown design canno
     const published = (await (await fetch(`${appUrl}/api/menus/${saved.id}`)).json()).menu;
     const { ownerId: _ownerId, ...expectedPublic } = saved;
     assert.deepEqual(published, expectedPublic);
+  }
+  for (const imagePresentation of [{ focalX: -1 }, { focalY: 101 }, { placement: ['thumbnail'] }, { hidden: 'true' }]) {
+    const response = await fetch(`${appUrl}/api/menus/current`, { method: 'POST', headers, body: JSON.stringify({ ...saved, sections: [{ ...saved.sections[0], imagePresentation }] }) });
+    assert.equal(response.status, 400, 'invalid image metadata is rejected');
   }
   for (const template of ['missing-template', 'constructor']) {
     const response = await fetch(`${appUrl}/api/menus/current`, {

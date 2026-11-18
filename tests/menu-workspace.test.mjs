@@ -480,3 +480,32 @@ test('logo and banner controls stay independent and undo retains both sources', 
   await act(() => container.querySelector('[aria-label="Edit restaurant banner in preview"]').click());
   assert.equal(document.activeElement.getAttribute('data-editor-image-control'),'banner');
 });
+
+
+test('section photos survive duplication, reordering, hiding and undo', async () => {
+  const menu = structuredClone(initialMenu); menu.sections[0].image = 'data:image/png;base64,section';
+  menu.sections[0].imagePresentation = { placement: 'heading-side', focalX: 30 };
+  let saved;
+  await mount(async value => { saved = value; return value; }, menu);
+  await click('Duplicate section Dinner'); await click('Move section Dinner (copy) up');
+  await click('Hide section Dinner');
+  assert.equal(container.querySelectorAll('[aria-label="Edit section photo for Dinner in preview"]').length,0);
+  assert.ok(container.querySelector('[aria-label="Edit section photo for Dinner (copy) in preview"]'));
+  await click('Save menu');
+  assert.equal(saved.sections[0].image,'data:image/png;base64,section');
+  assert.equal(saved.sections[0].imagePresentation.focalX,30);
+  await act(() => container.querySelector('[aria-label="Edit section photo for Dinner (copy) in preview"]').click());
+  assert.equal(document.activeElement.getAttribute('data-editor-image-control'),'section');
+  await click('Remove section photo'); await click('Undo menu change');
+  assert.ok(container.querySelector('[aria-label="Edit section photo for Dinner (copy) in preview"]'));
+});
+
+
+test('dropping the last dish on its own group does not create a history step', async () => {
+  const menu = structuredClone(initialMenu);
+  menu.sections[0].items.push({ id:'tea',name:'Tea',price:20,currency:'MAD',available:true });
+  await mount(async value => value,menu); await click('Expand Dinner');
+  const transfer = { getData: () => JSON.stringify({type:'item',sectionId:'dinner',itemId:'vegetable'}) };
+  await act(() => { const drop = new window.Event('drop',{bubbles:true}); Object.defineProperty(drop,'dataTransfer',{value:transfer}); button('Edit subsection Tagines').parentElement.dispatchEvent(drop); });
+  assert.equal(button('Undo menu change').disabled,true);
+});

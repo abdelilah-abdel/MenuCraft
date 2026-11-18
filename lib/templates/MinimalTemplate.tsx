@@ -1,3 +1,4 @@
+import { SectionPhoto } from './SectionPhoto';
 import { RestaurantLogo, RestaurantBanner } from './RestaurantImages';
 import React from 'react';
 import { Menu, MenuItem as MenuItemType } from '../types/menu';
@@ -25,7 +26,7 @@ export const MinimalTemplate: React.FC<TemplateProps> = ({ menu }) => {
         {sections.map((section) => (
           <section key={section.id}>
             <header className="mb-7">
-              <PreviewHeading as="h2" target={{ kind: 'section', sectionId: section.id }} editLabel={`Edit section ${section.name} in preview`} className="text-xl font-medium uppercase tracking-[0.22em]" style={{ color: customization.primaryColor }}>{section.name}</PreviewHeading>
+              <SectionPhoto menu={menu} section={section} /><PreviewHeading as="h2" target={{ kind: 'section', sectionId: section.id }} editLabel={`Edit section ${section.name} in preview`} className="text-xl font-medium uppercase tracking-[0.22em]" style={{ color: customization.primaryColor }}>{section.name}</PreviewHeading>
               {customization.showDescriptions && section.description && <p className="mt-2 text-sm font-light text-gray-500">{section.description}</p>}
             </header>
             <div className="space-y-8">

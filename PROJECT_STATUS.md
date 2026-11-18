@@ -17,10 +17,21 @@
 - Phase 1, Step 1 is in progress. Ticket 01 is complete: Atlas Simple uses a validated composition of reusable header, section/subsection, and dish blocks. The six legacy templates retain their existing renderers for compatibility.
 - Ticket 02 is complete: the owner workspace has a collapsible outline, focused detail forms, persistent desktop Live Preview with independent scrolling and view-only fit/zoom, mobile edit/preview switching, and explicit save/failure status.
 - Ticket 03 is complete: visible restaurant, section/subsection, dish, logo, dish photo, and dish-sourced hero areas in all seven Live Preview designs open ID-matched editor controls. Selection has keyboard actions and visible markers while Published Menus remain clean.
+- Tickets 04–09 are complete: nested lifecycle and visibility, movement into groups, complete content rendering, reusable photo controls, independent logo/banner, and section photo slots. Screenshots were captured for every ticket.
 - Server menu validation now uses the template registry as its allowlist, so registered config-only templates can be saved.
 - Persistence is still file-backed JSON and intended for one durable app instance. No relational database migration has been done.
 
 ## Latest changes
+
+### Ticket 09 and requested 04–09 sequence completed — 2026-11-18
+
+- Added optional section photo content/presentation with registry-declared banner/heading-side layouts across all seven templates. Reused image validation, upload feedback, replace/remove, fit/focal/visibility and existing history/persistence. Stable sections carry photo metadata through duplication/reorder/hiding. Custom registries pass active capabilities to the photo component.
+- Fixed an existing unlayered `img { height: auto }` default that overrode intended photo dimensions; image sizing now follows template utilities, including deliberate crop boxes. Refreshed the ticket 07 desktop screenshot after correcting the capture viewport.
+- Final verification: `npx tsc --noEmit`, `npm run build`, and `npm test` all passed, with **34 tests** (26 workspace, 6 renderer, 2 HTTP integration). Integration checks preserve section/dish photos, hidden content, logo/banner settings across all seven saved IDs and reject invalid focal/placement values. The suite also covers duplicate IDs/remapping, sold out vs hidden, grouped movement/no-op history, photo failure/source preservation, independent header slots, custom registry photos and section-photo history.
+- Browser used isolated disposable data. Saved independent logo/banner and two section images; checked desktop and mobile editor previews after each ticket. Actual public output at 390px showed the section photo/heading without horizontal overflow or editor markers; no browser errors were reported in the final pages. Evidence: [04 desktop](.scratch/template-engine/evidence/04-lifecycle-desktop.jpg), [05 desktop](.scratch/template-engine/evidence/05-movement-desktop.jpg), [06 desktop](.scratch/template-engine/evidence/06-content-desktop.jpg), [07 desktop](.scratch/template-engine/evidence/07-dish-photo-desktop.jpg), [08 desktop](.scratch/template-engine/evidence/08-header-images-desktop.jpg), [09 desktop](.scratch/template-engine/evidence/09-section-photo-desktop.jpg), [09 public mobile](.scratch/template-engine/evidence/09-public-mobile.jpg). Matching mobile images for all six tickets are in the same evidence directory.
+- Standards/spec reviews ran for every ticket. Findings about subsection removal, no-op drops, truthful empty states/template facts, hero crops, validation, logo compatibility and active photo capabilities were fixed. Photo uploads remain the existing base64/JSON storage with a 2MB per-file limit; large aggregate menu payloads remain a constraint of this architecture. Legacy dish placement stays fixed until individual migrations; Atlas offers all three choices. Arabic typography and print/PDF are not qualified. Existing non-blocking build notices remain.
+- Next: ticket 10 overall appearance, followed by 11–14 and the individually blocked legacy migrations. Tickets 01–09 are resolved. Normal-data dev server is restored on port 3000 after verification.
+
 
 ### Ticket 08 — logo and banner completed — 2026-11-18
 
@@ -126,13 +137,13 @@
 
 - `npx tsc --noEmit` — passed.
 - `npm run build` — passed.
-- `npm test` — all 26 tests passed, including preview selection DOM cases and temporary isolated HTTP storage.
+- `npm test` — all 34 tests passed, including lifecycle/movement/image DOM cases, rendering and temporary isolated HTTP storage.
 - Browser: desktop and 390px mobile selection, hero photo and editor focus, and published route separation — passed with no browser alerts or horizontal page overflow. Browser fixtures used an isolated directory outside the owner's data.
 - Review: standards/spec findings fixed and re-reviewed without remaining blockers. Passing source items directly to photo targets instead of looking them up by object identity is an optional future maintenance improvement.
 
 ## Next
 
-1. Tickets 01–03 are resolved. The unblocked frontier is 04, 05, 06, 07, and 10 in the [approved 21-ticket plan](.scratch/template-engine/spec.md). Continue with [04 — menu entry lifecycle](.scratch/template-engine/issues/04-menu-entry-lifecycle.md) for the next editing step, or choose another unblocked ticket.
+1. Tickets 01–09 are resolved. Continue with [10 — overall appearance](.scratch/template-engine/issues/10-menu-wide-appearance.md) in the [approved 21-ticket plan](.scratch/template-engine/spec.md); 11–14 and individual migrations follow their blockers.
 2. Complete the approved shared editor/engine behaviors and convert the six legacy templates individually when their blockers are complete, preserving IDs and visual/behavior parity. Keep specialized hooks only where configuration cannot express the design cleanly.
 3. Grow the template library in quality-reviewed batches, starting with Morocco-relevant restaurant types and styles.
 4. Build Playwright PDF export from the shared renderer (A4/A5 first, then pagination and multi-page output).

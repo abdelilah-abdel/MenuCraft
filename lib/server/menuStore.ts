@@ -52,6 +52,7 @@ function isMenuSection(value: unknown): value is MenuSection {
     typeof value.name === 'string' &&
     (value.hidden === undefined || typeof value.hidden === 'boolean') &&
     typeof value.order === 'number' && Number.isFinite(value.order) &&
+    (value.image === undefined || typeof value.image === 'string') && isImagePresentation(value.imagePresentation) &&
     Array.isArray(value.items) && value.items.every(isMenuItem) &&
     (value.subsections === undefined || (Array.isArray(value.subsections) && value.subsections.every(isMenuSubsection))) &&
     (value.description === undefined || typeof value.description === 'string');

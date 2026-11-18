@@ -88,6 +88,8 @@ test('one template definition makes a new preset discoverable and renders its ow
   assert.equal(options.find((option) => option.id === 'fixture-noir').name, 'Fixture Noir');
   assert.equal(options.find((option) => option.id === 'fixture-noir').category, 'Café');
   const Template = rendering.getTemplate('fixture-noir', registry);
+  const photographed = structuredClone(menu); photographed.sections[0].image = 'data:image/png;base64,c2VjdGlvbg==';
+  assert.match(renderToStaticMarkup(React.createElement(Template, { menu: { ...photographed, template: 'fixture-noir' } })), /Lunch photo/);
   const html = renderToStaticMarkup(
     React.createElement(Template, { menu: { ...menu, template: 'fixture-noir' } })
   );

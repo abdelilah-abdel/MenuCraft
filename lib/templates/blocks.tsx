@@ -1,3 +1,4 @@
+import { SectionPhoto } from './SectionPhoto';
 import { RestaurantLogo, RestaurantBanner } from './RestaurantImages';
 import React from 'react';
 import type { Menu, MenuItem, MenuSection, MenuSubsection } from '../types/menu';
@@ -66,7 +67,7 @@ export function MenuSectionsBlock({ menu, config }: MenuBlockProps) {
   );
 }
 
-export function SectionHeadingBlock({ section, config, showDescriptions }: { section: MenuSection; config: TemplateConfig; showDescriptions: boolean }) {
+export function SectionHeadingBlock({ menu, section, config, showDescriptions }: { menu: Menu; section: MenuSection; config: TemplateConfig; showDescriptions: boolean }) {
   const { theme, layout } = config;
   return (
     <header
@@ -74,6 +75,7 @@ export function SectionHeadingBlock({ section, config, showDescriptions }: { sec
       style={layout.showSectionRules ? { borderBottom: `1px solid ${theme.primaryColor}` } : undefined}
     >
       <div>
+        <SectionPhoto menu={menu} section={section} placements={config.sectionPhotoPlacements} />
         <PreviewHeading
           as="h2"
           target={{ kind: 'section', sectionId: section.id }}
@@ -123,7 +125,7 @@ function MenuSectionBlock({
   const { layout } = config;
   return (
     <section aria-labelledby={`config-section-${section.id}`}>
-      <SectionHeadingBlock section={section} config={config} showDescriptions={menu.customization.showDescriptions} />
+      <SectionHeadingBlock menu={menu} section={section} config={config} showDescriptions={menu.customization.showDescriptions} />
 
       {getMenuSectionGroups(section).map((group) => (
         <div key={group.subsection?.id || 'all'} className="mb-4 last:mb-0">

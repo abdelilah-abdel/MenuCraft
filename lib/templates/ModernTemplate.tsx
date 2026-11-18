@@ -1,3 +1,4 @@
+import { SectionPhoto } from './SectionPhoto';
 import { RestaurantLogo, RestaurantBanner } from './RestaurantImages';
 import React from 'react';
 import { Menu, MenuItem as MenuItemType } from '../types/menu';
@@ -27,7 +28,7 @@ export const ModernTemplate: React.FC<TemplateProps> = ({ menu }) => {
         {sections.map((section) => (
           <section key={section.id} className="mb-14">
             <header className="mb-7">
-              <PreviewHeading as="h2" target={{ kind: 'section', sectionId: section.id }} editLabel={`Edit section ${section.name} in preview`} className="text-3xl font-bold sm:text-4xl" style={{ color: customization.primaryColor }}>{section.name}</PreviewHeading>
+              <SectionPhoto menu={menu} section={section} /><PreviewHeading as="h2" target={{ kind: 'section', sectionId: section.id }} editLabel={`Edit section ${section.name} in preview`} className="text-3xl font-bold sm:text-4xl" style={{ color: customization.primaryColor }}>{section.name}</PreviewHeading>
               {customization.showDescriptions && section.description && <p className="mt-2 text-gray-400">{section.description}</p>}
               <div className="mt-4 h-1 w-20" style={{ backgroundColor: customization.primaryColor }} />
             </header>

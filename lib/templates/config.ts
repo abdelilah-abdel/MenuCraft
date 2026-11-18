@@ -19,6 +19,7 @@ const legacyTheme = (
 export const TEMPLATE_CONFIGS = defineTemplateRegistry({
   classic: {
     id: 'classic',
+    sectionPhotoPlacements: ['banner', 'heading-side'],
     headerImagePlacements: { defaultLogoSize: 96, logo: ['above'], banner: ['above', 'below'] },
     dishPhotoPlacements: ['thumbnail'],
     name: 'Classic',
@@ -36,6 +37,7 @@ export const TEMPLATE_CONFIGS = defineTemplateRegistry({
   },
   modern: {
     id: 'modern',
+    sectionPhotoPlacements: ['banner', 'heading-side'],
     headerImagePlacements: { defaultLogoSize: 80, logo: ['above'], banner: ['above', 'below'] },
     dishPhotoPlacements: ['card-top'],
     name: 'Modern',
@@ -53,6 +55,7 @@ export const TEMPLATE_CONFIGS = defineTemplateRegistry({
   },
   minimal: {
     id: 'minimal',
+    sectionPhotoPlacements: ['banner', 'heading-side'],
     headerImagePlacements: { defaultLogoSize: 64, logo: ['above'], banner: ['above', 'below'] },
     dishPhotoPlacements: ['text-side'],
     name: 'Minimal',
@@ -70,6 +73,7 @@ export const TEMPLATE_CONFIGS = defineTemplateRegistry({
   },
   'medina-cafe': {
     id: 'medina-cafe',
+    sectionPhotoPlacements: ['banner', 'heading-side'],
     headerImagePlacements: { defaultLogoSize: 64, logo: ['above'], banner: ['above', 'below'] },
     dishPhotoPlacements: ['thumbnail'],
     name: 'Medina Café',
@@ -88,6 +92,7 @@ export const TEMPLATE_CONFIGS = defineTemplateRegistry({
   },
   'moroccan-fine-dining': {
     id: 'moroccan-fine-dining',
+    sectionPhotoPlacements: ['banner', 'heading-side'],
     headerImagePlacements: { defaultLogoSize: 64, logo: ['above'], banner: ['above', 'below'] },
     dishPhotoPlacements: ['card-top'],
     name: 'Moroccan Fine Dining',
@@ -105,6 +110,7 @@ export const TEMPLATE_CONFIGS = defineTemplateRegistry({
   },
   'modern-moroccan-garden': {
     id: 'modern-moroccan-garden',
+    sectionPhotoPlacements: ['banner', 'heading-side'],
     headerImagePlacements: { defaultLogoSize: 64, logo: ['above'], banner: ['above', 'below'] },
     dishPhotoPlacements: ['card-top'],
     name: 'Modern Moroccan Garden',
@@ -122,6 +128,7 @@ export const TEMPLATE_CONFIGS = defineTemplateRegistry({
   },
   'atlas-simple': {
     id: 'atlas-simple',
+    sectionPhotoPlacements: ['banner', 'heading-side'],
     headerImagePlacements: { defaultLogoSize: 64, logo: ['above'], banner: ['above', 'below'] },
     dishPhotoPlacements: ['thumbnail', 'text-side', 'card-top'],
     name: 'Atlas Simple',

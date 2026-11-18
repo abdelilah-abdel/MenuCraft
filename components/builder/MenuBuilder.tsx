@@ -61,9 +61,9 @@ export const MenuBuilder: React.FC<MenuBuilderProps> = ({
     if (view !== 'content') return;
     if (selection) {
       const editor = detailHeading.current?.closest<HTMLElement>('[aria-label="Menu editor"]');
-      if ('focus' in selection && (selection.focus === 'image' || selection.focus === 'banner')) {
+      if ('focus' in selection && (selection.focus === 'image' || selection.focus === 'banner' || selection.focus === 'section-image')) {
         const imageControl = editor?.querySelector<HTMLInputElement>(
-          `[data-editor-image-control="${selection.kind === 'restaurant' ? selection.focus === 'banner' ? 'banner' : 'restaurant' : 'item'}"]`
+          `[data-editor-image-control="${selection.kind === 'restaurant' ? selection.focus === 'banner' ? 'banner' : 'restaurant' : selection.kind === 'section' ? 'section' : 'item'}"]`
         );
         imageControl?.focus({ preventScroll: true });
         if (editor && imageControl) {
@@ -633,6 +633,8 @@ export const MenuBuilder: React.FC<MenuBuilderProps> = ({
                       rows={2}
                     />
 
+                    <ImageSlotEditor key={section.id} label="Section photo" image={section.image} settings={section.imagePresentation} placements={getTemplateConfig(menu.template).sectionPhotoPlacements} focusTarget="section" onChange={(image, imagePresentation) => updateSection(section.id, { image, imagePresentation })} />
+
                     <Button
                       type="button"
                       variant="outline"
@@ -1150,7 +1152,7 @@ export const MenuBuilder: React.FC<MenuBuilderProps> = ({
                       className="w-5 h-5 text-menu-stamp-600 rounded border border-menu-ink-300/60 focus:ring-2 focus:ring-menu-stamp-500"
                     />
                     <div>
-                      <span className="text-sm font-semibold text-menu-ink-900 block">Show Images</span>
+                      <span className="text-sm font-semibold text-menu-ink-900 block">Show dish images</span>
                       <span className="text-xs text-menu-ink-600">Display item photos</span>
                     </div>
                   </label>

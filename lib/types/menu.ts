@@ -33,6 +33,8 @@ export interface MenuSubsection {
 }
 
 export interface MenuSection {
+  image?: string;
+  imagePresentation?: ImagePresentation;
   id: string;
   name: string;
   hidden?: boolean;

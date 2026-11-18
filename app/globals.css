@@ -427,11 +427,8 @@ h1, h2, h3, h4, h5, h6, p {
    RESPONSIVE UTILITIES
    ============================================ */
 
-img,
-video,
-canvas {
-  max-width: 100%;
-  height: auto;
+@layer base {
+  img, video, canvas { max-width: 100%; height: auto; }
 }
 
 @media (max-width: 640px) {
@@ -564,5 +561,7 @@ canvas {
 .menu-content { overflow-wrap: anywhere; }
 .menu-content :where(article,section,header,h1,h2,h3,p,div) { min-width: 0; }
 .menu-content :where(h1,h2,h3,p) { white-space: normal; }
-.menu-content img { max-width: 100%; }
+@layer base { .menu-content img { max-width: 100%; } }
 .menu-content article > div > div:has(> h3) { flex-wrap: wrap; }
+
+.menu-content :where(div,header):has(> img[data-section-photo]) { display: flow-root; }

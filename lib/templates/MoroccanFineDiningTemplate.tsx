@@ -1,3 +1,4 @@
+import { SectionPhoto } from './SectionPhoto';
 import { RestaurantLogo, RestaurantBanner } from './RestaurantImages';
 import React from 'react';
 import { imageStyle } from '../imagePresentation';
@@ -63,7 +64,7 @@ export const MoroccanFineDiningTemplate: React.FC<TemplateProps> = ({ menu }) =>
             <div className="mb-7 flex items-end gap-4 border-b border-[#d6c9b6] pb-4">
               <div>
                 <p className="mb-2 text-[10px] uppercase tracking-[0.32em] text-[#9a7844]">{localizedMenuText(menu.originalLanguage, 'Selection', 'Sélection', 'اختيار')} · {String(sectionIndex + 1).padStart(2, '0')}</p>
-                <PreviewHeading as="h2" target={{ kind: 'section', sectionId: section.id }} editLabel={`Edit section ${section.name} in preview`} className="font-serif text-3xl font-medium sm:text-4xl" style={{ color: customization.primaryColor }}>{section.name}</PreviewHeading>
+                <SectionPhoto menu={menu} section={section} /><PreviewHeading as="h2" target={{ kind: 'section', sectionId: section.id }} editLabel={`Edit section ${section.name} in preview`} className="font-serif text-3xl font-medium sm:text-4xl" style={{ color: customization.primaryColor }}>{section.name}</PreviewHeading>
                 {customization.showDescriptions && section.description && <p className="mt-2 max-w-2xl text-sm leading-relaxed text-[#716c65]">{section.description}</p>}
               </div>
               <span aria-hidden="true" className="mb-2 hidden h-px flex-1 bg-[#d6c9b6] sm:block" />
