@@ -5,9 +5,11 @@ import { useSearchParams } from 'next/navigation';
 import type { Menu } from '@/lib/types/menu';
 import { MenuService } from '@/lib/services/menuService';
 import { MenuWorkspace } from '@/components/builder/MenuWorkspace';
+import { MenuCompositionPrototype } from '@/components/builder/prototype/MenuCompositionPrototype';
 
 function BuilderContent() {
-  const menuId = useSearchParams().get('id');
+  const searchParams = useSearchParams();
+  const menuId = searchParams.get('id');
   const [loaded, setLoaded] = useState<{ menu: Menu; initiallyPublished: boolean } | null>(null);
   const [isLoadingWorkspace, setIsLoadingWorkspace] = useState(true);
   const [workspaceError, setWorkspaceError] = useState('');
@@ -63,6 +65,7 @@ function BuilderContent() {
         </div>
       </div>
     );
+  if (process.env.NODE_ENV !== 'production' && searchParams.get('prototype') === 'composition') return <MenuCompositionPrototype />;
   return (
     <MenuWorkspace
       key={loaded.menu.id}

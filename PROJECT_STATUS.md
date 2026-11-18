@@ -3,7 +3,7 @@
 > **Always update this file before finishing a development task.** Record the active branch, what changed, checks run, decisions/risks, and the next concrete step. Keep `idea.md` as the product vision; this file is the execution log and handoff.
 
 **Last updated:** 2026-11-18
-**Current branch:** `feat/template-engine-roadmap`  
+**Current branch:** `codex/menu-composition-proof`
 **Product source of truth:** [`idea.md`](./idea.md)  
 **Build order and accepted decisions:** [`docs/IMPLEMENTATION_ROADMAP.md`](./docs/IMPLEMENTATION_ROADMAP.md)  
 **Chosen app chrome design:** Direction B — The Wall ([design notes](./design-lab/NOTES.md))
@@ -24,6 +24,16 @@
 - Persistence is still file-backed JSON and intended for one durable app instance. No relational database migration has been done.
 
 ## Latest changes
+
+### Reference-driven composition proof — awaiting owner review — 2026-11-18
+
+- The owner supplied seven menu references and questioned whether the current template engine can express their visual range simply. They chose “Build a visual proof first” before revising the engine specification/tickets. This is a design study, not ticket 15 or a production engine migration.
+- Isolated on `codex/menu-composition-proof`, based on `bc11dae`. Review at `/prototype/menu-composition?variant=tiles` or `?variant=coffee`; the authenticated builder can also mount it with `?prototype=composition`. The standalone review route contains only sample data. Both entry points are disabled in production. The real builder's auth and menu APIs are unchanged.
+- Seven reference-inspired presets use four distinct composition families: editorial lists (bakery/diner/illustrated café), alternating photo features (outlined rows/wave), poster tiles and a mixed-width coffee catalogue. Shared in-memory sample content feeds each composition. Design/Content/Blocks controls support click-to-edit names/descriptions/prices, adding/hiding items, section grouping/order, photo visibility/demo photo swaps, colors, compact spacing, decorative badges, Undo/Redo and a reference comparison. URL variant switching and a floating previous/next control make directions reviewable.
+- This proof deliberately is not a production template registry integration. Photos are SVG display crops from the owner's supplied reference images, not a production cutout/asset pipeline. Original reference graphics appear only in the labeled comparison. Local Anton, Shrikhand and Amatic SC fonts and their OFL licenses came from the official Google Fonts repository. Decoration is simplified, sample content is illustrative, state resets on reload, and no save/publish API is called. The seven original references remain intact as local study assets.
+- Checks: TypeScript and production build passed. No new tests were written or full suite rerun, following the throwaway prototype workflow. Browser checked all seven desktop directions while keeping ten dishes, name/price edits across composition switching, Undo/Redo, mobile preview/editor switching, hiding/restoring a dish, and section movement/restoration with eleven coffee items. Desktop/page and mobile canvas had no measured horizontal overflow; mobile's observed viewport was 354px. No final browser errors were recorded. Screenshot evidence is in `.scratch/template-engine/evidence/composition-proof/` (01–07 desktop and 07 mobile).
+- Demonstrated: richer composition rules and clear editing controls can produce recognizably different designs from one content state. Not yet decided: which visual treatments meet the owner's fidelity expectations, which reusable primitives should enter the production schema, production photo/decorative assets, or any revised ticket dependencies. Print/PDF and Arabic typography remain unqualified.
+- Next: owner reviews the live proof and identifies accepted treatments/differences. Translate that feedback into a proposed engine extension before proceeding with Classic migration. Existing approved tickets and dependencies remain unchanged.
 
 ### Ticket 14 and requested 13–14 sequence completed — 2026-11-18
 
@@ -179,7 +189,7 @@
 
 ## Next
 
-1. Tickets 01–14 are resolved. Continue with [15 — migrate Classic](.scratch/template-engine/issues/15-migrate-classic.md) in the [approved 21-ticket plan](.scratch/template-engine/spec.md); the remaining individual migrations follow their blockers.
+1. Review the seven-direction composition proof on `codex/menu-composition-proof` before choosing the next implementation scope. Tickets 01–14 remain resolved; [15 — migrate Classic](.scratch/template-engine/issues/15-migrate-classic.md) remains the next numbered ticket in the [approved 21-ticket plan](.scratch/template-engine/spec.md); the remaining individual migrations follow their blockers.
 2. Complete the approved shared editor/engine behaviors and convert the six legacy templates individually when their blockers are complete, preserving IDs and visual/behavior parity. Keep specialized hooks only where configuration cannot express the design cleanly.
 3. Grow the template library in quality-reviewed batches, starting with Morocco-relevant restaurant types and styles.
 4. Build Playwright PDF export from the shared renderer (A4/A5 first, then pagination and multi-page output).

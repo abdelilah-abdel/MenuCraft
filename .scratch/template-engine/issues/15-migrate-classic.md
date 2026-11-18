@@ -30,3 +30,5 @@ Open a saved Classic menu in the shared editor, compare its old/new desktop and 
 ## Comments
 
 - Approved by the owner on 2026-11-17 as part of the revised 21-ticket template-engine and editor plan. Implementation has not started.
+
+- 2026-11-18 context: before starting this migration, the owner requested a visual proof based on seven newly supplied references. Captured on branch `codex/menu-composition-proof` (base `bc11dae`), review route `/prototype/menu-composition?variant=tiles`, source `components/builder/prototype/`, and comparison screenshots in `../evidence/composition-proof/`. It demonstrates four composition families with independent editable sample content. The owner's visual verdict and any proposed engine/ticket revision are pending; this ticket's approved scope/dependencies/status have not changed.
