@@ -80,7 +80,7 @@ function TemplateCard({ template, selected, onSelect, onUseSample }: { template:
   return (
     <article className={`group relative flex h-full flex-col border-[1.5px] border-menu-ink-900 bg-menu-paper-50 p-4 transition sm:p-5 ${selected ? 'border-menu-stamp-500 ring-2 ring-menu-stamp-500/30' : 'hover:bg-menu-paper-100'}`}>
       {selected && <span className="absolute right-3 top-3 z-10 flex h-8 w-8 items-center justify-center bg-menu-stamp-500 text-white" aria-label="Selected template">✓</span>}
-      <button type="button" aria-pressed={selected} onClick={() => onSelect(template)} className="flex flex-1 flex-col text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-menu-stamp-500">
+      <button type="button" aria-label={`Use ${info.name} design`} aria-pressed={selected} onClick={() => onSelect(template)} className="flex flex-1 flex-col text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-menu-stamp-500">
         <div className="mb-4 flex items-start justify-between gap-3 pr-8">
           <div><span className={`mb-2 inline-flex px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider ${info.category === 'Moroccan' ? 'bg-menu-stamp-50 text-menu-stamp-600 border border-menu-stamp-500' : 'bg-menu-paper-200 text-menu-ink-600 border border-menu-ink-300'}`}>{info.category}</span><h4 className="font-display text-xl font-bold text-menu-ink-900">{info.name}</h4></div>
         </div>

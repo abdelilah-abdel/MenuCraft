@@ -24,6 +24,12 @@
 
 ## Latest changes
 
+### Ticket 13 — safe template switching completed — 2026-11-18
+
+- Added registry-based compatibility notices in Templates/Customize. Supported owner choices carry across; unsupported styles, layouts and photo placements stay saved with explicit fallback explanations. Returning to Atlas restores them. Explicit style/layout reset keeps appearance/content/photos and uses the same Editor History. Template selection still changes only its ID; sample replacement remains separate.
+- TypeScript/build and 30 workspace tests passed, including preservation of content/IDs/photos/Availability/earlier edits and save/reset/Undo/Redo. Browser keyboard-selected Minimal, saved/reloaded and returned to Atlas at the same public link; mobile notices had no horizontal overflow. Screenshots: `13-switching-desktop.jpg` / `13-switching-mobile.jpg`.
+- Standards review: no hard violations; optional future consolidation of compatibility checks with renderer resolution. Spec review: no static gaps. Full batch checks continue with ticket 14. Next: renderer-backed gallery/examples and a composed preset.
+
 ### Ticket 12 and requested 10–12 sequence completed — 2026-11-18
 
 - Added registry-declared Atlas layouts with one/two/three columns, permitted section regions, compact/comfortable/airy spacing and start/center alignment. The header stays full width. Placement changes only design settings; canonical content order, IDs and photos stay intact. Section deletion prunes stale references within the same undoable update; duplication copies explicit placement. API validation rejects dangling/out-of-range regions, arbitrary positioning and unsupported style values.
@@ -163,7 +169,7 @@
 
 ## Next
 
-1. Tickets 01–12 are resolved. Continue with [13 — safe template switching](.scratch/template-engine/issues/13-safe-template-switching.md) in the [approved 21-ticket plan](.scratch/template-engine/spec.md); gallery/preset authoring and individual migrations follow their blockers.
+1. Tickets 01–13 are resolved. Continue with [14 — gallery and presets](.scratch/template-engine/issues/14-gallery-and-template-presets.md) in the [approved 21-ticket plan](.scratch/template-engine/spec.md); gallery/preset authoring and individual migrations follow their blockers.
 2. Complete the approved shared editor/engine behaviors and convert the six legacy templates individually when their blockers are complete, preserving IDs and visual/behavior parity. Keep specialized hooks only where configuration cannot express the design cleanly.
 3. Grow the template library in quality-reviewed batches, starting with Morocco-relevant restaurant types and styles.
 4. Build Playwright PDF export from the shared renderer (A4/A5 first, then pagination and multi-page output).

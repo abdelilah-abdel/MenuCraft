@@ -9,6 +9,7 @@ import { createSampleMenuSections, type SampleTemplateType } from '@/lib/templat
 import { MenuBuilder } from './MenuBuilder';
 import { MenuPreviewPane } from './MenuPreviewPane';
 import { TemplateSelector } from './TemplateSelector';
+import { DesignCompatibilityNotice } from './DesignCompatibilityNotice';
 import { QRCodeDisplay } from '../preview/QRCodeDisplay';
 import { Button } from '../ui/Button';
 import { pruneLayoutReferences } from '@/lib/menuDesign';
@@ -225,6 +226,7 @@ export function MenuWorkspace({
           aria-label="Menu editor"
           className={`min-h-0 min-w-0 overflow-y-auto p-4 sm:p-6 ${mobilePane === 'edit' ? 'block' : 'hidden'} lg:block`}
         >
+          {(view === 'template' || view === 'customize') && <DesignCompatibilityNotice menu={menu} onReset={() => update(current => ({ ...current, design: { ...current.design, componentStyles: undefined, layout: undefined } }))} />}
           <div hidden={view !== 'content' && view !== 'customize'}>
             <MenuBuilder
               menu={menu}

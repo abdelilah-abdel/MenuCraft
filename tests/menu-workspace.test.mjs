@@ -562,3 +562,29 @@ test('layout regions move sections without changing content order and deletion p
   await click('Undo menu change');
   assert.match(container.querySelector('[data-menu-region="column-2"]').textContent,/Vegetable tagine/);
 });
+
+
+test('template switching retains content and dormant choices through reset, save and history', async () => {
+  const menu=structuredClone(initialMenu); menu.template='atlas-simple';
+  menu.design={appearance:{primaryColor:'#174f54'},componentStyles:{dishes:'outlined'},layout:{columns:3,sectionRegions:{dinner:'column-3'}}};
+  menu.sections[0].items[0].image='data:image/png;base64,photo';
+  menu.sections[0].items[0].imagePresentation={placement:'card-top',focalX:25};
+  menu.sections[0].items[0].available=false;
+  let saved;
+  await mount(async value=>{saved=structuredClone(value);return value;},menu);
+  await click('Edit restaurant information'); await fill('Restaurant Name *','My kitchen');
+  await click('Templates'); await click('Use Minimal design');
+  assert.match(container.textContent,/Saved choices/);
+  assert.match(container.textContent,/Dish photos.*card-top.*text-side/);
+  await click('Save menu');
+  assert.equal(saved.template,'minimal'); assert.equal(saved.restaurantName,'My kitchen');
+  assert.equal(saved.id,menu.id); assert.deepEqual(saved.sections,menu.sections);
+  assert.deepEqual(saved.design,menu.design); assert.deepEqual(saved.customization,menu.customization);
+  await click('Reset saved style and layout choices'); await click('Save menu');
+  assert.equal(saved.design.layout,undefined); assert.deepEqual(saved.design.appearance,menu.design.appearance);
+  await click('Undo menu change'); await click('Save menu'); assert.deepEqual(saved.design,menu.design);
+  await click('Undo menu change'); await click('Save menu'); assert.equal(saved.template,'atlas-simple');
+  await click('Redo menu change'); await click('Save menu'); assert.equal(saved.template,'minimal');
+  await click('Use Atlas Simple design');
+  assert.ok(container.querySelector('[data-menu-region="column-3"] [data-dish-treatment="outlined"]'));
+});
