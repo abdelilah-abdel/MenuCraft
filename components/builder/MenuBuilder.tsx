@@ -59,9 +59,22 @@ export const MenuBuilder: React.FC<MenuBuilderProps> = ({
   useEffect(() => {
     if (view !== 'content') return;
     if (selection) {
-      detailHeading.current?.focus({ preventScroll: true });
       const editor = detailHeading.current?.closest<HTMLElement>('[aria-label="Menu editor"]');
-      if (editor) editor.scrollTop = 0;
+      if ('focus' in selection && selection.focus === 'image') {
+        const imageControl = editor?.querySelector<HTMLInputElement>(
+          `[data-editor-image-control="${selection.kind === 'restaurant' ? 'restaurant' : 'item'}"]`
+        );
+        imageControl?.focus({ preventScroll: true });
+        if (editor && imageControl) {
+          editor.scrollTop +=
+            imageControl.getBoundingClientRect().top -
+            editor.getBoundingClientRect().top -
+            editor.clientHeight / 2;
+        }
+      } else {
+        detailHeading.current?.focus({ preventScroll: true });
+        if (editor) editor.scrollTop = 0;
+      }
     } else if (previousSelection.current) {
       const target = selectionKey(previousSelection.current);
       const buttons = [
@@ -622,7 +635,7 @@ export const MenuBuilder: React.FC<MenuBuilderProps> = ({
                         </div>
                       )}
                       <label className="flex-1 cursor-pointer">
-                        <div className="border border-dashed border-menu-ink-300/60 p-6 hover:border-menu-stamp-500 hover:bg-white transition-all text-center bg-menu-paper-200">
+                        <div className="border border-dashed border-menu-ink-300/60 p-6 hover:border-menu-stamp-500 hover:bg-white focus-within:outline focus-within:outline-2 focus-within:outline-menu-stamp-500 transition-all text-center bg-menu-paper-200">
                           <svg
                             className="w-8 h-8 mx-auto mb-2 text-menu-ink-500"
                             fill="none"
@@ -639,13 +652,14 @@ export const MenuBuilder: React.FC<MenuBuilderProps> = ({
                           <span className="text-sm text-menu-ink-700 font-semibold">Upload Logo</span>
                           <p className="text-xs text-menu-ink-500 mt-1">PNG, JPG up to 5MB</p>
                           <input
+                            data-editor-image-control="restaurant"
                             type="file"
                             accept="image/*"
                             onChange={(e) => {
                               const file = e.target.files?.[0];
                               if (file) handleLogoUpload(file);
                             }}
-                            className="hidden"
+                            className="sr-only"
                           />
                         </div>
                       </label>
@@ -1099,11 +1113,12 @@ export const MenuBuilder: React.FC<MenuBuilderProps> = ({
                                 />
                               )}
                               <label className="cursor-pointer flex-1">
-                                <div className="border border-dashed border-menu-ink-300/60 px-4 py-2.5 hover:border-menu-stamp-500 hover:bg-white transition-all text-center rounded-none bg-menu-paper-100">
+                                <div className="border border-dashed border-menu-ink-300/60 px-4 py-2.5 hover:border-menu-stamp-500 hover:bg-white focus-within:outline focus-within:outline-2 focus-within:outline-menu-stamp-500 transition-all text-center rounded-none bg-menu-paper-100">
                                   <span className="text-sm text-menu-ink-700 uppercase tracking-wide">
                                     {item.image ? 'Change photo' : 'Upload photo'}
                                   </span>
                                   <input
+                                    data-editor-image-control="item"
                                     type="file"
                                     accept="image/*"
                                     onChange={(e) => {
@@ -1111,7 +1126,7 @@ export const MenuBuilder: React.FC<MenuBuilderProps> = ({
                                       if (file) handleImageUpload(file, section.id, item.id);
                                     }}
                                     disabled={uploading}
-                                    className="hidden"
+                                    className="sr-only"
                                   />
                                 </div>
                               </label>

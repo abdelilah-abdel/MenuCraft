@@ -141,6 +141,7 @@ test('all seven existing IDs render the supplied menu without changing its data'
     for (const text of ['Atlas Kitchen', 'Lunch', 'Tagines', 'Vegetable tagine', 'MAD 72.00'])
       assert.ok(html.includes(text), `${template}: ${text}`);
     assert.match(html, /lang="fr"/);
+    assert.doesNotMatch(html, /data-preview-target|data-preview-image|Edit dish .* in preview/, `${template}: public menu has no editor controls`);
   }
   assert.deepEqual(menu, original);
 });

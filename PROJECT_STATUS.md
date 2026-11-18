@@ -16,10 +16,21 @@
 - Direction B — The Wall — has been ported to the app chrome: self-hosted Bricolage Grotesque, paper/ink/stamp tokens, landing-page motion, and restyled builder/auth UI.
 - Phase 1, Step 1 is in progress. Ticket 01 is complete: Atlas Simple uses a validated composition of reusable header, section/subsection, and dish blocks. The six legacy templates retain their existing renderers for compatibility.
 - Ticket 02 is complete: the owner workspace has a collapsible outline, focused detail forms, persistent desktop Live Preview with independent scrolling and view-only fit/zoom, mobile edit/preview switching, and explicit save/failure status.
+- Ticket 03 is complete: visible restaurant, section/subsection, dish, logo, dish photo, and dish-sourced hero areas in all seven Live Preview designs open ID-matched editor controls. Selection has keyboard actions and visible markers while Published Menus remain clean.
 - Server menu validation now uses the template registry as its allowlist, so registered config-only templates can be saved.
 - Persistence is still file-backed JSON and intended for one durable app instance. No relational database migration has been done.
 
 ## Latest changes
+
+### Ticket 03 — preview selection to editing completed — 2026-11-18
+
+- Resolved [ticket 03](.scratch/template-engine/issues/03-preview-selection-to-editing.md) on `feat/template-engine-roadmap`.
+- Added preview-only targets backed by restaurant/section/subsection/item IDs across Atlas Simple and all six legacy renderers. Selecting a heading, dish, logo, dish photo, or dish-sourced hero photo opens the matching focused form; image selection focuses its upload control. The selected target is visibly outlined. Selection follows rename and reorder, and deletion clears it safely. Preview selection alone creates no history step or publication.
+- Kept real heading semantics with separately named edit buttons and Enter/Space actions. Published templates render without editor attributes or controls. The structured Menu JSON, save API, and design settings did not change; existing saved menus need no migration.
+- Focused tests cover duplicate dish names, rename/reorder with keyboard re-selection, deletion, headings and photos, hero photos in three designs, all seven templates, and the public rendering boundary. `npx tsc --noEmit`, `npm run build`, and full `npm test` (26/26) passed. The first full-suite attempt could not acquire Next's dev lock while the normal port 3000 server was running; stopping it for the test and restoring it afterward produced a clean full pass.
+- Browser checks with isolated disposable data passed desktop and 390px mobile preview-to-editor selection, semantic heading actions, hero-photo selection and image focus. Image focus scrolled the editor while page scroll stayed at zero; no horizontal page overflow or browser alerts were observed. The public route had zero preview targets/buttons. Evidence: [desktop selection](.scratch/template-engine/evidence/03-desktop-selection.jpg), [mobile selection](.scratch/template-engine/evidence/03-mobile-selection.jpg), [hero photo selection](.scratch/template-engine/evidence/03-hero-photo-selection.jpg).
+- Standards/spec review findings about heading semantics and unselectable hero photos were fixed and re-reviewed without blockers. Current photo lookup uses source item object identity within each render; this works in all seven present renderers but would need an explicit ID handoff if a future renderer clones items. Print/PDF and full Arabic typography remain unqualified.
+- Next unblocked tickets: 04, 05, 06, 07, and 10. Ticket 04 adds the entry lifecycle controls using the focused workspace.
 
 ### Ticket 02 — outline and focused editing completed — 2026-11-18
 
@@ -89,13 +100,13 @@
 
 - `npx tsc --noEmit` — passed.
 - `npm run build` — passed.
-- `npm test` — all 13 tests passed, including DOM workspace interactions and temporary isolated HTTP storage.
-- Browser: desktop and 390px mobile outline/detail, Content/Customize retention, Done, history, view-only zoom, mobile preview, explicit publication, and public access — passed with no browser errors or page/Fit-width horizontal overflow. Browser fixtures used an isolated directory outside the owner's data.
-- Review: standards/spec findings fixed and re-reviewed without remaining blockers; optional extraction of the retained MenuBuilder bundle is a maintenance follow-up.
+- `npm test` — all 26 tests passed, including preview selection DOM cases and temporary isolated HTTP storage.
+- Browser: desktop and 390px mobile selection, hero photo and editor focus, and published route separation — passed with no browser alerts or horizontal page overflow. Browser fixtures used an isolated directory outside the owner's data.
+- Review: standards/spec findings fixed and re-reviewed without remaining blockers. Passing source items directly to photo targets instead of looking them up by object identity is an optional future maintenance improvement.
 
 ## Next
 
-1. Tickets 01 and 02 are resolved. The unblocked frontier is 03, 04, 05, 06, 07, and 10 in the [approved 21-ticket plan](.scratch/template-engine/spec.md). Continue with [03 — preview selection to editing](.scratch/template-engine/issues/03-preview-selection-to-editing.md) for the next interaction step, or choose another unblocked ticket.
+1. Tickets 01–03 are resolved. The unblocked frontier is 04, 05, 06, 07, and 10 in the [approved 21-ticket plan](.scratch/template-engine/spec.md). Continue with [04 — menu entry lifecycle](.scratch/template-engine/issues/04-menu-entry-lifecycle.md) for the next editing step, or choose another unblocked ticket.
 2. Complete the approved shared editor/engine behaviors and convert the six legacy templates individually when their blockers are complete, preserving IDs and visual/behavior parity. Keep specialized hooks only where configuration cannot express the design cleanly.
 3. Grow the template library in quality-reviewed batches, starting with Morocco-relevant restaurant types and styles.
 4. Build Playwright PDF export from the shared renderer (A4/A5 first, then pagination and multi-page output).

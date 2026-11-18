@@ -10,6 +10,7 @@ import {
   SoldOutLabel,
   formatMenuPrice,
 } from './menuTemplateUtils';
+import { PreviewHeading, PreviewHeroImageTarget, usePreviewTarget } from './previewSelection';
 
 interface TemplateProps { menu: Menu }
 
@@ -17,9 +18,10 @@ export const MoroccanFineDiningTemplate: React.FC<TemplateProps> = ({ menu }) =>
   const { customization } = menu;
   const sections = getVisibleMenuSections(menu);
   const heroItem = sections.flatMap((section) => section.items).find((item) => item.image);
+  const previewTarget = usePreviewTarget();
 
-  const renderItem = (item: MenuItem) => (
-    <article key={item.id} className={`overflow-hidden border border-[#e4d9ca] bg-white ${!item.available ? 'opacity-75' : ''}`}>
+  const renderItem = (item: MenuItem, sectionId: string) => (
+    <article {...previewTarget({ kind: 'item', sectionId, itemId: item.id }, `Edit dish ${item.name || 'Untitled dish'} in preview`)} key={item.id} className={`overflow-hidden border border-[#e4d9ca] bg-white ${!item.available ? 'opacity-75' : ''}`}>
       {customization.showImages && item.image && <MenuItemPhoto item={item} showImages className="h-44 w-full object-cover sm:h-52" />}
       <div className="p-5 sm:p-6">
         <div className="flex items-start justify-between gap-4">
@@ -39,11 +41,12 @@ export const MoroccanFineDiningTemplate: React.FC<TemplateProps> = ({ menu }) =>
     <main dir={menuDirection(menu)} lang={menu.originalLanguage} className="min-h-screen bg-[#f7f4ee] text-[#352b2b]" style={{ fontFamily: customization.fontFamily }}>
       <header className="relative overflow-hidden bg-[#332323] text-[#f7f1e7]">
         {customization.showImages && heroItem?.image ? <img src={heroItem.image} alt="" onError={(event) => { event.currentTarget.style.display = 'none'; }} className="absolute inset-0 h-full w-full object-cover opacity-25" /> : <div aria-hidden="true" className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(176,134,74,.32),transparent_48%),linear-gradient(120deg,#332323,#241919)]" />}
-        <div className="relative mx-auto max-w-6xl px-6 py-12 sm:px-10 sm:py-16">
+        {customization.showImages && heroItem?.image && <PreviewHeroImageTarget item={heroItem} />}
+        <div className="pointer-events-none relative z-10 mx-auto max-w-6xl px-6 py-12 sm:px-10 sm:py-16">
           <div className="mx-auto max-w-3xl border-y border-[#c6a66d]/60 py-8 text-center">
-            {customization.logoImage && <img src={customization.logoImage} alt={`${menu.restaurantName} logo`} className="mx-auto mb-5 h-16 max-w-40 object-contain" />}
+            {customization.logoImage && <img {...previewTarget({ kind: 'restaurant' }, 'Edit restaurant logo in preview', true)} src={customization.logoImage} alt={`${menu.restaurantName} logo`} className="pointer-events-auto mx-auto mb-5 h-16 max-w-40 object-contain" />}
             <p className="mb-4 text-[10px] font-semibold uppercase tracking-[0.45em] text-[#d8bd8a]">{localizedMenuText(menu.originalLanguage, 'The art of hospitality · Moroccan cuisine', 'L’art de recevoir · Cuisine marocaine', 'فن الضيافة · المطبخ المغربي')}</p>
-            <h1 className="font-serif text-4xl font-light tracking-wide sm:text-6xl">{menu.restaurantName}</h1>
+            <PreviewHeading as="h1" target={{ kind: 'restaurant' }} editLabel={`Edit restaurant ${menu.restaurantName} in preview`} className="font-serif text-4xl font-light tracking-wide sm:text-6xl">{menu.restaurantName}</PreviewHeading>
             {menu.description && <p className="mx-auto mt-5 max-w-2xl text-sm leading-7 text-[#eee4d3]/80 sm:text-base">{menu.description}</p>}
             <div className="mt-6 text-[#d8bd8a]" aria-hidden="true">✦　✦　✦</div>
           </div>
@@ -56,7 +59,7 @@ export const MoroccanFineDiningTemplate: React.FC<TemplateProps> = ({ menu }) =>
             <div className="mb-7 flex items-end gap-4 border-b border-[#d6c9b6] pb-4">
               <div>
                 <p className="mb-2 text-[10px] uppercase tracking-[0.32em] text-[#9a7844]">{localizedMenuText(menu.originalLanguage, 'Selection', 'Sélection', 'اختيار')} · {String(sectionIndex + 1).padStart(2, '0')}</p>
-                <h2 className="font-serif text-3xl font-medium sm:text-4xl" style={{ color: customization.primaryColor }}>{section.name}</h2>
+                <PreviewHeading as="h2" target={{ kind: 'section', sectionId: section.id }} editLabel={`Edit section ${section.name} in preview`} className="font-serif text-3xl font-medium sm:text-4xl" style={{ color: customization.primaryColor }}>{section.name}</PreviewHeading>
                 {section.description && <p className="mt-2 max-w-2xl text-sm leading-relaxed text-[#716c65]">{section.description}</p>}
               </div>
               <span aria-hidden="true" className="mb-2 hidden h-px flex-1 bg-[#d6c9b6] sm:block" />
@@ -65,9 +68,9 @@ export const MoroccanFineDiningTemplate: React.FC<TemplateProps> = ({ menu }) =>
             <div className="space-y-9">
               {getMenuSectionGroups(section).map((group) => (
                 <div key={group.subsection?.id || 'section-items'}>
-                  {group.subsection && <div className="mb-4 flex items-center gap-3"><h3 className="font-serif text-xl italic text-[#765c3b]">{group.subsection.name}</h3><span aria-hidden="true" className="h-px flex-1 bg-[#e4d9ca]" /></div>}
+                  {group.subsection && <div className="mb-4 flex items-center gap-3"><PreviewHeading as="h3" target={{ kind: 'subsection', sectionId: section.id, subsectionId: group.subsection.id }} editLabel={`Edit subsection ${group.subsection.name} in preview`} className="font-serif text-xl italic text-[#765c3b]">{group.subsection.name}</PreviewHeading><span aria-hidden="true" className="h-px flex-1 bg-[#e4d9ca]" /></div>}
                   {group.subsection?.description && <p className="mb-4 text-sm text-[#716c65]">{group.subsection.description}</p>}
-                  <div className="grid gap-4 md:grid-cols-2">{group.items.map(renderItem)}</div>
+                  <div className="grid gap-4 md:grid-cols-2">{group.items.map((item) => renderItem(item, section.id))}</div>
                 </div>
               ))}
             </div>

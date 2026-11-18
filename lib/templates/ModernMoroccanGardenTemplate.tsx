@@ -10,6 +10,7 @@ import {
   SoldOutLabel,
   formatMenuPrice,
 } from './menuTemplateUtils';
+import { PreviewHeading, PreviewHeroImageTarget, usePreviewTarget } from './previewSelection';
 
 interface TemplateProps { menu: Menu }
 
@@ -18,9 +19,10 @@ export const ModernMoroccanGardenTemplate: React.FC<TemplateProps> = ({ menu }) 
   const sections = getVisibleMenuSections(menu);
   const imageItems = sections.flatMap((section) => section.items).filter((item) => item.image).slice(0, 3);
   const heroImage = customization.showImages ? imageItems[0]?.image : undefined;
+  const previewTarget = usePreviewTarget();
 
-  const renderItem = (item: MenuItem, index: number) => (
-    <article key={item.id} className={`group overflow-hidden rounded-2xl border border-[#dbe3d2] bg-white shadow-[0_8px_28px_rgba(43,67,45,.08)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_14px_34px_rgba(43,67,45,.14)] ${!item.available ? 'opacity-80' : ''}`}>
+  const renderItem = (item: MenuItem, index: number, sectionId: string) => (
+    <article {...previewTarget({ kind: 'item', sectionId, itemId: item.id }, `Edit dish ${item.name || 'Untitled dish'} in preview`)} key={item.id} className={`group overflow-hidden rounded-2xl border border-[#dbe3d2] bg-white shadow-[0_8px_28px_rgba(43,67,45,.08)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_14px_34px_rgba(43,67,45,.14)] ${!item.available ? 'opacity-80' : ''}`}>
       {customization.showImages && item.image ? (
         <div className="relative overflow-hidden">
           <MenuItemPhoto item={item} showImages className="h-48 w-full object-cover transition duration-500 group-hover:scale-[1.03]" />
@@ -51,13 +53,14 @@ export const ModernMoroccanGardenTemplate: React.FC<TemplateProps> = ({ menu }) 
     <main dir={menuDirection(menu)} lang={menu.originalLanguage} className="min-h-screen bg-[#f7f8f1] text-[#2f3b2c]" style={{ fontFamily: customization.fontFamily }}>
       <header className="relative isolate overflow-hidden bg-[#526d49] text-white">
         {heroImage && <img src={heroImage} alt="" className="absolute inset-0 -z-20 h-full w-full object-cover opacity-35" />}
+        {heroImage && imageItems[0] && <PreviewHeroImageTarget item={imageItems[0]} />}
         <div aria-hidden="true" className="absolute inset-0 -z-10 bg-[linear-gradient(105deg,rgba(27,47,31,.9),rgba(49,78,54,.58),rgba(35,55,36,.78))]" />
         {customization.showImages && imageItems.length > 1 && <div className="absolute bottom-0 right-0 hidden h-28 w-1/3 gap-2 p-3 opacity-70 lg:flex">{imageItems.slice(1).map((item) => <MenuItemPhoto key={item.id} item={item} showImages className="h-full min-w-0 flex-1 rounded-t-xl object-cover" />)}</div>}
-        <div className="relative mx-auto max-w-7xl px-6 py-14 sm:px-10 sm:py-20">
+        <div className="pointer-events-none relative z-10 mx-auto max-w-7xl px-6 py-14 sm:px-10 sm:py-20">
           <div className="max-w-2xl">
-            {customization.logoImage && <img src={customization.logoImage} alt={`${menu.restaurantName} logo`} className="mb-6 h-16 max-w-40 object-contain" />}
+            {customization.logoImage && <img {...previewTarget({ kind: 'restaurant' }, 'Edit restaurant logo in preview', true)} src={customization.logoImage} alt={`${menu.restaurantName} logo`} className="pointer-events-auto mb-6 h-16 max-w-40 object-contain" />}
             <p className="mb-3 text-[11px] font-semibold uppercase tracking-[0.35em] text-[#e5d4a8]">{localizedMenuText(menu.originalLanguage, 'From the garden to the table', 'Du jardin à la table', 'من الحديقة إلى المائدة')}</p>
-            <h1 className="font-serif text-5xl font-semibold leading-tight sm:text-7xl">{menu.restaurantName}</h1>
+            <PreviewHeading as="h1" target={{ kind: 'restaurant' }} editLabel={`Edit restaurant ${menu.restaurantName} in preview`} className="font-serif text-5xl font-semibold leading-tight sm:text-7xl">{menu.restaurantName}</PreviewHeading>
             {menu.description && <p className="mt-5 max-w-xl text-base leading-7 text-white/85">{menu.description}</p>}
             <div className="mt-7 inline-flex items-center gap-3 rounded-full border border-white/30 bg-white/10 px-4 py-2 text-xs uppercase tracking-widest text-[#f5edcf]">{localizedMenuText(menu.originalLanguage, 'Fresh · Local · Moroccan', 'Frais · Local · Marocain', 'طازج · محلي · مغربي')}</div>
           </div>
@@ -72,7 +75,7 @@ export const ModernMoroccanGardenTemplate: React.FC<TemplateProps> = ({ menu }) 
             <div className="mb-6 flex items-end justify-between gap-4">
               <div>
                 <p className="mb-2 text-[10px] font-bold uppercase tracking-[0.34em] text-[#8b9b6a]">{localizedMenuText(menu.originalLanguage, 'To share', 'À partager', 'للمشاركة')} · {String(sectionIndex + 1).padStart(2, '0')}</p>
-                <h2 className="font-serif text-3xl font-semibold sm:text-4xl" style={{ color: customization.primaryColor }}>{section.name}</h2>
+                <PreviewHeading as="h2" target={{ kind: 'section', sectionId: section.id }} editLabel={`Edit section ${section.name} in preview`} className="font-serif text-3xl font-semibold sm:text-4xl" style={{ color: customization.primaryColor }}>{section.name}</PreviewHeading>
                 {section.description && <p className="mt-2 max-w-2xl text-sm leading-relaxed text-[#687164]">{section.description}</p>}
               </div>
               <span aria-hidden="true" className="mb-2 hidden h-px flex-1 bg-[#dbe3d2] sm:block" />
@@ -80,9 +83,9 @@ export const ModernMoroccanGardenTemplate: React.FC<TemplateProps> = ({ menu }) 
             <div className="space-y-9">
               {getMenuSectionGroups(section).map((group) => (
                 <div key={group.subsection?.id || 'section-items'}>
-                  {group.subsection && <div className="mb-4 flex items-center gap-3"><h3 className="rounded-full bg-[#e9efe0] px-4 py-2 font-serif text-lg font-semibold text-[#526d49]">{group.subsection.name}</h3><span aria-hidden="true" className="h-px flex-1 bg-[#dbe3d2]" /></div>}
+                  {group.subsection && <div className="mb-4 flex items-center gap-3"><PreviewHeading as="h3" target={{ kind: 'subsection', sectionId: section.id, subsectionId: group.subsection.id }} editLabel={`Edit subsection ${group.subsection.name} in preview`} className="rounded-full bg-[#e9efe0] px-4 py-2 font-serif text-lg font-semibold text-[#526d49]">{group.subsection.name}</PreviewHeading><span aria-hidden="true" className="h-px flex-1 bg-[#dbe3d2]" /></div>}
                   {group.subsection?.description && <p className="mb-4 text-sm text-[#687164]">{group.subsection.description}</p>}
-                  <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">{group.items.map(renderItem)}</div>
+                  <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">{group.items.map((item, index) => renderItem(item, index, section.id))}</div>
                 </div>
               ))}
             </div>

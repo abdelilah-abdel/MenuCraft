@@ -1,6 +1,7 @@
 import React from 'react';
 import { Menu, MenuItem, MenuLanguage, MenuSection, MenuSubsection } from '../types/menu';
 import { imageService } from '../services/imageService';
+import { usePreviewItemTarget, usePreviewTarget } from './previewSelection';
 
 export interface MenuSectionGroup {
   subsection: MenuSubsection | null;
@@ -48,10 +49,13 @@ export function MenuItemPhoto({
   showImages: boolean;
   className: string;
 }) {
+  const target = usePreviewItemTarget(item);
+  const previewTarget = usePreviewTarget();
   if (!showImages || !item.image) return null;
 
   return (
     <img
+      {...(target ? previewTarget(target, `Edit photo for ${item.name || 'Untitled dish'} in preview`, true) : {})}
       src={imageService.getImageUrl(item.image)}
       alt={item.name}
       className={className}

@@ -109,6 +109,18 @@ body {
   color: var(--color-paper-light);
 }
 
+/* Owner-only targets are added by the Live Preview context. Public menus have no edit attributes. */
+[data-preview-target] { cursor: pointer; }
+[data-preview-target]:hover,
+[data-preview-target][data-preview-selected="true"] {
+  outline: 3px solid var(--color-stamp);
+  outline-offset: 3px;
+}
+[data-preview-target]:focus-visible {
+  outline: 3px solid var(--color-stamp);
+  outline-offset: 3px;
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

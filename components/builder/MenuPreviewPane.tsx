@@ -1,10 +1,17 @@
 import React, { useEffect, useRef, useState } from 'react';
 import type { Menu } from '@/lib/types/menu';
 import { MenuPreview } from '../preview/MenuPreview';
+import { PreviewSelectionProvider } from '@/lib/templates/previewSelection';
+import type { EditorSelection } from '@/lib/types/editorSelection';
 
 const CANVAS_WIDTH = 800;
 
-export function MenuPreviewPane({ menu, dirty }: { menu: Menu; dirty: boolean }) {
+export function MenuPreviewPane({ menu, dirty, selection, onSelect }: {
+  menu: Menu;
+  dirty: boolean;
+  selection: EditorSelection | null;
+  onSelect: (selection: EditorSelection) => void;
+}) {
   const viewport = useRef<HTMLDivElement>(null);
   const canvas = useRef<HTMLDivElement>(null);
   const [availableWidth, setAvailableWidth] = useState(CANVAS_WIDTH);
@@ -69,7 +76,9 @@ export function MenuPreviewPane({ menu, dirty }: { menu: Menu; dirty: boolean })
             ref={canvas}
             style={{ width: CANVAS_WIDTH, transform: `scale(${scale})`, transformOrigin: 'top left' }}
           >
-            <MenuPreview menu={menu} />
+            <PreviewSelectionProvider menu={menu} selection={selection} onSelect={onSelect}>
+              <MenuPreview menu={menu} />
+            </PreviewSelectionProvider>
           </div>
         </div>
       </div>

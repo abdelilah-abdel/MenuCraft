@@ -36,6 +36,11 @@ export function MenuWorkspace({
   const [view, setView] = useState<WorkspaceView>('content');
   const [selection, setSelection] = useState<EditorSelection | null>(null);
   const [mobilePane, setMobilePane] = useState<'edit' | 'preview'>('edit');
+  const selectFromPreview = (target: EditorSelection) => {
+    setSelection(target);
+    setView('content');
+    setMobilePane('edit');
+  };
 
   useEffect(() => {
     if (!selection || selectionExists(menu, selection)) return;
@@ -249,7 +254,7 @@ export function MenuWorkspace({
           aria-label="Live menu preview"
           className={`min-h-0 min-w-0 flex-col overflow-hidden border-menu-ink-300 lg:border-l ${mobilePane === 'preview' ? 'flex' : 'hidden'} lg:flex`}
         >
-          <MenuPreviewPane menu={menu} dirty={publication.dirty} />
+          <MenuPreviewPane menu={menu} dirty={publication.dirty} selection={selection} onSelect={selectFromPreview} />
         </aside>
       </main>
     </div>

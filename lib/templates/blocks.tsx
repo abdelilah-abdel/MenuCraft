@@ -1,6 +1,7 @@
 import React from 'react';
 import type { Menu, MenuItem, MenuSection, MenuSubsection } from '../types/menu';
 import type { TemplateConfig } from './config';
+import { PreviewHeading, usePreviewTarget } from './previewSelection';
 import {
   formatMenuPrice,
   getMenuSectionGroups,
@@ -17,20 +18,24 @@ export interface MenuBlockProps {
 
 export function RestaurantHeaderBlock({ menu, config }: MenuBlockProps) {
   const { theme, layout } = config;
+  const previewTarget = usePreviewTarget();
   return (
     <header
       className={`mb-14 pb-8 text-center ${layout.showSectionRules ? 'border-b-2' : ''}`}
       style={{ borderColor: theme.primaryColor }}
     >
       {menu.customization.logoImage && (
-        <img src={menu.customization.logoImage} alt="" className="mx-auto mb-4 h-16 w-auto object-contain" />
+        <img {...previewTarget({ kind: 'restaurant' }, 'Edit restaurant logo in preview', true)} src={menu.customization.logoImage} alt="" className="mx-auto mb-4 h-16 w-auto object-contain" />
       )}
-      <h1
+      <PreviewHeading
+        as="h1"
+        target={{ kind: 'restaurant' }}
+        editLabel={`Edit restaurant ${menu.restaurantName} in preview`}
         className="text-4xl font-semibold tracking-tight sm:text-6xl"
         style={{ color: theme.primaryColor, fontFamily: theme.headingFont }}
       >
         {menu.restaurantName}
-      </h1>
+      </PreviewHeading>
       {menu.description && (
         <p className="mx-auto mt-4 max-w-xl text-base" style={{ color: theme.secondaryColor }}>
           {menu.description}
@@ -67,13 +72,16 @@ export function SectionHeadingBlock({ section, config }: { section: MenuSection;
       style={layout.showSectionRules ? { borderBottom: `1px solid ${theme.primaryColor}` } : undefined}
     >
       <div>
-        <h2
+        <PreviewHeading
+          as="h2"
+          target={{ kind: 'section', sectionId: section.id }}
+          editLabel={`Edit section ${section.name} in preview`}
           id={`config-section-${section.id}`}
           className={layout.kind === 'minimal' ? 'text-lg font-semibold' : 'text-2xl font-semibold'}
           style={{ color: theme.primaryColor, fontFamily: theme.headingFont }}
         >
           {section.name}
-        </h2>
+        </PreviewHeading>
         {section.description && (
           <p className="mt-1 text-sm" style={{ color: theme.secondaryColor }}>
             {section.description}
@@ -85,17 +93,19 @@ export function SectionHeadingBlock({ section, config }: { section: MenuSection;
 }
 
 export function SubsectionHeadingBlock({
+  sectionId,
   subsection,
   config,
 }: {
+  sectionId: string;
   subsection: MenuSubsection;
   config: TemplateConfig;
 }) {
   const { theme } = config;
   return (
-    <h3 className="mb-3 text-base font-semibold" style={{ color: theme.secondaryColor }}>
+    <PreviewHeading as="h3" target={{ kind: 'subsection', sectionId, subsectionId: subsection.id }} editLabel={`Edit subsection ${subsection.name} in preview`} className="mb-3 text-base font-semibold" style={{ color: theme.secondaryColor }}>
       {subsection.name}
-    </h3>
+    </PreviewHeading>
   );
 }
 
@@ -115,10 +125,10 @@ function MenuSectionBlock({
 
       {getMenuSectionGroups(section).map((group) => (
         <div key={group.subsection?.id || 'all'} className="mb-4 last:mb-0">
-          {group.subsection && <SubsectionHeadingBlock subsection={group.subsection} config={config} />}
+          {group.subsection && <SubsectionHeadingBlock sectionId={section.id} subsection={group.subsection} config={config} />}
           <div className={layout.kind === 'cards' ? 'grid gap-5 sm:grid-cols-2' : undefined}>
             {group.items.map((item) => (
-              <DishRowBlock key={item.id} item={item} menu={menu} config={config} />
+              <DishRowBlock key={item.id} sectionId={section.id} item={item} menu={menu} config={config} />
             ))}
           </div>
         </div>
@@ -127,14 +137,17 @@ function MenuSectionBlock({
   );
 }
 
-export function DishRowBlock({ item, menu, config }: { item: MenuItem; menu: Menu; config: TemplateConfig }) {
+export function DishRowBlock({ sectionId, item, menu, config }: { sectionId: string; item: MenuItem; menu: Menu; config: TemplateConfig }) {
   const { theme, layout } = config;
+  const previewTarget = usePreviewTarget();
+  const editTarget = previewTarget({ kind: 'item', sectionId, itemId: item.id }, `Edit dish ${item.name || 'Untitled dish'} in preview`);
   const isCard = layout.imageStyle === 'cards';
   const visible = item.available;
 
   if (isCard) {
     return (
       <article
+        {...editTarget}
         className={`overflow-hidden border-2 ${visible ? '' : 'opacity-60'}`}
         style={{ borderColor: theme.primaryColor, borderRadius: layout.cornerRadius }}
       >
@@ -164,7 +177,7 @@ export function DishRowBlock({ item, menu, config }: { item: MenuItem; menu: Men
   }
 
   return (
-    <article className={`border-b border-black/10 py-4 ${visible ? '' : 'opacity-60'}`}>
+    <article {...editTarget} className={`border-b border-black/10 py-4 ${visible ? '' : 'opacity-60'}`}>
       <div className="flex items-start gap-4">
         {layout.imageStyle === 'row-thumbs' && (
           <MenuItemPhoto

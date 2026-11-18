@@ -303,3 +303,102 @@ test('dropping a dish onto another subsection follows the visible destination as
   const restored = container.querySelector('[aria-label="Live menu preview"]').textContent;
   assert.ok(restored.indexOf('Vegetable tagine') < restored.indexOf('Drinks'));
 });
+
+test('preview dish selection uses menu identities across duplicate names, rename, and reorder', async () => {
+  const menu = structuredClone(initialMenu);
+  menu.sections.push({
+    id: 'lunch',
+    name: 'Lunch',
+    order: 1,
+    items: [
+      { id: 'lunch-vegetable', name: 'Vegetable tagine', price: 48, currency: 'MAD', available: true },
+      { id: 'soup', name: 'Harira', price: 36, currency: 'MAD', available: true },
+    ],
+  });
+  await mount(async (value) => value, menu);
+  const dishes = [...container.querySelectorAll('[aria-label="Edit dish Vegetable tagine in preview"]')];
+  assert.equal(dishes.length, 2, 'both displayed dishes are independently actionable');
+  await act(() => dishes[1].click());
+  assert.equal(field('Price').value, '48');
+  await fill('Item Name', 'Lunch tagine');
+  await click('Move Lunch tagine down');
+  const previewText = container.querySelector('[aria-label="Live menu preview"]').textContent;
+  assert.ok(previewText.indexOf('Harira') < previewText.indexOf('Lunch tagine'));
+  await click('Done');
+  const renamed = container.querySelector('[aria-label="Edit dish Lunch tagine in preview"]');
+  assert.ok(renamed);
+  await act(() => renamed.dispatchEvent(new window.KeyboardEvent('keydown', { key: 'Enter', bubbles: true })));
+  assert.equal(field('Price').value, '48');
+  assert.equal(container.querySelector('[role="status"]').textContent, 'Unsaved changes');
+  await click('Undo menu change');
+  await click('Undo menu change');
+  assert.equal(field('Item Name').value, 'Vegetable tagine');
+});
+
+for (const template of ['classic', 'modern', 'minimal', 'medina-cafe', 'moroccan-fine-dining', 'modern-moroccan-garden', 'atlas-simple']) {
+  test(`${template} preview targets open the matching dish`, async () => {
+    const menu = structuredClone(initialMenu);
+    menu.template = template;
+    await mount(async (value) => value, menu);
+    const dish = container.querySelector('[aria-label="Edit dish Vegetable tagine in preview"]');
+    assert.ok(dish);
+    await act(() => dish.click());
+    assert.equal(field('Item Name').value, 'Vegetable tagine');
+    assert.equal(dish.getAttribute('data-preview-selected'), 'true');
+  });
+}
+
+test('preview headings and photos are keyboard actionable without changing publication or history', async () => {
+  const menu = structuredClone(initialMenu);
+  menu.customization.showImages = true;
+  menu.customization.logoImage = 'data:image/png;base64,aGVsbG8=';
+  menu.sections[0].items[0].image = 'data:image/png;base64,aGVsbG8=';
+  let saves = 0;
+  await mount(async (value) => {
+    saves++;
+    return value;
+  }, menu);
+  const sectionHeading = container.querySelector('[aria-label="Edit section Dinner in preview"]');
+  assert.equal(sectionHeading.getAttribute('tabindex'), '0');
+  assert.equal(sectionHeading.closest('h2')?.getAttribute('aria-label'), 'Dinner', 'section remains a named heading');
+  assert.equal(sectionHeading.closest('h2')?.getAttribute('role'), null);
+  await act(() => sectionHeading.dispatchEvent(new window.KeyboardEvent('keydown', { key: 'Enter', bubbles: true })));
+  assert.equal(field('Section Name *').value, 'Dinner');
+  const photo = container.querySelector('[aria-label="Edit photo for Vegetable tagine in preview"]');
+  await act(() => photo.dispatchEvent(new window.KeyboardEvent('keydown', { key: ' ', bubbles: true })));
+  assert.equal(field('Item Name').value, 'Vegetable tagine');
+  assert.equal(document.activeElement.getAttribute('data-editor-image-control'), 'item');
+  const logo = container.querySelector('[aria-label="Edit restaurant logo in preview"]');
+  await act(() => logo.click());
+  assert.equal(document.activeElement.getAttribute('data-editor-image-control'), 'restaurant');
+  assert.equal(container.querySelector('[role="status"]').textContent, 'Saved');
+  assert.equal(button('Undo menu change').disabled, true);
+  assert.equal(saves, 0);
+});
+
+test('removing a preview-selected dish clears its marker and leaves a usable editor target', async () => {
+  await mount();
+  const dish = container.querySelector('[aria-label="Edit dish Vegetable tagine in preview"]');
+  await act(() => dish.click());
+  assert.equal(dish.getAttribute('data-preview-selected'), 'true');
+  await click('Delete Vegetable tagine');
+  assert.equal(container.querySelector('[data-preview-selected="true"]'), null);
+  assert.equal(document.activeElement, button('Edit section Dinner'));
+  await click('Undo menu change');
+  assert.ok(container.querySelector('[aria-label="Edit dish Vegetable tagine in preview"]'));
+});
+
+for (const template of ['medina-cafe', 'moroccan-fine-dining', 'modern-moroccan-garden']) {
+  test(`${template} hero image opens its source dish photo control`, async () => {
+    const menu = structuredClone(initialMenu);
+    menu.template = template;
+    menu.customization.showImages = true;
+    menu.sections[0].items[0].image = 'data:image/png;base64,aGVsbG8=';
+    await mount(async (value) => value, menu);
+    const hero = container.querySelector('[aria-label="Edit hero photo for Vegetable tagine in preview"]');
+    assert.ok(hero, 'visible dish-derived hero image is actionable');
+    await act(() => hero.click());
+    assert.equal(field('Item Name').value, 'Vegetable tagine');
+    assert.equal(document.activeElement.getAttribute('data-editor-image-control'), 'item');
+  });
+}
