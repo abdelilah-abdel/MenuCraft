@@ -5,7 +5,7 @@ import { useSearchParams } from 'next/navigation';
 import type { Menu } from '@/lib/types/menu';
 import { MenuService } from '@/lib/services/menuService';
 import { MenuWorkspace } from '@/components/builder/MenuWorkspace';
-import { MenuCompositionPrototype } from '@/components/builder/prototype/MenuCompositionPrototype';
+import { MenuPrototypeEntry } from '@/components/builder/prototype/MenuPrototypeEntry';
 
 function BuilderContent() {
   const searchParams = useSearchParams();
@@ -65,7 +65,7 @@ function BuilderContent() {
         </div>
       </div>
     );
-  if (process.env.NODE_ENV !== 'production' && searchParams.get('prototype') === 'composition') return <MenuCompositionPrototype />;
+  if (process.env.NODE_ENV !== 'production' && searchParams.get('prototype') === 'composition') return <MenuPrototypeEntry />;
   return (
     <MenuWorkspace
       key={loaded.menu.id}
