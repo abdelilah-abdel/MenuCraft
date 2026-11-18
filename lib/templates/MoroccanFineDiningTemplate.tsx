@@ -1,4 +1,5 @@
 import React from 'react';
+import { imageStyle } from '../imagePresentation';
 import { Menu, MenuItem } from '../types/menu';
 import {
   MenuEmptyState, getMenuSectionGroups,
@@ -17,7 +18,7 @@ interface TemplateProps { menu: Menu }
 export const MoroccanFineDiningTemplate: React.FC<TemplateProps> = ({ menu }) => {
   const { customization } = menu;
   const sections = getVisibleMenuSections(menu);
-  const heroItem = sections.flatMap(section => getMenuSectionGroups(section).flatMap(group => group.items)).find((item) => item.image);
+  const heroItem = sections.flatMap(section => getMenuSectionGroups(section).flatMap(group => group.items)).find((item) => item.image && !item.imagePresentation?.hidden);
   const previewTarget = usePreviewTarget();
 
   const renderItem = (item: MenuItem, sectionId: string) => (
@@ -40,7 +41,7 @@ export const MoroccanFineDiningTemplate: React.FC<TemplateProps> = ({ menu }) =>
   return (
     <main dir={menuDirection(menu)} lang={menu.originalLanguage} className="min-h-screen bg-[#f7f4ee] text-[#352b2b]" style={{ fontFamily: customization.fontFamily }}>
       <header className="relative overflow-hidden bg-[#332323] text-[#f7f1e7]">
-        {customization.showImages && heroItem?.image ? <img src={heroItem.image} alt="" onError={(event) => { event.currentTarget.style.display = 'none'; }} className="absolute inset-0 h-full w-full object-cover opacity-25" /> : <div aria-hidden="true" className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(176,134,74,.32),transparent_48%),linear-gradient(120deg,#332323,#241919)]" />}
+        {customization.showImages && heroItem?.image ? <img style={imageStyle(heroItem.imagePresentation)} src={heroItem.image} alt="" onError={(event) => { event.currentTarget.style.display = 'none'; }} className="absolute inset-0 h-full w-full object-cover opacity-25" /> : <div aria-hidden="true" className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(176,134,74,.32),transparent_48%),linear-gradient(120deg,#332323,#241919)]" />}
         {customization.showImages && heroItem?.image && <PreviewHeroImageTarget item={heroItem} />}
         <div className="pointer-events-none relative z-10 mx-auto max-w-6xl px-6 py-12 sm:px-10 sm:py-16">
           <div className="mx-auto max-w-3xl border-y border-[#c6a66d]/60 py-8 text-center">

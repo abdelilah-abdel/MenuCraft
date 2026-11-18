@@ -1,5 +1,13 @@
 import type { TEMPLATE_CONFIGS } from '../templates/config';
 
+export interface ImagePresentation {
+  hidden?: boolean;
+  fit?: 'cover' | 'contain';
+  focalX?: number;
+  focalY?: number;
+  placement?: 'thumbnail' | 'card-top' | 'text-side' | 'banner' | 'heading-side' | 'above' | 'below';
+}
+
 // Core menu data types
 
 export interface MenuItem {
@@ -10,6 +18,7 @@ export interface MenuItem {
   price: number;
   currency: string;
   image?: string; // base64 or URL
+  imagePresentation?: ImagePresentation;
   subsectionId?: string;
   tags?: string[]; // e.g., "vegetarian", "spicy", "popular"
   available: boolean;

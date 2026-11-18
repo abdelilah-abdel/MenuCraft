@@ -115,7 +115,7 @@ export function MenuWorkspace({
   };
 
   return (
-    <div className="flex h-dvh min-h-0 flex-col overflow-hidden bg-menu-paper-200 text-menu-ink-900">
+    <div className="fixed inset-0 flex min-h-0 flex-col overflow-hidden bg-menu-paper-200 text-menu-ink-900">
       <header className="shrink-0 border-b border-menu-ink-900 bg-menu-paper-50 px-3 py-3 sm:px-6">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div className="flex min-w-0 items-center gap-4">

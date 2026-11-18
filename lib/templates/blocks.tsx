@@ -143,7 +143,8 @@ export function DishRowBlock({ sectionId, item, menu, config }: { sectionId: str
   const { theme, layout } = config;
   const previewTarget = usePreviewTarget();
   const editTarget = previewTarget({ kind: 'item', sectionId, itemId: item.id }, `Edit dish ${item.name || 'Untitled dish'} in preview`);
-  const isCard = layout.imageStyle === 'cards';
+  const placement = config.dishPhotoPlacements.includes(item.imagePresentation?.placement as 'thumbnail') ? item.imagePresentation!.placement : config.dishPhotoPlacements[0];
+  const isCard = placement === 'card-top';
   const visible = item.available;
 
   if (isCard) {
@@ -182,11 +183,11 @@ export function DishRowBlock({ sectionId, item, menu, config }: { sectionId: str
   return (
     <article {...editTarget} className={`border-b border-black/10 py-4 ${visible ? '' : 'opacity-60'}`}>
       <div className="flex items-start gap-4">
-        {layout.imageStyle === 'row-thumbs' && (
+        {(
           <MenuItemPhoto
             item={item}
             showImages={menu.customization.showImages}
-            className="h-20 w-20 shrink-0 object-cover"
+            className={placement === 'thumbnail' ? "h-20 w-20 shrink-0 object-cover" : "h-32 w-32 shrink-0 object-cover"}
           />
         )}
         <div className="min-w-0 flex-1">

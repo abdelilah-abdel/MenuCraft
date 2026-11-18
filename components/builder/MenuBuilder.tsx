@@ -7,6 +7,8 @@ import { editMenuEntry } from '@/lib/menuEntries';
 import { imageService } from '@/lib/services/imageService';
 import { Button } from '../ui/Button';
 import { Input, Textarea } from '../ui/Input';
+import { ImageSlotEditor } from './ImageSlotEditor';
+import { getTemplateConfig } from '@/lib/templates/config';
 import { MenuOutline } from './MenuOutline';
 import { getMenuSectionGroups } from '@/lib/templates/menuTemplateUtils';
 import { selectionKey, type DragPayload, type EditorSelection } from './editorSelection';
@@ -477,22 +479,6 @@ export const MenuBuilder: React.FC<MenuBuilderProps> = ({
       delete next[itemId];
       return next;
     });
-  };
-
-  const handleImageUpload = async (file: File, sectionId: string, itemId: string) => {
-    setUploading(true);
-    try {
-      const result = await imageService.uploadImage(file);
-      if (result.success) {
-        updateItem(sectionId, itemId, { image: result.url });
-      } else {
-        alert(result.error || 'Failed to upload image');
-      }
-    } catch (error) {
-      alert('Failed to upload image');
-    } finally {
-      setUploading(false);
-    }
   };
 
   const handleLogoUpload = async (file: File) => {
@@ -1127,39 +1113,8 @@ export const MenuBuilder: React.FC<MenuBuilderProps> = ({
                           );
                         })()}
 
-                        <div className="flex items-end justify-between gap-4">
-                          <div className="flex-1">
-                            <label className="block text-sm font-medium text-menu-ink-700 uppercase tracking-wide mb-2">
-                              Item Photo (Optional)
-                            </label>
-                            <div className="flex items-center gap-3">
-                              {item.image && (
-                                <img
-                                  src={item.image}
-                                  alt={item.name}
-                                  className="h-16 w-16 object-cover border-menu border-menu-ink-200"
-                                />
-                              )}
-                              <label className="cursor-pointer flex-1">
-                                <div className="border border-dashed border-menu-ink-300/60 px-4 py-2.5 hover:border-menu-stamp-500 hover:bg-white focus-within:outline focus-within:outline-2 focus-within:outline-menu-stamp-500 transition-all text-center rounded-none bg-menu-paper-100">
-                                  <span className="text-sm text-menu-ink-700 uppercase tracking-wide">
-                                    {item.image ? 'Change photo' : 'Upload photo'}
-                                  </span>
-                                  <input
-                                    data-editor-image-control="item"
-                                    type="file"
-                                    accept="image/*"
-                                    onChange={(e) => {
-                                      const file = e.target.files?.[0];
-                                      if (file) handleImageUpload(file, section.id, item.id);
-                                    }}
-                                    disabled={uploading}
-                                    className="sr-only"
-                                  />
-                                </div>
-                              </label>
-                            </div>
-                          </div>
+                        <div className="flex flex-wrap items-end justify-between gap-4">
+                          <div className="w-full min-w-0 flex-none"><ImageSlotEditor key={item.id} label="Dish photo" image={item.image} settings={item.imagePresentation} placements={getTemplateConfig(menu.template).dishPhotoPlacements} focusTarget="item" onChange={(image, imagePresentation) => updateItem(section.id, item.id, { image, imagePresentation })} /></div>
 
                           <div className="flex items-center gap-3">
                             <label className="flex items-center gap-2 cursor-pointer">

@@ -1,4 +1,5 @@
 import React from 'react';
+import { imageStyle } from '../imagePresentation';
 import { Menu, MenuItem } from '../types/menu';
 import {
   MenuEmptyState, getMenuSectionGroups,
@@ -17,13 +18,13 @@ interface TemplateProps { menu: Menu }
 export const ModernMoroccanGardenTemplate: React.FC<TemplateProps> = ({ menu }) => {
   const { customization } = menu;
   const sections = getVisibleMenuSections(menu);
-  const imageItems = sections.flatMap(section => getMenuSectionGroups(section).flatMap(group => group.items)).filter((item) => item.image).slice(0, 3);
+  const imageItems = sections.flatMap(section => getMenuSectionGroups(section).flatMap(group => group.items)).filter((item) => item.image && !item.imagePresentation?.hidden).slice(0, 3);
   const heroImage = customization.showImages ? imageItems[0]?.image : undefined;
   const previewTarget = usePreviewTarget();
 
   const renderItem = (item: MenuItem, index: number, sectionId: string) => (
     <article {...previewTarget({ kind: 'item', sectionId, itemId: item.id }, `Edit dish ${item.name || 'Untitled dish'} in preview`)} key={item.id} className={`group overflow-hidden rounded-2xl border border-[#dbe3d2] bg-white shadow-[0_8px_28px_rgba(43,67,45,.08)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_14px_34px_rgba(43,67,45,.14)] ${!item.available ? 'opacity-80' : ''}`}>
-      {customization.showImages && item.image ? (
+      {customization.showImages && item.image && !item.imagePresentation?.hidden ? (
         <div className="relative overflow-hidden">
           <MenuItemPhoto item={item} showImages className="h-48 w-full object-cover transition duration-500 group-hover:scale-[1.03]" />
           <span className="absolute left-4 top-4 rounded-full bg-[#f4f3e8]/95 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-[#496342]">{String(index + 1).padStart(2, '0')}</span>
@@ -52,7 +53,7 @@ export const ModernMoroccanGardenTemplate: React.FC<TemplateProps> = ({ menu }) 
   return (
     <main dir={menuDirection(menu)} lang={menu.originalLanguage} className="min-h-screen bg-[#f7f8f1] text-[#2f3b2c]" style={{ fontFamily: customization.fontFamily }}>
       <header className="relative isolate overflow-hidden bg-[#526d49] text-white">
-        {heroImage && <img src={heroImage} alt="" className="absolute inset-0 -z-20 h-full w-full object-cover opacity-35" />}
+        {heroImage && <img style={imageStyle(imageItems[0]?.imagePresentation)} src={heroImage} alt="" className="absolute inset-0 -z-20 h-full w-full object-cover opacity-35" />}
         {heroImage && imageItems[0] && <PreviewHeroImageTarget item={imageItems[0]} />}
         <div aria-hidden="true" className="absolute inset-0 -z-10 bg-[linear-gradient(105deg,rgba(27,47,31,.9),rgba(49,78,54,.58),rgba(35,55,36,.78))]" />
         {customization.showImages && imageItems.length > 1 && <div className="absolute bottom-0 right-0 hidden h-28 w-1/3 gap-2 p-3 opacity-70 lg:flex">{imageItems.slice(1).map((item) => <MenuItemPhoto key={item.id} item={item} showImages className="h-full min-w-0 flex-1 rounded-t-xl object-cover" />)}</div>}

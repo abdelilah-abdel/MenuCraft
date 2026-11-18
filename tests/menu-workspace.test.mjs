@@ -412,7 +412,7 @@ test('outline duplicates nested content, hides independently of sold out, and re
   assert.equal(container.querySelectorAll('[aria-label="Edit dish Vegetable tagine in preview"]').length, 1);
   await click('Expand Dinner');
   await click('Edit Vegetable tagine');
-  await act(() => container.querySelector('input[type="checkbox"]').click());
+  await act(() => [...container.querySelectorAll('label')].find(label => label.textContent.trim() === 'Available').querySelector('input').click());
   assert.match(container.querySelector('[aria-label="Live menu preview"]').textContent, /Sold out/);
   await click('Done');
   await click('Remove section Dinner');
@@ -444,4 +444,25 @@ test('dish can move to an empty subsection and empty section without losing its 
   assert.equal(saved.sections[1].items[0].image,'data:image/png;base64,photo');
   await click('Undo menu change');
   assert.equal(field('Move dish to group').value,JSON.stringify(['dinner','tagines']));
+});
+
+
+test('dish photo crop and placement are undoable and preserve the source on failed upload', async () => {
+  const menu = structuredClone(initialMenu); menu.template = 'atlas-simple'; menu.customization.showImages = true;
+  menu.sections[0].items[0].image = 'data:image/png;base64,original';
+  let saved;
+  await mount(async value => { saved = value; return value; }, menu);
+  await click('Expand Dinner'); await click('Edit Vegetable tagine');
+  const select = container.querySelector('[aria-label="Dish photo placement"]');
+  await act(() => { select.value = 'card-top'; select.dispatchEvent(new window.Event('change',{bubbles:true})); });
+  const upload = container.querySelector('[aria-label="Upload dish photo"]');
+  await act(async () => { Object.defineProperty(upload,'files',{configurable:true,value:[new window.File(['bad'],'bad.txt',{type:'text/plain'})]}); upload.dispatchEvent(new window.Event('change',{bubbles:true})); });
+  assert.match(container.querySelector('[role="alert"]').textContent,/File must be an image/);
+  await click('Save menu');
+  assert.equal(saved.sections[0].items[0].image,'data:image/png;base64,original');
+  assert.equal(saved.sections[0].items[0].imagePresentation.placement,'card-top');
+  await click('Remove dish photo');
+  assert.equal(container.querySelector('[aria-label="Edit photo for Vegetable tagine in preview"]'),null);
+  await click('Undo menu change');
+  assert.ok(container.querySelector('[aria-label="Edit photo for Vegetable tagine in preview"]'));
 });

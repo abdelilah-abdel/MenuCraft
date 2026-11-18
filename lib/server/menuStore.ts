@@ -2,6 +2,7 @@ import { mkdir, readFile, rename, unlink, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { randomUUID } from 'node:crypto';
 import type { Menu, MenuItem, MenuSection, MenuSubsection } from '@/lib/types/menu';
+import { isImagePresentation } from '@/lib/imagePresentation';
 import { isTemplateId } from '@/lib/templates/config';
 
 export type MenuInput = Omit<Menu, 'ownerId' | 'createdAt' | 'updatedAt' | 'originalLanguage'> &
@@ -31,6 +32,7 @@ function isMenuItem(value: unknown): value is MenuItem {
     typeof value.available === 'boolean' &&
     (value.description === undefined || typeof value.description === 'string') &&
     (value.image === undefined || typeof value.image === 'string') &&
+    isImagePresentation(value.imagePresentation) &&
     (value.subsectionId === undefined || typeof value.subsectionId === 'string') &&
     (value.tags === undefined || (Array.isArray(value.tags) && value.tags.every((tag) => typeof tag === 'string')));
 }

@@ -49,7 +49,10 @@ export interface TemplateLayoutConfig {
 export const TEMPLATE_BLOCK_TYPES = ['restaurant-header', 'menu-sections'] as const;
 export type TemplateBlockType = (typeof TEMPLATE_BLOCK_TYPES)[number];
 
+export const DISH_PHOTO_PLACEMENTS = ['thumbnail', 'card-top', 'text-side'] as const;
+
 interface TemplateMetadata {
+  dishPhotoPlacements: readonly (typeof DISH_PHOTO_PLACEMENTS)[number][];
   id: string;
   name: string;
   category: (typeof CATEGORIES)[number];
@@ -97,6 +100,7 @@ function validateDefinition(id: string, value: unknown): asserts value is Templa
   if (!isRecord(value.theme) || !isRecord(value.layout)) {
     throw new Error(`Invalid template "${id}": theme and layout are required.`);
   }
+  check(Array.isArray(value.dishPhotoPlacements) && value.dishPhotoPlacements.length > 0 && value.dishPhotoPlacements.every((placement: unknown) => DISH_PHOTO_PLACEMENTS.some(allowed => allowed === placement)), 'invalid dish photo capabilities');
   const theme = value.theme;
   const layout = value.layout;
   for (const field of [

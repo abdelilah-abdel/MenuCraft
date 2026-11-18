@@ -1,6 +1,6 @@
 # 07: Control dish photos
 
-**Status:** ready-for-agent
+**Status:** resolved
 
 **Blocked by:** 02: Create the outline-and-detail editing workspace
 
@@ -8,12 +8,12 @@
 
 ## Acceptance criteria
 
-- [ ] Expose dish-photo controls in the focused editor with upload feedback and the existing file-type/size validation; failed uploads preserve the current picture.
-- [ ] Offer supported thumbnail, card-top, or text-side placement choices through the template's declared capabilities, with a clear default for existing menus.
-- [ ] Store crop/focal-position settings separately from the source photo so presentation changes do not destructively replace the uploaded image.
-- [ ] Render the chosen crop and placement consistently in preview and publication, with a deliberate layout when the image is absent, removed, disabled, or fails to load.
-- [ ] Keep photo and presentation changes in Editor History and persist them through save/reload without changing the dish's identity.
-- [ ] Make the image-slot and crop controls reusable for the later restaurant-header and section-photo tickets while retaining the current storage approach.
+- [x] Expose dish-photo controls in the focused editor with upload feedback and the existing file-type/size validation; failed uploads preserve the current picture.
+- [x] Offer supported thumbnail, card-top, or text-side placement choices through the template's declared capabilities, with a clear default for existing menus.
+- [x] Store crop/focal-position settings separately from the source photo so presentation changes do not destructively replace the uploaded image.
+- [x] Render the chosen crop and placement consistently in preview and publication, with a deliberate layout when the image is absent, removed, disabled, or fails to load.
+- [x] Keep photo and presentation changes in Editor History and persist them through save/reload without changing the dish's identity.
+- [x] Make the image-slot and crop controls reusable for the later restaurant-header and section-photo tickets while retaining the current storage approach.
 
 ## Demonstration
 
@@ -28,3 +28,7 @@ Add a photo to a dish, change its crop and supported placement, replace it, undo
 ## Comments
 
 - Approved by the owner on 2026-11-17 as part of the revised 21-ticket template-engine and editor plan. Implementation has not started.
+
+## Answer
+
+Completed 2026-11-18. Reusable ImageSlotEditor supports validated upload/replace/remove, independent visibility, fit and focal-position crop. Source image stays separate from presentation. Atlas declares three supported placements; legacy renderers retain their declared fixed placement until migration. Server validates bounded focal values; hidden images and failed loads collapse safely. 23 workspace tests (including upload rejection/source preservation and undo), TypeScript/build passed. Desktop/mobile evidence: [desktop](../evidence/07-dish-photo-desktop.jpg), [mobile](../evidence/07-dish-photo-mobile.jpg). Review validation/hero crop issues fixed.

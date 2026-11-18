@@ -1,4 +1,5 @@
 import React from 'react';
+import { imageStyle } from '../imagePresentation';
 import { Menu, MenuItem } from '../types/menu';
 import {
   MenuEmptyState, getMenuSectionGroups,
@@ -17,7 +18,7 @@ interface TemplateProps { menu: Menu }
 export const MedinaCafeTemplate: React.FC<TemplateProps> = ({ menu }) => {
   const { customization } = menu;
   const sections = getVisibleMenuSections(menu);
-  const heroItem = sections.flatMap(section => getMenuSectionGroups(section).flatMap(group => group.items)).find((item) => item.image);
+  const heroItem = sections.flatMap(section => getMenuSectionGroups(section).flatMap(group => group.items)).find((item) => item.image && !item.imagePresentation?.hidden);
   const previewTarget = usePreviewTarget();
 
   const renderItem = (item: MenuItem, sectionId: string) => (
@@ -41,7 +42,7 @@ export const MedinaCafeTemplate: React.FC<TemplateProps> = ({ menu }) => {
     <main dir={menuDirection(menu)} lang={menu.originalLanguage} className="min-h-screen bg-[#f5f0e3] text-[#352b22]" style={{ fontFamily: customization.fontFamily }}>
       <header className="relative isolate overflow-hidden border-b-[6px] border-[#1e6b70] bg-[#1e6b70] text-white">
         {customization.showImages && heroItem?.image ? (
-          <img src={heroItem.image} alt="" onError={(event) => { event.currentTarget.style.display = 'none'; }} className="absolute inset-0 -z-20 h-full w-full object-cover opacity-35" />
+          <img style={imageStyle(heroItem.imagePresentation)} src={heroItem.image} alt="" onError={(event) => { event.currentTarget.style.display = 'none'; }} className="absolute inset-0 -z-20 h-full w-full object-cover opacity-35" />
         ) : (
           <div aria-hidden="true" className="absolute inset-0 -z-20 bg-[radial-gradient(circle_at_15%_15%,rgba(238,196,122,.32),transparent_26%),radial-gradient(circle_at_85%_85%,rgba(9,47,50,.55),transparent_35%),linear-gradient(120deg,#1e6b70,#174f54)]" />
         )}

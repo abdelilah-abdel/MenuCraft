@@ -22,6 +22,11 @@
 
 ## Latest changes
 
+### Ticket 07 — dish photo controls completed — 2026-11-18
+
+- Added reusable validated photo slot editor, source-independent focal/fit/visibility settings, remove/replace, inline errors and upload feedback. Atlas exposes thumbnail/text-side/card-top; legacy designs keep their declared fixed placement. All dish-sourced hero images honor focal/fit and visibility.
+- TypeScript/build and 23 workspace tests passed; invalid uploads preserve source and photo edits undo. Desktop/mobile focal and placement checked; `07-dish-photo-desktop.jpg` / `07-dish-photo-mobile.jpg` saved. Fixed mobile control width/page scroll and review validation/hero findings. Next: ticket 08 logo/banner.
+
 ### Ticket 06 — content rendering completed — 2026-11-18
 
 - Filled Atlas tags/subsection descriptions, made description settings consistent across seven designs, and added shared long-text wrapping. Orphan dishes remain ungrouped; hidden/empty groups render empty states.
