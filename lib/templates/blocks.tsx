@@ -1,6 +1,7 @@
 import { SectionPhoto } from './SectionPhoto';
 import { RestaurantLogo, RestaurantBanner } from './RestaurantImages';
 import React from 'react';
+import { resolveComponentStyles } from '../menuDesign';
 import type { Menu, MenuItem, MenuSection, MenuSubsection } from '../types/menu';
 import type { TemplateConfig } from './config';
 import { PreviewHeading, usePreviewTarget } from './previewSelection';
@@ -69,10 +70,12 @@ export function MenuSectionsBlock({ menu, config }: MenuBlockProps) {
 
 export function SectionHeadingBlock({ menu, section, config, showDescriptions }: { menu: Menu; section: MenuSection; config: TemplateConfig; showDescriptions: boolean }) {
   const { theme, layout } = config;
+  const ruled = resolveComponentStyles(menu, config).headings === 'ruled';
   return (
     <header
       className="mb-5 flex items-baseline justify-between gap-4 pb-3"
-      style={layout.showSectionRules ? { borderBottom: `1px solid ${theme.primaryColor}` } : undefined}
+      data-heading-treatment={ruled ? 'ruled' : 'plain'}
+      style={ruled ? { borderBottom: `1px solid ${theme.primaryColor}` } : undefined}
     >
       <div>
         <SectionPhoto menu={menu} section={section} placements={config.sectionPhotoPlacements} />
@@ -149,11 +152,13 @@ export function DishRowBlock({ sectionId, item, menu, config }: { sectionId: str
   const placement = config.dishPhotoPlacements.includes(item.imagePresentation?.placement as 'thumbnail') ? item.imagePresentation!.placement : config.dishPhotoPlacements[0];
   const isCard = placement === 'card-top';
   const visible = item.available;
+  const components = resolveComponentStyles(menu, config);
 
   if (isCard) {
     return (
       <article
         {...editTarget}
+        data-dish-treatment={components.dishes}
         className={`overflow-hidden border-2 ${visible ? '' : 'opacity-60'}`}
         style={{ borderColor: theme.primaryColor, borderRadius: layout.cornerRadius }}
       >
@@ -163,14 +168,7 @@ export function DishRowBlock({ sectionId, item, menu, config }: { sectionId: str
           className="h-48 w-full object-cover"
         />
         <div className="p-4">
-          <div className="flex items-baseline justify-between gap-3">
-            <h3 className="text-lg font-semibold">{item.name}</h3>
-            {menu.customization.showPrices && (
-              <span className="shrink-0 font-bold tabular-nums" style={{ color: theme.primaryColor }}>
-                {formatMenuPrice(item)}
-              </span>
-            )}
-          </div>
+          <DishHeading card item={item} menu={menu} config={config} />
           {item.description && menu.customization.showDescriptions && (
             <p className="mt-2 text-sm" style={{ color: theme.secondaryColor }}>
               {item.description}
@@ -184,7 +182,7 @@ export function DishRowBlock({ sectionId, item, menu, config }: { sectionId: str
   }
 
   return (
-    <article {...editTarget} className={`border-b border-black/10 py-4 ${visible ? '' : 'opacity-60'}`}>
+    <article {...editTarget} data-dish-treatment={components.dishes} className={`border-b border-black/10 py-4 ${visible ? '' : 'opacity-60'}`}>
       <div className="flex items-start gap-4">
         {(
           <MenuItemPhoto
@@ -194,20 +192,7 @@ export function DishRowBlock({ sectionId, item, menu, config }: { sectionId: str
           />
         )}
         <div className="min-w-0 flex-1">
-          <div className="flex items-baseline gap-3">
-            <h3 className={layout.kind === 'minimal' ? 'font-medium' : 'font-semibold'}>{item.name}</h3>
-            {layout.showPricesWithLeaders && (
-              <span aria-hidden="true" className="mb-1 flex-1 border-b-2 border-dotted border-current/40" />
-            )}
-            {menu.customization.showPrices && (
-              <span
-                className="shrink-0 font-semibold tabular-nums"
-                style={{ color: theme.primaryColor, fontFamily: theme.headingFont }}
-              >
-                {formatMenuPrice(item)}
-              </span>
-            )}
-          </div>
+          <DishHeading item={item} menu={menu} config={config} />
           {item.description && menu.customization.showDescriptions && (
             <p className="mt-1 text-sm" style={{ color: theme.secondaryColor }}>
               {item.description}
@@ -219,4 +204,15 @@ export function DishRowBlock({ sectionId, item, menu, config }: { sectionId: str
       </div>
     </article>
   );
+}
+
+function DishHeading({ item, menu, config, card = false }: { item: MenuItem; menu: Menu; config: TemplateConfig; card?: boolean }) {
+  const prices = resolveComponentStyles(menu, config).prices;
+  return <div data-price-treatment={prices} className="flex items-baseline gap-3">
+    <h3 className={card ? "min-w-0 text-lg font-semibold" : config.layout.kind === 'minimal' ? "min-w-0 text-base font-medium" : "min-w-0 text-base font-semibold"}>{item.name || 'Untitled dish'}</h3>
+    {menu.customization.showPrices && <>
+      {prices === 'dotted' && <span aria-hidden="true" className="mb-1 min-w-4 flex-1 border-b-2 border-dotted border-current/40" />}
+      <span data-menu-role="price" className={`shrink-0 text-base tabular-nums ${card ? 'font-bold' : 'font-semibold'}`} style={{ marginInlineStart: prices === 'aligned' ? 'auto' : undefined, color: config.theme.primaryColor, fontFamily: card ? undefined : config.theme.headingFont }}>{formatMenuPrice(item)}</span>
+    </>}
+  </div>;
 }

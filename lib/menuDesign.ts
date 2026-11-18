@@ -16,7 +16,10 @@ export interface MenuAppearance {
   fontFamily?: string;
   textSize?: typeof TEXT_SIZES[number];
 }
-export interface MenuDesign { appearance?: MenuAppearance }
+export const COMPONENT_STYLES = { headings: ['ruled', 'plain'], dishes: ['plain', 'outlined'], prices: ['aligned', 'dotted'] } as const;
+export type ComponentStyles = { [K in keyof typeof COMPONENT_STYLES]?: typeof COMPONENT_STYLES[K][number] };
+export type ComponentCapabilities = { [K in keyof typeof COMPONENT_STYLES]: readonly typeof COMPONENT_STYLES[K][number][] };
+export interface MenuDesign { appearance?: MenuAppearance; componentStyles?: ComponentStyles }
 
 export const isColor = (value: unknown): value is string => typeof value === 'string' && /^#[0-9a-f]{6}$/i.test(value);
 export const isMenuFont = (value: unknown): value is string => MENU_FONTS.some(font => font.value === value);
@@ -27,7 +30,13 @@ function record(value: unknown): value is Record<string, unknown> {
 
 export function isMenuDesign(value: unknown): value is MenuDesign | undefined {
   if (value === undefined) return true;
-  if (!record(value) || Object.keys(value).some(key => key !== 'appearance')) return false;
+  if (!record(value) || Object.keys(value).some(key => !['appearance', 'componentStyles'].includes(key))) return false;
+  if (value.componentStyles !== undefined) {
+    if (!record(value.componentStyles)) return false;
+    for (const [key, style] of Object.entries(value.componentStyles)) {
+      if (!Object.hasOwn(COMPONENT_STYLES, key) || !(COMPONENT_STYLES[key as keyof ComponentStyles] as readonly unknown[]).includes(style)) return false;
+    }
+  }
   const appearance = value.appearance;
   if (appearance === undefined) return true;
   if (!record(appearance) || Object.keys(appearance).some(key => !['inheritTemplate', 'primaryColor', 'secondaryColor', 'backgroundColor', 'fontFamily', 'textSize'].includes(key))) return false;
@@ -54,4 +63,14 @@ export function resolveAppearance(menu: Menu, config: TemplateConfig) {
     headingFont: appearance?.fontFamily === 'template' ? config.theme.headingFont : appearance?.fontFamily ?? (inherit ? config.theme.headingFont : legacyFont(menu.customization.fontFamily, config.theme.bodyFont)),
     textSize: appearance?.textSize ?? 'medium',
   };
+}
+
+export function resolveComponentStyles(menu: Menu, config: TemplateConfig): Required<ComponentStyles> {
+  const defaults: Required<ComponentStyles> = { headings: config.layout.showSectionRules ? 'ruled' : 'plain', dishes: 'plain', prices: config.layout.showPricesWithLeaders ? 'dotted' : 'aligned' };
+  const overrides = menu.design?.componentStyles;
+  return Object.fromEntries(Object.entries(defaults).map(([key, fallback]) => {
+    const kind = key as keyof ComponentStyles;
+    const value = overrides?.[kind];
+    return [key, value && (config.componentStyles?.[kind] as readonly string[] | undefined)?.includes(value) ? value : fallback];
+  })) as Required<ComponentStyles>;
 }

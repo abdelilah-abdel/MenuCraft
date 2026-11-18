@@ -526,3 +526,19 @@ test('appearance edits preview immediately and resetting is undoable without cha
   assert.deepEqual(saved.sections,menu.sections);
   assert.equal(saved.design.appearance.primaryColor,'#174f54');
 });
+
+
+test('component styles apply to every dish including new entries and reset with undo', async () => {
+  const menu = structuredClone(initialMenu); menu.template = 'atlas-simple';
+  await mount(async value => value, menu); await click('Customize');
+  const prices = container.querySelector('[aria-label="Price treatment"]');
+  assert.ok(prices,'supported component choices are available');
+  await act(() => { prices.value='aligned'; prices.dispatchEvent(new window.Event('change',{bubbles:true})); });
+  assert.equal(container.querySelector('[data-price-treatment]').getAttribute('data-price-treatment'),'aligned');
+  await click('Content'); await click('Expand Dinner'); await click('+ Add dish');
+  assert.equal(container.querySelectorAll('[data-price-treatment="aligned"]').length,2);
+  await click('Customize'); await click('Reset component styles');
+  assert.equal(container.querySelector('[data-price-treatment]').getAttribute('data-price-treatment'),'dotted');
+  await click('Undo menu change');
+  assert.equal(container.querySelectorAll('[data-price-treatment="aligned"]').length,2);
+});

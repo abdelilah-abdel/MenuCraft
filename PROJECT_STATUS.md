@@ -23,6 +23,11 @@
 
 ## Latest changes
 
+### Ticket 11 — Component Styles completed — 2026-11-18
+
+- Added registry-bounded Atlas heading rules, dish outlines and aligned/dotted prices, shared across all current/new entries. Explicit reset and history keep appearance and content independent. Legacy signature treatments remain until their migrations.
+- TypeScript/build and 34 focused checks passed. Browser saved 8 matching dish/price treatments and 3 ruled headings, with desktop/mobile screenshots `11-component-styles-desktop.jpg` / `11-component-styles-mobile.jpg`. Review card typography finding fixed. Modern reset keeps readable default descriptions. Next: ticket 12 constrained regions/layout.
+
 ### Ticket 10 — overall appearance completed — 2026-11-18
 
 - Added design.appearance overrides with template/legacy inheritance, constrained colors/fonts/text scale, and explicit undoable reset. Preserves old saved values and content; Atlas now honors owner appearance. Scoped legacy output keeps design structure.

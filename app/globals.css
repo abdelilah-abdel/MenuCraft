@@ -602,3 +602,5 @@ h1, h2, h3, h4, h5, h6, p {
   .menu-appearance[data-appearance-size] .sm\:text-6xl { font-size: calc(3.75rem * var(--menu-text-scale)) !important; }
   .menu-appearance[data-appearance-size] .sm\:text-7xl { font-size: calc(4.5rem * var(--menu-text-scale)) !important; }
 }
+
+.menu-content [data-dish-treatment="outlined"] { border: 1px solid var(--menu-primary); border-radius: 8px; padding: 1rem; margin-block: .75rem; }
