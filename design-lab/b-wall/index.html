@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MenuCraft — Direction B · The Wall</title>
+<style>
+  :focus-visible { outline: 3px solid var(--stamp, #C4311F); outline-offset: 3px; }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; transition-duration: 0.001ms !important; scroll-behavior: auto !important; }
+  }
+</style>
+<style>
+/* ============================================================
+   DIRECTION B — THE WALL (letterpress editorial)
+   Palette sources:
+   --ink    #17140F  letterpress black, ink-soaked fibre
+   --paper  #F2ECDF  offset litho paper stock
+   --stamp  #C4311F  red rubber stamp ink
+   --graph  #55504A  graphite pencil
+   ============================================================ */
+@font-face {
+  font-family: 'Bricolage';
+  src: url('../fonts/bricolage-grotesque-latin.woff2') format('woff2');
+  font-weight: 200 800; font-stretch: 75% 100%; font-display: swap;
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+2000-206F, U+2212;
+}
+@font-face {
+  font-family: 'Bricolage';
+  src: url('../fonts/bricolage-grotesque-latin-ext.woff2') format('woff2');
+  font-weight: 200 800; font-stretch: 75% 100%; font-display: swap;
+  unicode-range: U+0100-02BA, U+1E00-1EFF, U+2020, U+20A0-20AB;
+}
+:root {
+  --ink: #17140F;
+  --paper: #F2ECDF;
+  --stamp: #C4311F;
+  --stamp-lit: #E86B55;   /* stamp red on ink ground: 5.9:1 */
+  --graph: #55504A;
+  --rule: rgba(23,20,15,.28);
+  --pad: clamp(20px, 5vw, 72px);
+  --step-1: clamp(15px, 1.1vw, 17px);
+  --step-2: clamp(18px, 1.5vw, 22px);
+  --step-3: clamp(26px, 3vw, 44px);
+  --step-4: clamp(44px, 6vw, 84px);
+  --step-5: clamp(58px, 10.5vw, 152px);
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: 'Bricolage', system-ui, sans-serif;
+  background: var(--paper); color: var(--ink);
+  font-size: var(--step-1); line-height: 1.5;
+  -webkit-font-smoothing: antialiased; overflow-x: hidden;
+}
+a { color: inherit; }
+::selection { background: var(--stamp); color: var(--paper); }
+
+.progress { position: fixed; top: 0; left: 0; height: 2px; width: 100%; background: var(--stamp); transform: scaleX(0); transform-origin: 0 50%; z-index: 100; }
+
+/* thin text nav — an index, not a banner */
+.topnav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 90;
+  display: flex; justify-content: space-between; align-items: center; gap: 20px;
+  padding: 14px var(--pad); background: var(--paper); border-bottom: 1.5px solid var(--ink);
+}
+.topnav .logo { font-weight: 800; font-stretch: 75%; letter-spacing: -0.03em; font-size: var(--step-2); text-decoration: none; }
+.topnav ul { display: flex; gap: clamp(14px, 3vw, 40px); list-style: none; }
+.topnav ul a { font-size: 13px; font-weight: 600; text-decoration: none; border-bottom: 1.5px solid transparent; padding-bottom: 2px; }
+.topnav ul a:hover { border-bottom-color: var(--stamp); color: var(--stamp); }
+
+section { padding: clamp(80px, 14vh, 170px) var(--pad); }
+.kicker {
+  font-size: 12px; font-weight: 700; letter-spacing: 0.22em; text-transform: uppercase;
+  color: var(--stamp); margin-bottom: 30px;
+}
+
+/* ---------- opening: type is the image ---------- */
+.hero { min-height: 100svh; display: flex; flex-direction: column; justify-content: flex-end; padding-top: 120px; padding-bottom: 0; }
+.hero h1 {
+  font-size: var(--step-5); line-height: 0.9; letter-spacing: -0.045em; font-weight: 800;
+  max-width: 14ch; text-wrap: balance;
+}
+.hero h1 .thin { font-weight: 200; font-stretch: 100%; }
+.hero h1 .stampword { color: var(--stamp); }
+.hero__sub {
+  display: flex; justify-content: space-between; align-items: flex-end; gap: 30px; flex-wrap: wrap;
+  margin-top: clamp(30px, 6vh, 70px); padding-bottom: 26px;
+}
+.hero__sub p { max-width: 40ch; font-size: var(--step-2); font-weight: 400; }
+.hero__sub .morph-line { font-size: var(--step-3); font-weight: 700; letter-spacing: -0.02em; }
+.morph { color: var(--stamp); display: inline-block; min-width: 4.2ch; }
+.cta {
+  display: inline-block; background: var(--ink); color: var(--paper); text-decoration: none;
+  padding: 16px 30px; font-weight: 700; font-size: 15px; letter-spacing: 0.02em;
+}
+.cta--stamp { background: var(--stamp); }
+.cta--line { background: transparent; color: var(--ink); border: 1.5px solid var(--ink); }
+
+/* ink band (parallax) */
+.inkband {
+  background: var(--ink); color: var(--paper); overflow: hidden;
+  padding: clamp(70px, 12vh, 150px) var(--pad); position: relative;
+}
+.inkband .big {
+  font-size: var(--step-5); font-weight: 200; font-stretch: 75%; line-height: 0.94;
+  letter-spacing: -0.04em; max-width: 16ch; will-change: transform;
+}
+.inkband .big b { font-weight: 800; color: var(--stamp); }
+.inkband .foot { display: flex; justify-content: space-between; gap: 24px; flex-wrap: wrap; margin-top: 44px; font-size: 13px; letter-spacing: .14em; text-transform: uppercase; color: rgba(242,236,223,.65); }
+
+/* ---------- intro statement ---------- */
+.intro h2 {
+  font-size: var(--step-4); line-height: 1.04; letter-spacing: -0.03em; font-weight: 700; max-width: 20ch;
+}
+.intro h2 .char { display: inline-block; }
+.differ { margin-top: clamp(50px, 9vh, 110px); display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 0; border-top: 1.5px solid var(--ink); }
+.differ div { padding: 26px 30px 30px 0; border-bottom: 1px solid var(--rule); }
+.differ div:nth-child(odd) { border-right: 1px solid var(--rule); padding-right: 40px; }
+.differ div:nth-child(even) { padding-left: 40px; }
+.differ h3 { font-size: var(--step-3); font-weight: 800; font-stretch: 75%; letter-spacing: -0.02em; line-height: 1.05; }
+.differ p { margin-top: 10px; color: var(--graph); max-width: 44ch; }
+
+/* ---------- flip zone: one menu, three homes ---------- */
+.flipsec { background: var(--paper); }
+.flipsec h2 { font-size: var(--step-4); font-weight: 800; font-stretch: 75%; letter-spacing: -0.03em; line-height: 1; max-width: 16ch; }
+.flip-stage {
+  margin-top: clamp(40px, 7vh, 90px);
+  display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: clamp(16px, 3vw, 40px);
+  position: relative;
+}
+.zone { border: 1.5px solid var(--ink); min-height: clamp(300px, 46vh, 430px); position: relative; background: transparent; }
+.zone figcaption {
+  position: absolute; left: 0; bottom: 0; width: 100%; padding: 12px 16px;
+  border-top: 1.5px solid var(--ink); font-size: 12px; font-weight: 700;
+  letter-spacing: .16em; text-transform: uppercase; background: var(--paper);
+}
+.zone .zone-ghost { position: absolute; inset: 16px 16px 52px; display: flex; align-items: center; justify-content: center; font-size: 13px; color: var(--graph); text-align: center; opacity: .55; }
+.flip-card {
+  position: absolute; top: clamp(16px, 3vh, 30px); left: clamp(16px, 3vw, 30px);
+  width: calc((100% - 2 * clamp(16px, 3vw, 40px)) / 3 - 2 * clamp(16px, 3vw, 30px));
+  background: #FFFDF8; border: 1.5px solid var(--ink); padding: 18px; z-index: 5;
+  box-shadow: 6px 6px 0 rgba(23,20,15,.16);
+}
+.flip-card .fc-title { font-weight: 800; font-stretch: 75%; text-transform: uppercase; font-size: 17px; letter-spacing: -0.01em; }
+.flip-card .fc-sub { font-size: 11.5px; color: var(--graph); margin-bottom: 12px; }
+.flip-card .fc-row { display: flex; align-items: baseline; gap: 7px; font-size: 13px; padding: 5px 0; }
+.flip-card .fc-row i { font-style: normal; flex: 1; border-bottom: 1.5px dotted var(--graph); opacity: .6; transform: translateY(-3px); }
+.flip-card .fc-row b { font-weight: 800; font-variant-numeric: tabular-nums; }
+.flip-card .fc-sec { font-size: 10.5px; font-weight: 700; letter-spacing: .2em; text-transform: uppercase; color: var(--stamp); border-bottom: 1px solid var(--ink); padding-bottom: 5px; margin-top: 12px; }
+.flip-note { margin-top: 30px; color: var(--graph); max-width: 52ch; }
+
+/* ---------- templates: hoverable list ---------- */
+.works { background: var(--ink); color: var(--paper); }
+.works .kicker { color: var(--stamp-lit); }
+.works h2 { font-size: var(--step-4); font-weight: 200; font-stretch: 75%; letter-spacing: -0.03em; max-width: 18ch; line-height: 1.02; }
+.works h2 b { font-weight: 800; }
+.tlist { margin-top: clamp(40px, 7vh, 80px); border-top: 1px solid rgba(242,236,223,.3); }
+.trow {
+  display: grid; grid-template-columns: minmax(0,1fr) auto auto; gap: 8px 30px; align-items: baseline;
+  padding: clamp(16px, 2.6vh, 26px) 0; border-bottom: 1px solid rgba(242,236,223,.3);
+  cursor: pointer; position: relative; transition: color .25s;
+}
+.trow h3 { font-size: clamp(30px, 4.6vw, 62px); font-weight: 800; font-stretch: 75%; letter-spacing: -0.03em; line-height: 1; transition: transform .35s cubic-bezier(.2,.7,.2,1), color .25s; }
+.trow .use { font-size: 12px; letter-spacing: .16em; text-transform: uppercase; color: rgba(242,236,223,.6); }
+.trow .arrow { font-size: clamp(22px, 3vw, 36px); font-weight: 200; transform: translateX(-8px); opacity: .4; transition: transform .3s, opacity .3s, color .3s; }
+.trow:hover h3, .trow:focus-visible h3 { color: var(--stamp); transform: translateX(18px); }
+.trow:hover .arrow, .trow:focus-visible .arrow { transform: translateX(0); opacity: 1; color: var(--stamp); }
+.tpreview {
+  position: fixed; top: 0; left: 0; width: 250px; pointer-events: none; z-index: 60;
+  background: #FFFDF8; color: var(--ink); border: 1.5px solid var(--ink); padding: 16px;
+  opacity: 0; visibility: hidden;
+}
+.tpreview .tp-title { font-weight: 800; text-transform: uppercase; font-size: 15px; margin-bottom: 8px; }
+.tpreview .tp-row { display: flex; gap: 6px; align-items: baseline; font-size: 12.5px; margin: 4px 0; }
+.tpreview .tp-row i { font-style: normal; flex: 1; border-bottom: 1.5px dotted currentColor; opacity: .5; transform: translateY(-3px); }
+@media (hover: none) { .tpreview { display: none; } }
+
+/* ---------- rates: printed menu ---------- */
+.rates__head { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: clamp(30px, 5vw, 80px); align-items: end; }
+.rates__head h2 { font-size: var(--step-4); font-weight: 800; font-stretch: 75%; letter-spacing: -0.035em; line-height: .98; max-width: 12ch; }
+.rates__head p { color: var(--graph); max-width: 44ch; font-size: var(--step-2); }
+.rate-list { list-style: none; margin-top: clamp(40px, 7vh, 80px); border-top: 2px solid var(--ink); }
+.rate-list li { display: grid; grid-template-columns: minmax(0,1fr) auto; gap: 4px 20px; padding: clamp(20px, 3.4vh, 34px) 0; border-bottom: 1px solid var(--rule); }
+.rate-list .line1 { display: flex; align-items: baseline; gap: 14px; grid-column: 1 / -1; }
+.rate-list h3 { font-size: clamp(26px, 3.4vw, 46px); font-weight: 800; font-stretch: 75%; letter-spacing: -0.03em; white-space: nowrap; }
+.rate-list .leader { flex: 1; border-bottom: 2px dotted var(--graph); transform: translateY(-7px); min-width: 40px; }
+.rate-list .price { font-size: clamp(26px, 3.4vw, 46px); font-weight: 800; font-stretch: 75%; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.rate-list .price small { font-size: .38em; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: var(--graph); margin-left: 6px; }
+.rate-list .price .from { font-size: .4em; font-weight: 500; color: var(--graph); margin-right: 8px; letter-spacing: 0; }
+.rate-list .desc { color: var(--graph); max-width: 58ch; grid-column: 1 / -1; }
+.rate-list .tag { display: inline-block; font-size: 11px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; background: var(--stamp); color: var(--paper); padding: 4px 10px; margin-left: 14px; vertical-align: middle; }
+
+/* ---------- closing ---------- */
+.closing { padding-bottom: 0; }
+.closing h2 { font-size: var(--step-5); font-weight: 800; font-stretch: 75%; letter-spacing: -0.045em; line-height: .92; max-width: 13ch; }
+.closing .row { display: flex; gap: 16px; flex-wrap: wrap; margin-top: clamp(30px, 6vh, 60px); }
+.closing .legal { display: flex; flex-wrap: wrap; gap: 12px 34px; margin-top: clamp(50px, 9vh, 110px); padding-top: 18px; border-top: 1.5px solid var(--ink); font-size: 13px; font-weight: 600; }
+.closing .legal span:last-child { margin-left: auto; color: var(--graph); font-weight: 500; }
+.closing .legal a { text-decoration: none; }
+.closing .legal a:hover { color: var(--stamp); }
+.wordmark { overflow: hidden; margin-top: 8px; line-height: 0.76; }
+.wordmark span { display: inline-block; font-size: clamp(64px, 16.5vw, 280px); font-weight: 800; font-stretch: 75%; letter-spacing: -0.05em; transform: translateY(110%); }
+.wordmark span:nth-child(3), .wordmark span:nth-child(6) { color: var(--stamp); }
+
+@media (max-width: 860px) {
+  .differ { grid-template-columns: 1fr; }
+  .differ div:nth-child(odd) { border-right: none; padding-right: 0; }
+  .differ div:nth-child(even) { padding-left: 0; }
+  .flip-stage { grid-template-columns: 1fr; }
+  .flip-card { position: relative; top: auto; left: auto; width: auto; margin-bottom: 20px; }
+  .zone { min-height: 260px; }
+  .rates__head { grid-template-columns: 1fr; }
+  .trow { grid-template-columns: 1fr auto; }
+  .trow .use { display: none; }
+  .topnav ul { display: none; }
+}
+</style>
+</head>
+<body>
+
+<div class="progress" aria-hidden="true"></div>
+
+<nav class="topnav" aria-label="Primary">
+  <a class="logo" href="#">MenuCraft∗</a>
+  <ul>
+    <li><a href="#bench">Bench</a></li>
+    <li><a href="#works">Templates</a></li>
+    <li><a href="#rates">Rates</a></li>
+    <li><a href="#start">Start</a></li>
+  </ul>
+</nav>
+
+<main>
+<!-- ============ OPENING ============ -->
+<section class="hero" aria-label="Opening">
+  <h1 id="hero-title">A menu is a <span class="thin">printed</span> thing — <br><span class="stampword">until it isn’t.</span></h1>
+  <div class="hero__sub">
+    <p>MenuCraft is the wall where a restaurant’s menu gets set, proofed and pinned — five minutes from blank page to a QR on every table.</p>
+    <div>
+      <p class="morph-line">From <span class="morph" id="morph">printed</span> to your table.</p>
+      <p style="margin-top:18px"><a href="#bench" class="cta cta--stamp">Open the workbench</a> &nbsp; <a href="#works" class="cta cta--line">See the templates</a></p>
+    </div>
+  </div>
+</section>
+
+<!-- ink band with parallax -->
+<div class="inkband" aria-hidden="false">
+  <p class="big" id="band-big">Set it like <b>paper.</b><br>Update it like <b>code.</b></p>
+  <div class="foot"><span>MenuCraft — digital menus, made simple</span><span>Free to start</span></div>
+</div>
+
+<!-- ============ INTRODUCTION ============ -->
+<section class="intro" id="why" aria-label="Why">
+  <p class="kicker">Why this exists</p>
+  <h2 id="intro-statement">Restaurants pay $500–$2,000 a redesign, or $50–$200 a month on a contract. MenuCraft takes five minutes and costs nothing to start.</h2>
+  <div class="differ" aria-label="What makes MenuCraft different">
+    <div class="reveal"><h3>Physical menu aesthetic</h3><p>Menus are set like print — rules, leaders, stock — so they land on the table looking like they belong there.</p></div>
+    <div class="reveal"><h3>Workbench simplicity</h3><p>Sections, items, prices, colours. The form is the whole learning curve.</p></div>
+    <div class="reveal"><h3>Generous free tier</h3><p>One menu, unlimited items, QR codes and public links — free forever, contract never.</p></div>
+    <div class="reveal"><h3>Hand-crafted templates</h3><p>Six designs drawn for food: Classic, Modern, Minimal, Medina Café, Moroccan Fine Dining, Modern Moroccan Garden.</p></div>
+  </div>
+</section>
+
+<!-- ============ FLIP ZONE: one menu, three homes ============ -->
+<section class="flipsec" id="bench" aria-label="The workbench">
+  <p class="kicker">The bench — one menu, three homes</p>
+  <h2>Set it once. It fits every frame.</h2>
+  <div class="flip-stage" id="flip-stage">
+    <figure class="zone" id="zone-1"><span class="zone-ghost">Slot A — the phone in the customer’s hand</span><figcaption>On the phone</figcaption></figure>
+    <figure class="zone" id="zone-2"><span class="zone-ghost">Slot B — the sheet by the pass</span><figcaption>On the paper</figcaption></figure>
+    <figure class="zone" id="zone-3"><span class="zone-ghost">Slot C — the code on the table tent</span><figcaption>On the code</figcaption></figure>
+    <div class="flip-card" id="flip-card">
+      <div class="fc-title">Casa Medina</div>
+      <div class="fc-sub">Moroccan kitchen, open fire, since 1998</div>
+      <div class="fc-sec">Starters</div>
+      <div class="fc-row"><span>Harira soup</span><i></i><b>45</b></div>
+      <div class="fc-row"><span>Zaalouk</span><i></i><b>55</b></div>
+      <div class="fc-row"><span>Pastilla</span><i></i><b>85</b></div>
+      <div class="fc-sec">Mains</div>
+      <div class="fc-row"><span>Tagine kefta</span><i></i><b>95</b></div>
+      <div class="fc-row"><span>Mechoui</span><i></i><b>140</b></div>
+    </div>
+  </div>
+  <p class="flip-note">One document, three resting states: the phone, the sheet, the code. Scroll — the same menu travels between them.</p>
+</section>
+
+<!-- ============ TEMPLATES: hoverable list ============ -->
+<section class="works" id="works" aria-label="Templates">
+  <p class="kicker">The shelf — six templates</p>
+  <h2>Six designs, <b>drawn for food.</b> Hover one to see it set.</h2>
+  <div class="tlist" id="tlist">
+    <a class="trow" href="#" data-tp='{"title":"Classic","rows":[["Bruschetta","8"],["Tagliatelle","16"],["Tiramisù","7"]]}'>
+      <h3>Classic</h3><span class="use">Fine dining · centred serif</span><span class="arrow">→</span>
+    </a>
+    <a class="trow" href="#" data-tp='{"title":"Modern","rows":[["Smash burger","12"],["Loaded fries","7"],["Stout","6"]]}'>
+      <h3>Modern</h3><span class="use">Bars · dark, bold</span><span class="arrow">→</span>
+    </a>
+    <a class="trow" href="#" data-tp='{"title":"Minimal","rows":[["Filter","3"],["Toast","5"],["Cake","4"]]}'>
+      <h3>Minimal</h3><span class="use">Cafés · content first</span><span class="arrow">→</span>
+    </a>
+    <a class="trow" href="#" data-tp='{"title":"Medina Café","rows":[["Mint tea","20"],["Chebakia","15"],["Msemen","25"]]}'>
+      <h3>Medina Café</h3><span class="use">Moroccan cafés · warm plaster</span><span class="arrow">→</span>
+    </a>
+    <a class="trow" href="#" data-tp='{"title":"Fine Dining","rows":[["Mechoui","140"],["Tagine kefta","95"],["Orange blossom","40"]]}'>
+      <h3>Moroccan Fine Dining</h3><span class="use">Riads · ruled, restrained</span><span class="arrow">→</span>
+    </a>
+    <a class="trow" href="#" data-tp='{"title":"Garden","rows":[["Courgette salad","65"],["Lamb, preserved lemon","120"],["Mint sorbet","45"]]}'>
+      <h3>Moroccan Garden</h3><span class="use">Courtyards · leafy, seasonal</span><span class="arrow">→</span>
+    </a>
+  </div>
+</section>
+<div class="tpreview" id="tpreview" aria-hidden="true">
+  <div class="tp-title" id="tp-title">Classic</div>
+  <div id="tp-rows"></div>
+</div>
+
+<!-- ============ RATES ============ -->
+<section id="rates" aria-label="Rates">
+  <div class="rates__head">
+    <div>
+      <p class="kicker">The rates — set like a menu</p>
+      <h2>Two lines, then a page for the rest.</h2>
+    </div>
+    <p>Prices sit the way they do on a printed card: name, leader, number. No feature gates hidden behind a click, no annual contract.</p>
+  </div>
+  <ul class="rate-list">
+    <li class="reveal">
+      <div class="line1"><h3>Free</h3><span class="leader" aria-hidden="true"></span><span class="price">$0</span></div>
+      <p class="desc">One menu, unlimited items, QR codes and public links, basic templates — with the MenuCraft stamp on the page.</p>
+    </li>
+    <li class="reveal">
+      <div class="line1"><h3>Starter <span class="tag">Most kitchens</span></h3><span class="leader" aria-hidden="true"></span><span class="price"><span class="from">from</span>$19<small>/month</small></span></div>
+      <p class="desc">Three menus, stamp removed, fifty custom images, basic analytics, one custom domain, email support.</p>
+    </li>
+    <li class="reveal">
+      <div class="line1"><h3>Professional</h3><span class="leader" aria-hidden="true"></span><span class="price"><span class="from">from</span>$49<small>/month</small></span></div>
+      <p class="desc">Unlimited menus and images, advanced analytics, five domains, A/B tests, seasonal scheduling, priority support, API access.</p>
+    </li>
+    <li class="reveal">
+      <div class="line1"><h3>Enterprise</h3><span class="leader" aria-hidden="true"></span><span class="price">by agreement</span></div>
+      <p class="desc">White label, franchise controls, POS and ordering integrations, multi-user collaboration, SLA.</p>
+    </li>
+  </ul>
+  <p style="margin-top:40px"><a href="#" class="cta">Start on the free tier</a></p>
+</section>
+
+<!-- ============ CLOSING ============ -->
+<footer class="closing" id="start" aria-label="Closing">
+  <p class="kicker">Closing</p>
+  <h2 id="closing-title">Pin it up<br>tonight.</h2>
+  <div class="row">
+    <a href="#" class="cta cta--stamp">Open the workbench</a>
+    <a href="#works" class="cta cta--line">Walk the shelf</a>
+  </div>
+  <nav class="legal" aria-label="Footer">
+    <a href="#bench">Bench</a><a href="#works">Templates</a><a href="#rates">Rates</a><a href="#">Docs</a><a href="#">GitHub</a>
+    <span>MenuCraft — MIT licence · digital menus made simple</span>
+  </nav>
+  <div class="wordmark" aria-hidden="true" id="wordmark">
+    <span>M</span><span>E</span><span>N</span><span>U</span><span>C</span><span>R</span><span>A</span><span>F</span><span>T</span>
+  </div>
+</footer>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/ScrollTrigger.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/SplitText.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/Flip.min.js"></script>
+<script>
+(function () {
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var hasGsap = typeof gsap !== 'undefined';
+
+  if (!hasGsap || reduce) {
+    document.querySelectorAll('.wordmark span').forEach(function (s) { s.style.transform = 'none'; });
+    // The card keeps its absolute resting place inside zone 1; the zones show their ghosts.
+    return;
+  }
+
+  gsap.registerPlugin(ScrollTrigger, SplitText, Flip);
+
+  /* 1 — Progress hairline */
+  gsap.to('.progress', {
+    scaleX: 1, ease: 'none',
+    scrollTrigger: { trigger: document.body, start: 'top top', end: 'bottom bottom', scrub: 0.3 }
+  });
+
+  /* 2 — Cinematic text: the hero line rises through a crop */
+  var heroSplit = SplitText.create('#hero-title', { type: 'lines', mask: 'lines' });
+  gsap.from(heroSplit.lines, {
+    yPercent: 112, duration: 1.3, stagger: 0.14, ease: 'expo.out', delay: 0.15
+  });
+
+  /* 3 — Text morph: printed → live → scanned */
+  var morph = document.getElementById('morph');
+  var words = ['printed', 'live', 'scanned'];
+  var wi = 0;
+  function morphTo(next) {
+    var chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ#*∙';
+    var steps = 7, i = 0;
+    var iv = setInterval(function () {
+      i++;
+      var out = next.split('').map(function (c, idx) {
+        if (i > (idx + 1) * (steps / next.length) + 2) return c;
+        return chars[Math.floor(Math.random() * chars.length)];
+      }).join('');
+      morph.textContent = out;
+      if (i >= steps + 3) { clearInterval(iv); morph.textContent = next; }
+    }, 55);
+  }
+  setInterval(function () { wi = (wi + 1) % words.length; morphTo(words[wi]); }, 3200);
+
+  /* 4 — Parallax: the ink band’s statement travels slower than the page */
+  gsap.fromTo('#band-big', { yPercent: 18 }, {
+    yPercent: -14, ease: 'none',
+    scrollTrigger: { trigger: '.inkband', start: 'top bottom', end: 'bottom top', scrub: true }
+  });
+
+  /* 5 — Character appear: the intro statement assembles letter by letter */
+  var introSplit = SplitText.create('#intro-statement', { type: 'chars' });
+  gsap.from(introSplit.chars, {
+    autoAlpha: 0, y: 14, duration: 0.5, stagger: { each: 0.008, from: 'random' }, ease: 'power2.out',
+    scrollTrigger: { trigger: '#intro-statement', start: 'top 78%', once: true }
+  });
+
+  /* 6 — Element reveal: the four difference rows arrive as units */
+  gsap.utils.toArray('.reveal').forEach(function (el) {
+    gsap.from(el, { autoAlpha: 0, y: 30, duration: 0.9, ease: 'power3.out',
+      scrollTrigger: { trigger: el, start: 'top 88%', once: true } });
+  });
+
+  /* 7 — FLIP ZONE (the moment): one menu card travels through three frames */
+  var card = document.getElementById('flip-card');
+  var zones = [document.getElementById('zone-1'), document.getElementById('zone-2'), document.getElementById('zone-3')];
+  var deltas = [];
+
+  function measure() {
+    if (window.innerWidth <= 860) { deltas = []; return; }
+    var prev = { x: gsap.getProperty(card, 'x'), y: gsap.getProperty(card, 'y') };
+    gsap.set(card, { x: 0, y: 0 });
+    var base = card.getBoundingClientRect();
+    deltas = zones.map(function (z) {
+      var r = z.getBoundingClientRect();
+      var pad = Math.min(30, window.innerWidth * 0.02);
+      return { x: (r.left + pad) - base.left, y: (r.top + pad) - base.top };
+    });
+    gsap.set(card, { x: prev.x, y: prev.y });
+  }
+  measure();
+
+  var flipTl = gsap.timeline({
+    scrollTrigger: {
+      trigger: '#flip-stage', start: 'top 62%', end: 'bottom 45%',
+      scrub: 0.6, invalidateOnRefresh: true,
+      onRefresh: measure
+    }
+  });
+  flipTl
+    .to(card, { x: function () { return deltas[1] ? deltas[1].x : 0; }, y: function () { return deltas[1] ? deltas[1].y : 0; }, duration: 1, ease: 'power2.inOut' })
+    .to(card, { x: function () { return deltas[2] ? deltas[2].x : 0; }, y: function () { return deltas[2] ? deltas[2].y : 0; }, duration: 1, ease: 'power2.inOut' });
+
+  /* 8 — Hoverable list: the preview plate follows the pointer */
+  var plate = document.getElementById('tpreview');
+  var pt = { x: gsap.quickTo(plate, 'x', { duration: 0.4, ease: 'power3' }),
+             y: gsap.quickTo(plate, 'y', { duration: 0.4, ease: 'power3' }) };
+  document.querySelectorAll('.trow').forEach(function (row) {
+    row.addEventListener('pointerenter', function () {
+      var d = JSON.parse(row.getAttribute('data-tp'));
+      document.getElementById('tp-title').textContent = d.title;
+      document.getElementById('tp-rows').innerHTML = d.rows.map(function (r) {
+        return '<div class="tp-row"><span>' + r[0] + '</span><i></i><b>' + r[1] + '</b></div>';
+      }).join('');
+      gsap.to(plate, { autoAlpha: 1, duration: 0.25, overwrite: 'auto' });
+    });
+    row.addEventListener('pointerleave', function () {
+      gsap.to(plate, { autoAlpha: 0, duration: 0.25, overwrite: 'auto' });
+    });
+    row.addEventListener('pointermove', function (e) {
+      pt.x(e.clientX + 28); pt.y(Math.min(e.clientY - 60, window.innerHeight - 260));
+    });
+    row.addEventListener('click', function (e) { e.preventDefault(); });
+  });
+
+  /* 9 — Background colour: paper → ink for the shelf, ink → paper after */
+  ScrollTrigger.create({
+    trigger: '.works', start: 'top 55%', end: 'bottom 45%',
+    onEnter:     function () { gsap.to('body', { backgroundColor: '#17140F', duration: 0.6, overwrite: 'auto' }); },
+    onEnterBack: function () { gsap.to('body', { backgroundColor: '#17140F', duration: 0.6, overwrite: 'auto' }); },
+    onLeaveBack: function () { gsap.to('body', { backgroundColor: '#F2ECDF', duration: 0.6, overwrite: 'auto' }); },
+    onLeave:     function () { gsap.to('body', { backgroundColor: '#F2ECDF', duration: 0.6, overwrite: 'auto' }); }
+  });
+
+  /* 10 — Wordmark rise, letter by letter */
+  gsap.fromTo('#wordmark span', { yPercent: 110 },
+    { yPercent: 0, duration: 0.75, stagger: 0.06, ease: 'expo.out',
+      scrollTrigger: { trigger: '#wordmark', start: 'top 94%', once: true } });
+})();
+</script>
+</body>
+</html>

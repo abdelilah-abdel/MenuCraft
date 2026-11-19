@@ -2,6 +2,7 @@ import { mkdir, readFile, rename, unlink, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { randomUUID } from 'node:crypto';
 import type { Menu, MenuItem, MenuSection, MenuSubsection, TemplateType } from '@/lib/types/menu';
+import { TEMPLATE_CONFIGS } from '@/lib/templates/config';
 
 export type MenuInput = Omit<Menu, 'ownerId' | 'createdAt' | 'updatedAt' | 'originalLanguage'> &
   Partial<Pick<Menu, 'ownerId' | 'createdAt' | 'updatedAt' | 'originalLanguage'>>;
@@ -52,8 +53,9 @@ function isMenuSection(value: unknown): value is MenuSection {
 }
 
 function isTemplateType(value: unknown): value is TemplateType {
-  return value === 'classic' || value === 'modern' || value === 'minimal' ||
-    value === 'medina-cafe' || value === 'moroccan-fine-dining' || value === 'modern-moroccan-garden';
+  // The library registry is the allowlist: adding a config makes a new design
+  // valid for saving instead of requiring a second hardcoded server list.
+  return typeof value === 'string' && Object.hasOwn(TEMPLATE_CONFIGS, value);
 }
 
 export function isMenuInput(value: unknown): value is MenuInput {

@@ -5,6 +5,26 @@ import { useEffect, useState } from 'react';
 import { MenuService } from '@/lib/services/menuService';
 import { Menu } from '@/lib/types/menu';
 import { Button } from '@/components/ui/Button';
+import LandingMotion from '@/components/landing/LandingMotion';
+
+/* The six templates on the shelf — name, use, and the rows the hover plate shows */
+const SHELF = [
+  { id: 'classic', name: 'Classic', use: 'Fine dining · centred serif', rows: [['Bruschetta', '8'], ['Tagliatelle', '16'], ['Tiramisù', '7']] },
+  { id: 'modern', name: 'Modern', use: 'Bars · dark, bold', rows: [['Smash burger', '12'], ['Loaded fries', '7'], ['Stout', '6']] },
+  { id: 'minimal', name: 'Minimal', use: 'Cafés · content first', rows: [['Filter', '3'], ['Toast', '5'], ['Cake', '4']] },
+  { id: 'medina-cafe', name: 'Medina Café', use: 'Moroccan cafés · warm plaster', rows: [['Mint tea', '20'], ['Chebakia', '15'], ['Msemen', '25']] },
+  { id: 'moroccan-fine-dining', name: 'Moroccan Fine Dining', use: 'Riads · ruled, restrained', rows: [['Mechoui', '140'], ['Tagine kefta', '95'], ['Orange blossom', '40']] },
+  { id: 'modern-moroccan-garden', name: 'Moroccan Garden', use: 'Courtyards · leafy, seasonal', rows: [['Courgette salad', '65'], ['Lamb, preserved lemon', '120'], ['Mint sorbet', '45']] },
+] as const;
+
+const DIFFER = [
+  { title: 'Physical menu aesthetic', body: 'Menus are set like print — rules, leaders, stock — so they land on the table looking like they belong there.' },
+  { title: 'Workbench simplicity', body: 'Sections, items, prices, colours. The form is the whole learning curve; no design skills required.' },
+  { title: 'Generous free tier', body: 'One menu, unlimited items, QR codes and public links — free forever, no contract, ever.' },
+  { title: 'Hand-crafted templates', body: 'Six designs drawn for food, not for blogs: Classic, Modern, Minimal, Medina Café, Moroccan Fine Dining, Moroccan Garden.' },
+];
+
+const WORDMARK = 'MENUCRAFT'.split('');
 
 export default function Home() {
   const [menus, setMenus] = useState<Menu[]>([]);
@@ -40,298 +60,345 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-menu-cream-200">
-      {/* Top Navigation - Menu Style */}
-      <nav className="sticky top-0 z-50 bg-menu-cream-50 border-b-menu border-menu-charcoal-200 shadow-menu-sm">
+    <div className="min-h-screen bg-menu-paper-200">
+      <LandingMotion />
+      <div className="progress fixed top-0 left-0 h-[3px] w-full bg-menu-stamp-500 origin-left scale-x-0 z-[100]" aria-hidden="true"></div>
+
+      {/* ============ NAV — a thin index, not a banner ============ */}
+      <nav className="sticky top-0 z-50 bg-menu-paper-200 border-b-menu border-menu-ink-900">
         <div className="max-w-6xl mx-auto px-6 lg:px-12">
           <div className="flex justify-between items-center h-16">
-            {/* Logo */}
-            <Link href="/" className="flex items-center space-x-2 group">
-              <span className="text-2xl font-serif menu-title text-menu-charcoal-900">MenuCraft</span>
-              <span className="text-menu-gold-500 text-sm">∗</span>
+            <Link href="/" className="flex items-center space-x-1 group">
+              <span className="text-xl font-extrabold tracking-[-0.03em] text-menu-ink-900">MenuCraft</span>
+              <span className="text-menu-stamp-500 text-sm">∗</span>
             </Link>
 
-            {/* Navigation */}
             <div className="hidden md:flex items-center space-x-8">
-              <a href="#templates" className="text-menu-charcoal-700 hover:text-menu-gold-600 transition-colors text-sm uppercase tracking-wider">
+              <a href="#bench" className="text-sm font-semibold text-menu-ink-700 hover:text-menu-stamp-600 transition-colors">
+                The bench
+              </a>
+              <a href="#templates" className="text-sm font-semibold text-menu-ink-700 hover:text-menu-stamp-600 transition-colors">
                 Templates
               </a>
-              <a href="#features" className="text-menu-charcoal-700 hover:text-menu-gold-600 transition-colors text-sm uppercase tracking-wider">
-                Features
+              <a href="#why" className="text-sm font-semibold text-menu-ink-700 hover:text-menu-stamp-600 transition-colors">
+                Why
               </a>
-              {owner && menus.length > 0 && (
-                <a href="#your-menus" className="text-menu-charcoal-700 hover:text-menu-gold-600 transition-colors text-sm uppercase tracking-wider">
-                  Your Menu
-                </a>
-              )}
               {owner ? (
                 <>
-                  <span className="text-xs text-menu-charcoal-500">{owner.email}</span>
+                  <span className="text-xs text-menu-ink-500">{owner.email}</span>
                   <button
                     type="button"
                     onClick={handleSignOut}
-                    className="text-menu-charcoal-700 hover:text-menu-gold-600 transition-colors text-sm uppercase tracking-wider"
+                    className="text-sm font-semibold text-menu-ink-700 hover:text-menu-stamp-600 transition-colors"
                   >
                     Sign out
                   </button>
                   <Link href="/builder">
-                    <Button variant="primary" size="sm">Manage Menu</Button>
+                    <Button variant="stamp-solid" size="sm">Manage menu</Button>
                   </Link>
                 </>
               ) : (
                 <>
-                  <Link href="/sign-in" className="text-menu-charcoal-700 hover:text-menu-gold-600 transition-colors text-sm uppercase tracking-wider">
+                  <Link href="/sign-in" className="text-sm font-semibold text-menu-ink-700 hover:text-menu-stamp-600 transition-colors">
                     Sign in
                   </Link>
                   <Link href="/sign-up">
-                    <Button variant="primary" size="sm">Create Account</Button>
+                    <Button variant="primary" size="sm">Create account</Button>
                   </Link>
                 </>
               )}
             </div>
 
-            {/* Mobile */}
             <Link href={owner ? '/builder' : '/sign-up'} className="md:hidden">
               <Button variant="primary" size="sm">
-                {owner ? 'Your Menu' : 'Get Started'}
+                {owner ? 'Your menu' : 'Get started'}
               </Button>
             </Link>
           </div>
         </div>
       </nav>
 
-      {/* Hero Section - Menu Cover */}
-      <section className="relative py-20 px-6 lg:px-12 bg-menu-cream-50">
-        <div className="max-w-5xl mx-auto text-center">
-          {/* Ornamental Top */}
-          <div className="menu-ornament"></div>
+      {/* ============ OPENING — the statement ============ */}
+      <section className="bg-menu-paper-200 px-6 lg:px-12 pt-20 pb-16 md:pt-28 md:pb-20">
+        <div className="max-w-6xl mx-auto">
+          <p className="kicker mb-8">Menu workbench · est. 2025</p>
 
-          {/* Main Headline */}
-          <h1 className="text-5xl md:text-6xl lg:text-7xl font-serif menu-title text-menu-charcoal-900 mb-6">
-            Digital Menus
+          <h1
+            id="hero-title"
+            data-cinematic
+            className="font-extrabold text-[clamp(52px,9.5vw,138px)] leading-[0.92] tracking-[-0.045em] text-menu-ink-900 max-w-[14ch] text-balance"
+          >
+            A menu is a <span className="font-light">printed</span> thing — until it{' '}
+            <span className="text-menu-stamp-500">isn’t.</span>
           </h1>
 
-          <div className="menu-divider-center mb-6"></div>
+          <div className="mt-12 md:mt-16 flex flex-col md:flex-row md:items-end md:justify-between gap-8">
+            <p className="text-lg md:text-xl text-menu-ink-700 max-w-[42ch] leading-snug">
+              MenuCraft is the wall where a restaurant’s menu gets set, proofed and pinned —
+              five minutes from blank page to a QR on every table.
+            </p>
 
-          <p className="text-xl md:text-2xl menu-subtitle max-w-2xl mx-auto mb-8">
-            Create elegant restaurant menus in minutes<br />
-            <span className="text-base text-menu-charcoal-500">Professional • Simple • Beautiful</span>
+            <div className="md:text-right">
+              <p className="text-[clamp(22px,3vw,34px)] font-bold tracking-[-0.02em] leading-none">
+                From <span id="morph" className="text-menu-stamp-500 inline-block min-w-[7ch] text-left">printed</span> to your table.
+              </p>
+              <div className="mt-5 flex flex-wrap gap-3 md:justify-end">
+                <Link href={owner ? '/builder' : '/sign-up'}>
+                  <Button variant="primary" size="lg">
+                    {owner ? 'Maintain your menu' : 'Open the workbench'}
+                  </Button>
+                </Link>
+                <a href="#templates">
+                  <Button variant="secondary" size="lg">See the six templates</Button>
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ============ INK BAND — parallax statement ============ */}
+      <div className="inkband bg-menu-ink-900 text-menu-paper-200 px-6 lg:px-12 py-20 md:py-32 overflow-hidden">
+        <div className="max-w-6xl mx-auto">
+          <p
+            id="band-big"
+            className="font-extrabold text-[clamp(44px,8vw,120px)] leading-[0.94] tracking-[-0.04em] max-w-[16ch] will-change-transform"
+          >
+            Set it like <span className="text-menu-stamp-400">paper.</span>
+            <br />
+            Update it like <span className="text-menu-stamp-400">code.</span>
           </p>
-
-          {/* CTA Buttons */}
-          <div className="flex flex-wrap justify-center gap-4 mb-12">
-            <Link href={owner ? '/builder' : '/sign-up'}>
-              <Button variant="primary" size="lg">
-                {owner ? 'Maintain Your Menu' : 'Create Your Menu'}
-              </Button>
-            </Link>
-            <Button variant="secondary" size="lg">
-              View Examples
-            </Button>
+          <div className="mt-10 flex flex-wrap justify-between gap-4 text-xs uppercase tracking-[0.16em] text-menu-paper-500">
+            <span>MenuCraft — digital menus, made simple</span>
+            <span>Free to start</span>
           </div>
+        </div>
+      </div>
 
-          {/* Preview Card */}
-          <div className="max-w-3xl mx-auto mt-16">
-            <div className="menu-card p-8 md:p-12">
-              <div className="space-y-8">
-                {/* Menu Header */}
-                <div className="text-center border-b-menu border-menu-gold-300 pb-6">
-                  <h2 className="text-3xl font-serif menu-title text-menu-charcoal-900 mb-2">
-                    Your Restaurant
-                  </h2>
-                  <p className="menu-subtitle text-lg">Fine Dining Experience</p>
-                </div>
+      {/* ============ INTRODUCTION — the problem, on an empty wall ============ */}
+      <section id="why" className="bg-menu-paper-200 px-6 lg:px-12 py-20 md:py-28">
+        <div className="max-w-6xl mx-auto">
+          <p className="kicker mb-8">Why this exists</p>
 
-                {/* Menu Items Preview */}
-                <div className="space-y-6">
-                  {[
-                    { name: 'Signature Appetizer', price: '14', desc: 'Fresh seasonal ingredients' },
-                    { name: 'Chef\'s Special Entrée', price: '28', desc: 'Premium cuts, locally sourced' },
-                    { name: 'Artisan Dessert', price: '12', desc: 'House-made daily' }
-                  ].map((item, i) => (
-                    <div key={i} className="menu-item">
-                      <div className="flex justify-between items-baseline mb-2">
-                        <h3 className="text-lg font-serif text-menu-charcoal-900">{item.name}</h3>
-                        <span className="menu-price text-lg">${item.price}</span>
-                      </div>
-                      <p className="menu-description">{item.desc}</p>
-                    </div>
-                  ))}
-                </div>
+          <h2
+            id="intro-statement"
+            data-cinematic
+            className="font-extrabold text-[clamp(32px,4.6vw,62px)] leading-[1.05] tracking-[-0.03em] max-w-[22ch] text-menu-ink-900"
+          >
+            Restaurants pay $500–$2,000 a redesign, or $50–$200 a month on a contract.
+            MenuCraft takes five minutes and costs nothing to start.
+          </h2>
+
+          <div className="mt-14 md:mt-20 border-t-[1.5px] border-menu-ink-900 md:grid md:grid-cols-2">
+            {DIFFER.map((row) => (
+              <div
+                key={row.title}
+                data-reveal
+                className="py-6 md:py-7 border-b border-menu-ink-200 md:odd:border-r md:odd:border-menu-ink-200 md:odd:pr-10 md:even:pl-10"
+              >
+                <h3 className="text-xl md:text-2xl font-extrabold tracking-[-0.02em] text-menu-ink-900 uppercase">
+                  {row.title}
+                </h3>
+                <p className="mt-2.5 text-menu-ink-500 max-w-[46ch]">{row.body}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ============ THE BENCH — one menu, three homes (the moment) ============ */}
+      <section id="bench" className="bg-menu-paper-200 px-6 lg:px-12 py-20 md:py-28 border-t border-menu-ink-200">
+        <div className="max-w-6xl mx-auto">
+          <p className="kicker mb-8">The bench — one menu, three homes</p>
+          <h2 className="font-extrabold text-[clamp(32px,4.6vw,62px)] leading-[1] tracking-[-0.03em] max-w-[16ch] text-menu-ink-900">
+            Set it once. It fits every frame.
+          </h2>
+
+          <div id="flip-stage" className="flip-stage mt-12 md:mt-16 grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-[clamp(16px,3vw,40px)]">
+            {[
+              { id: 'zone-1', ghost: 'Slot A — the phone in the customer’s hand', caption: 'On the phone' },
+              { id: 'zone-2', ghost: 'Slot B — the sheet by the pass', caption: 'On the paper' },
+              { id: 'zone-3', ghost: 'Slot C — the code on the table tent', caption: 'On the code' },
+            ].map((zone) => (
+              <figure
+                key={zone.id}
+                id={zone.id}
+                className="relative border-[1.5px] border-menu-ink-900 min-h-[280px] md:min-h-[420px]"
+              >
+                <span className="absolute inset-x-4 top-4 bottom-14 flex items-center justify-center text-center text-sm text-menu-ink-500 opacity-70">
+                  {zone.ghost}
+                </span>
+                <figcaption className="absolute bottom-0 inset-x-0 px-4 py-3 border-t-[1.5px] border-menu-ink-900 bg-menu-paper-200 text-xs font-bold uppercase tracking-[0.16em] text-menu-ink-900">
+                  {zone.caption}
+                </figcaption>
+              </figure>
+            ))}
+
+            {/* The actor — one document travelling between three frames */}
+            <div
+              id="flip-card"
+              className="flip-card bg-menu-paper-50 border-[1.5px] border-menu-ink-900 p-4 md:p-5 shadow-[6px_6px_0_rgba(11,9,6,0.14)]"
+            >
+              <div className="font-extrabold uppercase text-base tracking-[-0.01em] text-menu-ink-900">Casa Medina</div>
+              <div className="text-xs text-menu-ink-500 mb-3">Moroccan kitchen, open fire, since 1998</div>
+              <div className="text-[10.5px] font-bold uppercase tracking-[0.2em] text-menu-stamp-600 border-b border-menu-ink-900 pb-1.5">Starters</div>
+              <div className="flex items-baseline gap-2 text-sm py-1.5">
+                <span className="font-semibold">Harira soup</span>
+                <i className="flex-1 border-b-2 border-dotted border-menu-ink-300 translate-y-[-4px] not-italic"></i>
+                <b className="font-extrabold tabular-nums">45</b>
+              </div>
+              <div className="flex items-baseline gap-2 text-sm py-1.5">
+                <span className="font-semibold">Zaalouk</span>
+                <i className="flex-1 border-b-2 border-dotted border-menu-ink-300 translate-y-[-4px] not-italic"></i>
+                <b className="font-extrabold tabular-nums">55</b>
+              </div>
+              <div className="flex items-baseline gap-2 text-sm py-1.5">
+                <span className="font-semibold">Pastilla</span>
+                <i className="flex-1 border-b-2 border-dotted border-menu-ink-300 translate-y-[-4px] not-italic"></i>
+                <b className="font-extrabold tabular-nums">85</b>
+              </div>
+              <div className="text-[10.5px] font-bold uppercase tracking-[0.2em] text-menu-stamp-600 border-b border-menu-ink-900 pb-1.5 mt-3">Mains</div>
+              <div className="flex items-baseline gap-2 text-sm py-1.5">
+                <span className="font-semibold">Tagine kefta</span>
+                <i className="flex-1 border-b-2 border-dotted border-menu-ink-300 translate-y-[-4px] not-italic"></i>
+                <b className="font-extrabold tabular-nums">95</b>
+              </div>
+              <div className="flex items-baseline gap-2 text-sm py-1.5">
+                <span className="font-semibold">Mechoui</span>
+                <i className="flex-1 border-b-2 border-dotted border-menu-ink-300 translate-y-[-4px] not-italic"></i>
+                <b className="font-extrabold tabular-nums">140</b>
               </div>
             </div>
           </div>
+
+          <p className="mt-8 text-menu-ink-500 max-w-[54ch]">
+            One document, three resting states: the phone, the sheet, the code. Keep scrolling —
+            the same menu travels between them.
+          </p>
         </div>
       </section>
 
-      {/* Templates Section */}
-      <section id="templates" className="py-20 px-6 lg:px-12 bg-menu-cream-100">
+      {/* ============ THE SHELF — six templates as a hoverable list ============ */}
+      <section id="templates" className="bg-menu-ink-900 text-menu-paper-200 px-6 lg:px-12 py-20 md:py-28">
         <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-16">
-            <div className="menu-divider-dots mb-6"></div>
-            <h2 className="text-4xl md:text-5xl font-serif menu-title text-menu-charcoal-900 mb-4">
-              Choose Your Template
-            </h2>
-            <p className="text-lg menu-description max-w-2xl mx-auto">
-              Start with a professionally designed template
-            </p>
-          </div>
+          <p className="kicker kicker-on-ink mb-8">The shelf — six templates</p>
+          <h2 className="font-extrabold text-[clamp(32px,4.6vw,62px)] leading-[1.02] tracking-[-0.03em] max-w-[18ch]">
+            Six designs, <span className="text-menu-stamp-400">drawn for food.</span> Hover one to see it set.
+          </h2>
 
-          <div className="grid md:grid-cols-3 gap-8">
-            {[
-              { name: 'Modern', desc: 'Clean & contemporary' },
-              { name: 'Classic', desc: 'Timeless elegance' },
-              { name: 'Minimal', desc: 'Simple & sophisticated' }
-            ].map((template, index) => (
-              <div
-                key={index}
-                className="menu-card p-8 hover-lift"
+          <div id="tlist" className="mt-12 md:mt-16 border-t border-menu-paper-500/40">
+            {SHELF.map((t) => (
+              <a
+                key={t.id}
+                href="/sign-up"
+                className="trow group grid grid-cols-[1fr_auto] md:grid-cols-[1fr_auto_auto] items-baseline gap-2 md:gap-8 py-5 md:py-7 border-b border-menu-paper-500/40"
+                data-name={t.name}
+                data-tp={JSON.stringify(t.rows)}
               >
-                <div className="text-center space-y-4">
-                  {/* Icon */}
-                  <div className="w-16 h-16 mx-auto bg-menu-cream-200 flex items-center justify-center">
-                    <svg className="w-8 h-8 text-menu-gold-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                    </svg>
-                  </div>
-
-                  <div>
-                    <h3 className="text-2xl font-serif menu-title text-menu-charcoal-900 mb-2">
-                      {template.name}
-                    </h3>
-                    <p className="menu-description">{template.desc}</p>
-                  </div>
-                </div>
-              </div>
+                <h3 className="text-[clamp(28px,4.4vw,58px)] font-extrabold leading-none tracking-[-0.03em] transition-all duration-300 group-hover:text-menu-stamp-400 group-hover:translate-x-4">
+                  {t.name}
+                </h3>
+                <span className="hidden md:inline text-xs uppercase tracking-[0.16em] text-menu-paper-500">
+                  {t.use}
+                </span>
+                <span className="text-[clamp(20px,2.6vw,34px)] font-light text-menu-paper-500 opacity-50 transition-all duration-300 group-hover:opacity-100 group-hover:text-menu-stamp-400 group-hover:translate-x-0 -translate-x-2">
+                  →
+                </span>
+              </a>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Features Section */}
-      <section id="features" className="py-20 px-6 lg:px-12 bg-menu-cream-50">
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-16">
-            <div className="menu-divider-dots mb-6"></div>
-            <h2 className="text-4xl md:text-5xl font-serif menu-title text-menu-charcoal-900 mb-4">
-              Everything You Need
-            </h2>
-            <p className="text-lg menu-description max-w-2xl mx-auto">
-              Professional features for modern restaurants
-            </p>
-          </div>
+      {/* Hover plate — follows the pointer, shows the template set */}
+      <div id="tpreview" aria-hidden="true">
+        <div id="tp-title" className="font-extrabold uppercase text-sm tracking-[0.06em] mb-2 text-menu-ink-900">Classic</div>
+        <div id="tp-rows" className="text-menu-ink-700"></div>
+      </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {[
-              { icon: 'M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z', title: 'QR Codes', desc: 'Instant contactless menus' },
-              { icon: 'M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z', title: 'Image Upload', desc: 'Showcase your dishes' },
-              { icon: 'M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01', title: 'Customization', desc: 'Match your brand' },
-              { icon: 'M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z', title: 'Mobile First', desc: 'Perfect on any device' },
-              { icon: 'M13 10V3L4 14h7v7l9-11h-7z', title: 'Real-Time Updates', desc: 'Update instantly' },
-              { icon: 'M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z', title: 'Secure & Free', desc: 'Your data protected' },
-            ].map((feature, index) => (
-              <div
-                key={index}
-                className="text-center space-y-4"
-              >
-                <div className="w-12 h-12 mx-auto bg-menu-cream-200 flex items-center justify-center">
-                  <svg className="w-6 h-6 text-menu-gold-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d={feature.icon} />
-                  </svg>
-                </div>
-                <div>
-                  <h3 className="text-lg font-serif text-menu-charcoal-900 uppercase tracking-wide mb-2">
-                    {feature.title}
-                  </h3>
-                  <p className="menu-description text-sm">{feature.desc}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Your Menus Section */}
+      {/* ============ YOUR MENU (signed in) ============ */}
       {owner && menus.length > 0 && (
-        <section id="your-menus" className="py-20 px-6 lg:px-12 bg-menu-cream-100">
+        <section id="your-menu" className="bg-menu-paper-100 px-6 lg:px-12 py-20 border-t border-menu-ink-200">
           <div className="max-w-6xl mx-auto">
-            <div className="flex flex-col md:flex-row justify-between items-center mb-12">
-              <div className="text-center md:text-left mb-6 md:mb-0">
-                <h2 className="text-4xl font-serif menu-title text-menu-charcoal-900 mb-2">Your Menu</h2>
-                <p className="menu-description">One restaurant workspace, one menu to maintain.</p>
+            <p className="kicker mb-6">On your wall</p>
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 mb-10">
+              <div>
+                <h2 className="text-4xl md:text-5xl font-extrabold tracking-[-0.03em] text-menu-ink-900">Your menu</h2>
+                <p className="mt-2 text-menu-ink-500">One restaurant workspace, one menu to maintain.</p>
               </div>
+              <Link href="/builder">
+                <Button variant="primary">Open the workbench</Button>
+              </Link>
             </div>
 
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {menus.slice(0, 1).map((menu) => (
-                <div
-                  key={menu.id}
-                  className="menu-card p-6 hover-lift"
-                >
-                  <div className="mb-4">
-                    <h3 className="text-xl font-serif text-menu-charcoal-900 mb-1">
-                      {menu.restaurantName}
-                    </h3>
-                    <p className="text-sm text-menu-charcoal-500 uppercase tracking-wide">
-                      {menu.sections.length} sections • {menu.template}
-                    </p>
-                  </div>
-
-                  <p className="menu-description text-sm line-clamp-2 mb-6 min-h-[40px]">
-                    {menu.description || 'No description'}
-                  </p>
-
-                  <div className="flex gap-3">
-                    <Link href={`/menu/${menu.id}`} className="flex-1">
-                      <Button variant="outline" size="sm" className="w-full">
-                        View
-                      </Button>
-                    </Link>
-                    <Link href={`/builder?id=${menu.id}`} className="flex-1">
-                      <Button variant="secondary" size="sm" className="w-full">
-                        Edit
-                      </Button>
-                    </Link>
-                  </div>
+            {menus.slice(0, 1).map((menu) => (
+              <div key={menu.id} className="menu-card p-6 md:p-8 max-w-2xl">
+                <div className="flex flex-wrap items-baseline justify-between gap-3">
+                  <h3 className="text-2xl font-extrabold tracking-[-0.02em] text-menu-ink-900">
+                    {menu.restaurantName}
+                  </h3>
+                  <span className="text-xs uppercase tracking-[0.14em] text-menu-ink-500">
+                    {menu.sections.length} sections • {menu.template}
+                  </span>
                 </div>
-              ))}
-            </div>
+                <p className="mt-3 text-menu-ink-500">
+                  {menu.description || 'No description yet — open the workbench and set it.'}
+                </p>
+                <div className="mt-6 flex gap-3">
+                  <Link href={`/menu/${menu.id}`} className="flex-1">
+                    <Button variant="outline" size="sm" className="w-full">View</Button>
+                  </Link>
+                  <Link href={`/builder?id=${menu.id}`} className="flex-1">
+                    <Button variant="secondary" size="sm" className="w-full">Edit</Button>
+                  </Link>
+                </div>
+              </div>
+            ))}
           </div>
         </section>
       )}
 
-      {/* CTA Section */}
-      <section className="py-20 px-6 lg:px-12 bg-menu-charcoal-900">
-        <div className="max-w-4xl mx-auto text-center">
-          <div className="menu-ornament opacity-30"></div>
-
-          <h2 className="text-4xl md:text-5xl font-serif menu-title text-menu-cream-50 mb-6">
-            Ready to Create Your Menu?
+      {/* ============ CLOSING ============ */}
+      <section className="bg-menu-paper-200 px-6 lg:px-12 pt-20 md:pt-28 pb-10 border-t border-menu-ink-200">
+        <div className="max-w-6xl mx-auto">
+          <p className="kicker mb-8">Closing</p>
+          <h2 className="font-extrabold text-[clamp(44px,8vw,116px)] leading-[0.94] tracking-[-0.045em] max-w-[13ch] text-menu-ink-900">
+            Build it tonight. Scan it tomorrow.
           </h2>
-
-          <p className="text-lg text-menu-cream-200 max-w-2xl mx-auto mb-8">
-            Join modern restaurants creating beautiful digital menus
-          </p>
-
-          <Link href={owner ? '/builder' : '/sign-up'}>
-            <Button variant="gold" size="lg">
-              {owner ? 'Maintain Your Menu' : 'Create Your Menu'}
-            </Button>
-          </Link>
+          <div className="mt-10 flex flex-wrap gap-4">
+            <Link href={owner ? '/builder' : '/sign-up'}>
+              <Button variant="stamp-solid" size="lg">
+                {owner ? 'Open the workbench' : 'Start on the free tier'}
+              </Button>
+            </Link>
+            <a href="#templates">
+              <Button variant="secondary" size="lg">Walk the shelf</Button>
+            </a>
+          </div>
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="bg-menu-cream-50 border-t-menu border-menu-charcoal-200 py-12 px-6 lg:px-12">
+      {/* ============ FOOTER + GIANT WORDMARK ============ */}
+      <footer className="bg-menu-paper-200 px-6 lg:px-12 pb-0">
         <div className="max-w-6xl mx-auto">
-          <div className="flex flex-col md:flex-row justify-between items-center gap-6">
-            <div className="flex items-center space-x-2">
-              <span className="text-xl font-serif menu-title text-menu-charcoal-900">MenuCraft</span>
-              <span className="text-menu-gold-500">∗</span>
-            </div>
-            <p className="text-sm text-menu-charcoal-500 uppercase tracking-wider">
-              © 2025 MenuCraft. Digital Menus Made Simple.
-            </p>
+          <nav className="flex flex-wrap items-center gap-x-8 gap-y-3 py-5 border-t-[1.5px] border-menu-ink-900 text-xs font-bold uppercase tracking-[0.14em] text-menu-ink-700" aria-label="Footer">
+            <a href="#bench" className="hover:text-menu-stamp-600">The bench</a>
+            <a href="#templates" className="hover:text-menu-stamp-600">Templates</a>
+            <a href="#why" className="hover:text-menu-stamp-600">Why</a>
+            <Link href="/sign-in" className="hover:text-menu-stamp-600">Sign in</Link>
+            <span className="ml-auto text-menu-ink-500 font-medium normal-case tracking-normal text-[13px]">
+              © 2025 MenuCraft · MIT licence · digital menus made simple
+            </span>
+          </nav>
+
+          <div id="wordmark" className="overflow-hidden leading-[0.74] pt-2 select-none" aria-hidden="true">
+            <span className="text-[clamp(64px,16.2vw,270px)] font-extrabold tracking-[-0.05em] text-menu-ink-900">
+              {WORDMARK.map((letter, i) => (
+                <span key={i} className={`wm-letter inline-block ${i % 3 === 2 ? 'text-menu-stamp-500' : ''}`}>
+                  {letter}
+                </span>
+              ))}
+            </span>
           </div>
         </div>
       </footer>

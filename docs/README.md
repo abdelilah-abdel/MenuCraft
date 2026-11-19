@@ -6,6 +6,15 @@ Welcome to the MenuCraft documentation! This folder contains all the guides and 
 
 ## 📚 Documentation Overview
 
+### Current project state (read first)
+
+| Document | Purpose | When to Read |
+|----------|---------|--------------|
+| [**PROJECT_STATUS.md**](../PROJECT_STATUS.md) | Current branch, latest work, checks, risks, and next step; mandatory handoff file | **At the start and end of every task** |
+| [**idea.md**](../idea.md) | Product vision, features, architecture direction, and long-term scope | **Before product planning** |
+| [**IMPLEMENTATION_ROADMAP.md**](./IMPLEMENTATION_ROADMAP.md) | Accepted decisions and dependency-ordered build sequence | **Before choosing the next feature** |
+| [**menu-studio-workflow skill**](../.agents/skills/menu-studio-workflow/SKILL.md) | Repo-specific product and engineering rules for coding agents | **Before implementing product work** |
+
 ### For Developers
 
 | Document | Purpose | When to Read |

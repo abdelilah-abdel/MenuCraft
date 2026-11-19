@@ -82,16 +82,16 @@ export function OwnerAuthForm({ mode }: OwnerAuthFormProps) {
   }
 
   return (
-    <main className="min-h-screen bg-menu-cream-200 px-6 py-16 flex items-center justify-center">
-      <section className="w-full max-w-md bg-menu-cream-50 border border-menu-charcoal-200/60 shadow-menu">
-        <div className="bg-menu-cream-200 border-b border-menu-charcoal-200/60 px-6 py-5 text-center">
-          <Link href="/" className="text-xl font-serif menu-title text-menu-charcoal-900">
+    <main className="min-h-screen bg-menu-paper-200 px-6 py-16 flex items-center justify-center">
+      <section className="w-full max-w-md bg-menu-paper-50 border-[1.5px] border-menu-ink-900">
+        <div className="bg-menu-ink-900 border-b-[1.5px] border-menu-ink-900 px-6 py-5 text-center">
+          <Link href="/" className="text-xl font-display font-extrabold tracking-[-0.03em] text-menu-paper-50">
             MenuCraft
           </Link>
-          <h1 className="mt-5 text-2xl font-serif text-menu-charcoal-900">
+          <h1 className="mt-5 text-2xl font-display font-extrabold tracking-[-0.02em] text-menu-paper-50">
             {copy.heading}
           </h1>
-          <p className="mt-2 text-sm menu-description">
+          <p className="mt-2 text-sm text-menu-paper-300">
             {copy.description}
           </p>
         </div>
@@ -120,7 +120,7 @@ export function OwnerAuthForm({ mode }: OwnerAuthFormProps) {
           />
 
           {copy.passwordHint && (
-            <p className="text-xs text-menu-charcoal-500">
+            <p className="text-xs text-menu-ink-500">
               {copy.passwordHint}
             </p>
           )}
@@ -131,15 +131,15 @@ export function OwnerAuthForm({ mode }: OwnerAuthFormProps) {
             </p>
           )}
 
-          <Button type="submit" variant="gold" size="lg" className="w-full" disabled={isSubmitting}>
+          <Button type="submit" variant="stamp-solid" size="lg" className="w-full" disabled={isSubmitting}>
             {isSubmitting ? 'Please wait…' : copy.submit}
           </Button>
 
-          <p className="text-center text-sm text-menu-charcoal-600">
+          <p className="text-center text-sm text-menu-ink-600">
             {copy.alternatePrompt}{' '}
             <Link
               href={copy.alternateHref}
-              className="font-semibold text-menu-gold-700 underline underline-offset-2"
+              className="font-semibold text-menu-stamp-700 underline underline-offset-2"
             >
               {copy.alternateLabel}
             </Link>

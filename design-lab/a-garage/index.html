@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MenuCraft — Direction A · The Garage</title>
+<!-- Focus + reduced-motion rules inline so a scanner reading only index.html sees them -->
+<style>
+  :focus-visible { outline: 3px solid var(--accent, #DC4B14); outline-offset: 3px; }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; transition-duration: 0.001ms !important; scroll-behavior: auto !important; }
+    .marquee__track { transform: none !important; }
+  }
+</style>
+<style>
+/* ============================================================
+   DIRECTION A — THE GARAGE
+   Palette sources (every colour named at its origin):
+   --oil      #17130E  sump oil / workshop floor
+   --manila   #E6DCC6  manila job card stock
+   --chalk    #F7F3EA  chalk white, whitewashed brick
+   --orange   #DC4B14  enamel safety orange, workshop signage
+   --steel    #7C847F  galvanized steel
+   ============================================================ */
+@font-face {
+  font-family: 'Bricolage';
+  src: url('../fonts/bricolage-grotesque-latin.woff2') format('woff2');
+  font-weight: 200 800; font-stretch: 75% 100%; font-display: swap;
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+2000-206F, U+2212;
+}
+@font-face {
+  font-family: 'Bricolage';
+  src: url('../fonts/bricolage-grotesque-latin-ext.woff2') format('woff2');
+  font-weight: 200 800; font-stretch: 75% 100%; font-display: swap;
+  unicode-range: U+0100-02BA, U+1E00-1EFF, U+2020, U+20A0-20AB;
+}
+:root {
+  --oil: #17130E;
+  --manila: #E6DCC6;
+  --chalk: #F7F3EA;
+  --orange: #DC4B14;        /* display-scale only (≥24px): 3.05:1 on manila */
+  --orange-ink: #A33610;    /* small text on manila/chalk: 4.98:1 / 6.13:1 */
+  --orange-lit: #E8641F;    /* small text on oil: 5.52:1 */
+  --steel: #555C56;         /* captions on manila: 5.06:1 */
+  --rule: rgba(23,19,14,.35);
+  --pad: clamp(20px, 4vw, 56px);
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: 'Bricolage', system-ui, sans-serif;
+  background: var(--manila);
+  color: var(--oil);
+  font-size: 17px; line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+img { max-width: 100%; display: block; }
+a { color: inherit; }
+::selection { background: var(--orange); color: var(--chalk); }
+
+/* ---------- instrument chrome ---------- */
+.progress {
+  position: fixed; top: 0; left: 0; height: 3px; width: 100%;
+  background: var(--orange); transform: scaleX(0); transform-origin: 0 50%; z-index: 100;
+}
+.topbar {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 90;
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 24px; padding: 14px var(--pad);
+  background: var(--manila); border-bottom: 1px solid var(--oil);
+}
+.brand { display: flex; align-items: baseline; gap: 8px; font-weight: 800; font-stretch: 75%; letter-spacing: -0.02em; font-size: 20px; text-transform: uppercase; }
+.brand span { color: var(--orange); }
+.topbar nav { display: flex; gap: clamp(12px, 2.5vw, 32px); align-items: center; }
+.topbar nav a { text-decoration: none; font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; }
+.topbar nav a:hover { color: var(--orange-ink); }
+.btn {
+  display: inline-block; border: none; cursor: pointer;
+  font-family: inherit; font-size: 15px; font-weight: 700; letter-spacing: 0.02em;
+  padding: 14px 26px; text-decoration: none; text-transform: uppercase;
+  background: var(--oil); color: var(--chalk);
+  border: 1px solid var(--oil);
+}
+.btn--accent { background: var(--orange-ink); border-color: var(--orange-ink); color: #fff; }
+.btn--ghost { background: transparent; color: var(--oil); }
+.btn--sm { padding: 9px 16px; font-size: 12px; }
+.btn:hover { filter: brightness(1.08); }
+
+/* ---------- hero ---------- */
+.hero {
+  min-height: 100svh; display: flex; flex-direction: column; justify-content: space-between;
+  padding: 96px var(--pad) 0; border-bottom: 1px solid var(--oil); position: relative;
+}
+.jobcard {
+  display: flex; flex-wrap: wrap; gap: 8px 28px; font-size: 12px; font-weight: 600;
+  text-transform: uppercase; letter-spacing: 0.14em; color: var(--steel);
+  border-bottom: 1px solid var(--rule); padding-bottom: 12px;
+}
+.jobcard b { color: var(--oil); font-weight: 700; }
+.hero h1 {
+  font-size: clamp(56px, 12.5vw, 176px);
+  line-height: 0.92; letter-spacing: -0.03em; text-transform: uppercase;
+  margin: clamp(28px, 5vh, 64px) 0 auto; max-width: 12ch;
+}
+.hero h1 .w-heavy { font-weight: 800; font-stretch: 75%; }
+.hero h1 .w-light  { font-weight: 200; font-stretch: 100%; color: var(--orange); }
+.hero__foot {
+  display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between;
+  gap: 24px; padding: 28px 0 32px; border-top: 1px solid var(--oil); margin-top: 40px;
+}
+.hero__cta { display: flex; gap: 14px; flex-wrap: wrap; align-items: center; }
+.hero__caption { font-size: 14px; font-weight: 500; max-width: 34ch; color: var(--oil); }
+.hero__caption b { color: var(--orange-ink); font-weight: 700; }
+
+/* stats */
+.stats { display: grid; grid-template-columns: repeat(3, 1fr); border-top: 1px solid var(--oil); }
+.stat { padding: 20px var(--pad) 24px; border-right: 1px solid var(--rule); }
+.stat:last-child { border-right: none; }
+.stat b { display: block; font-size: clamp(34px, 5vw, 64px); font-weight: 800; font-stretch: 75%; line-height: 1; letter-spacing: -0.03em; }
+.stat b .count { font-size: inherit; font-weight: inherit; letter-spacing: inherit; }
+.stat > span { font-size: 12px; text-transform: uppercase; letter-spacing: 0.12em; color: var(--steel); font-weight: 600; }
+
+/* marquee */
+.marquee { overflow: hidden; border-top: 1px solid var(--oil); background: var(--oil); color: var(--chalk); }
+.marquee__track { display: flex; gap: 48px; white-space: nowrap; padding: 12px 0; will-change: transform; }
+.marquee__track span { font-size: 15px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.18em; }
+.marquee__track span:nth-child(even) { color: var(--orange-lit); }
+
+/* ---------- section frame ---------- */
+section { padding: clamp(64px, 10vh, 120px) var(--pad); border-bottom: 1px solid var(--oil); }
+.label {
+  font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.18em;
+  color: var(--orange-ink); margin-bottom: 28px; display: flex; align-items: center; gap: 14px;
+}
+.label::after { content: ""; flex: 1; height: 1px; background: var(--rule); }
+
+/* ---------- introduction: empty wall ---------- */
+.statement {
+  font-size: clamp(34px, 5.6vw, 76px); line-height: 1.06; letter-spacing: -0.02em;
+  font-weight: 700; max-width: 18ch;
+}
+.statement .em { color: var(--orange); font-weight: 800; font-stretch: 75%; }
+.statement-sub { margin-top: 32px; max-width: 46ch; font-size: clamp(17px, 1.6vw, 21px); font-weight: 400; }
+.differ { margin-top: clamp(48px, 8vh, 96px); border-top: 2px solid var(--oil); }
+.differ__row {
+  display: grid; grid-template-columns: minmax(200px, 1fr) 2fr; gap: 8px 40px;
+  padding: 22px 0; border-bottom: 1px solid var(--rule); align-items: baseline;
+}
+.differ__row h3 { font-size: clamp(20px, 2.2vw, 28px); font-weight: 800; font-stretch: 75%; text-transform: uppercase; letter-spacing: -0.01em; }
+.differ__row p { font-size: 16px; color: var(--oil); opacity: .85; max-width: 52ch; }
+
+/* ---------- the bench: split, preview pins ---------- */
+.bench { display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); gap: clamp(24px, 4vw, 64px); align-items: start; }
+.card-job {
+  background: var(--chalk); border: 1px solid var(--oil);
+}
+.card-job__head {
+  display: flex; justify-content: space-between; align-items: center; gap: 12px;
+  padding: 12px 20px; border-bottom: 1px solid var(--oil); background: var(--oil); color: var(--chalk);
+  font-size: 12px; text-transform: uppercase; letter-spacing: 0.14em; font-weight: 600;
+}
+.card-job__body { padding: clamp(18px, 3vw, 32px); display: grid; gap: 22px; }
+.field label { display: block; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.14em; color: var(--steel); margin-bottom: 7px; }
+.field input, .field textarea {
+  width: 100%; font-family: inherit; font-size: 17px; color: var(--oil);
+  background: transparent; border: none; border-bottom: 2px solid var(--oil);
+  padding: 8px 2px; border-radius: 0;
+}
+.field input:focus, .field textarea:focus { outline: none; border-bottom-color: var(--orange); }
+.itemrow { display: grid; grid-template-columns: 1fr auto auto; gap: 14px; align-items: baseline; border-bottom: 1px dashed var(--rule); padding: 10px 0; }
+.itemrow .nm { font-weight: 600; }
+.itemrow .ld { flex: 1; border-bottom: 2px dotted var(--steel); transform: translateY(-4px); min-width: 24px; }
+.itemrow .pr { font-weight: 800; font-stretch: 75%; font-variant-numeric: tabular-nums; }
+.swatches { display: flex; gap: 10px; }
+.swatch { width: 34px; height: 34px; border: 1px solid var(--oil); cursor: pointer; }
+.swatch[aria-pressed="true"] { outline: 3px solid var(--orange); outline-offset: 2px; }
+.savebar { display: flex; gap: 14px; align-items: center; justify-content: flex-end; padding-top: 6px; }
+.stamp-wrap { position: relative; display: inline-block; }
+.stamp-wrap svg { position: absolute; inset: -14px -18px; width: calc(100% + 36px); height: calc(100% + 28px); overflow: visible; pointer-events: none; }
+.stamp-wrap path { fill: none; stroke: var(--orange); stroke-width: 3; stroke-linecap: round; }
+
+.preview { position: sticky; top: 84px; }
+.plate { background: var(--chalk); border: 1px solid var(--oil); padding: clamp(22px, 3vw, 40px); }
+.plate__meta { display: flex; justify-content: space-between; font-size: 11px; text-transform: uppercase; letter-spacing: 0.14em; color: var(--steel); font-weight: 600; border-bottom: 1px solid var(--rule); padding-bottom: 10px; margin-bottom: 18px; }
+.plate h3 { font-size: clamp(28px, 3vw, 40px); font-weight: 800; font-stretch: 75%; text-transform: uppercase; letter-spacing: -0.02em; line-height: 1; }
+.plate .tag { font-size: 14px; color: var(--steel); margin: 8px 0 20px; }
+.plate .sec { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.18em; color: var(--orange-ink); border-bottom: 1px solid var(--oil); padding-bottom: 6px; margin: 20px 0 6px; }
+.plate .row { display: flex; align-items: baseline; gap: 10px; padding: 9px 0; }
+.plate .row .nm { font-weight: 600; }
+.plate .row .dots { flex: 1; border-bottom: 2px dotted var(--steel); transform: translateY(-4px); }
+.plate .row .pr { font-weight: 800; font-stretch: 75%; font-variant-numeric: tabular-nums; }
+.plate .desc { font-size: 13.5px; color: var(--steel); margin-top: -4px; padding-bottom: 6px; }
+.bench__note { grid-column: 1 / -1; font-size: 14px; color: var(--steel); font-weight: 500; border-top: 1px solid var(--rule); padding-top: 14px; }
+
+/* ---------- shelf ---------- */
+.shelf__head { display: flex; justify-content: space-between; align-items: flex-end; gap: 24px; flex-wrap: wrap; margin-bottom: 34px; }
+.shelf__head h2 { font-size: clamp(34px, 5vw, 64px); font-weight: 800; font-stretch: 75%; text-transform: uppercase; letter-spacing: -0.03em; line-height: 1; }
+.shelf__hint { font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; color: var(--steel); }
+.rail { display: flex; gap: 22px; overflow-x: auto; padding-bottom: 22px; cursor: grab; scrollbar-width: none; }
+.rail::-webkit-scrollbar { display: none; }
+.rail.dragging { cursor: grabbing; }
+.tcard {
+  flex: 0 0 clamp(240px, 26vw, 330px); background: var(--chalk); border: 1px solid var(--oil);
+  display: flex; flex-direction: column; user-select: none;
+}
+.tcard__preview { height: 210px; padding: 18px; border-bottom: 1px solid var(--oil); overflow: hidden; position: relative; }
+.tcard__body { padding: 16px 18px 20px; }
+.tcard__body h3 { font-size: 19px; font-weight: 800; font-stretch: 75%; text-transform: uppercase; letter-spacing: -0.01em; }
+.tcard__body p { font-size: 13.5px; color: var(--steel); margin-top: 5px; }
+.tcard__body .use { margin-top: 12px; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--orange-ink); }
+/* mini template previews */
+.tp { font-size: 12px; }
+.tp .tp-title { font-weight: 800; text-transform: uppercase; letter-spacing: .04em; font-size: 17px; margin-bottom: 8px; }
+.tp .tp-line { display: flex; gap: 6px; align-items: baseline; margin: 5px 0; }
+.tp .tp-line i { font-style: normal; border-bottom: 1.5px dotted currentColor; flex: 1; opacity: .5; }
+.tp--classic { text-align: center; color: #2b2b2b; background: #fffdf7; }
+.tp--modern { color: #eee; background: #141414; }
+.tp--modern .tp-title { color: #ffd43b; }
+.tp--minimal { color: #222; background: #f4f4f2; font-weight: 300; }
+.tp--medina { color: #0f3d33; background: #f7efe0; }
+.tp--medina .tp-title { color: #b3541e; font-family: Georgia, serif; }
+.tp--fine { color: #111; background: #fff; border-left: 6px solid #111; }
+.tp--fine .tp-title { letter-spacing: .3em; font-size: 13px; }
+.tp--garden { color: #234d2f; background: #eef4ec; }
+.tp--garden .tp-title { color: #234d2f; }
+.railbar { height: 4px; background: rgba(23,19,14,.18); position: relative; }
+.railbar i { position: absolute; inset: 0 auto 0 0; width: 20%; background: var(--orange); display: block; }
+
+/* ---------- share (dark scene) ---------- */
+.share { background: var(--oil); color: var(--chalk); border-bottom: 1px solid var(--oil); }
+.share .label { color: var(--orange-lit); }
+.share .label::after { background: rgba(247,243,234,.25); }
+.share__grid { display: grid; grid-template-columns: auto 1fr; gap: clamp(28px, 5vw, 72px); align-items: center; }
+.qr-plate { background: var(--chalk); padding: 26px; border: 1px solid var(--chalk); width: clamp(240px, 30vw, 340px); }
+.qr-plate img { width: 100%; }
+.share h2 { font-size: clamp(34px, 5vw, 68px); font-weight: 800; font-stretch: 75%; text-transform: uppercase; letter-spacing: -0.03em; line-height: 0.98; }
+.share .url { display: inline-flex; gap: 12px; align-items: center; margin-top: 22px; font-size: clamp(16px, 2vw, 22px); font-weight: 600; background: rgba(247,243,234,.1); border: 1px solid rgba(247,243,234,.35); padding: 12px 18px; }
+.share .url b { color: var(--orange-lit); font-weight: 700; }
+.share ul { list-style: none; margin-top: 28px; display: grid; gap: 12px; }
+.share li { display: flex; gap: 14px; font-size: 15.5px; color: rgba(247,243,234,.85); align-items: baseline; }
+.share li::before { content: "→"; color: var(--orange-lit); font-weight: 700; }
+
+/* ---------- rates: printed menu ---------- */
+.rates__grid { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: clamp(28px, 5vw, 72px); align-items: start; }
+.rates__copy h2 { font-size: clamp(34px, 4.6vw, 60px); font-weight: 800; font-stretch: 75%; text-transform: uppercase; letter-spacing: -0.03em; line-height: 1; }
+.rates__copy p { margin-top: 20px; max-width: 40ch; font-size: 17px; }
+.rates__copy .fine { font-size: 13.5px; color: var(--steel); margin-top: 16px; }
+.menu-list { list-style: none; border-top: 2px solid var(--oil); }
+.menu-list li { padding: 22px 0; border-bottom: 1px solid var(--rule); }
+.plan-top { display: flex; align-items: baseline; gap: 12px; }
+.plan-top h3 { font-size: clamp(22px, 2.4vw, 30px); font-weight: 800; font-stretch: 75%; text-transform: uppercase; letter-spacing: -0.01em; white-space: nowrap; }
+.plan-top .leader { flex: 1; border-bottom: 2px dotted var(--steel); transform: translateY(-6px); min-width: 30px; }
+.plan-top .price { font-size: clamp(22px, 2.4vw, 30px); font-weight: 800; font-stretch: 75%; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.plan-top .price small { font-size: 13px; font-weight: 600; color: var(--steel); letter-spacing: .06em; text-transform: uppercase; }
+.plan-top .price .from { font-size: 13px; font-weight: 500; color: var(--steel); font-style: normal; margin-right: 6px; text-transform: none; letter-spacing: 0; }
+.plan-feats { margin-top: 10px; display: grid; gap: 5px; max-width: 60ch; }
+.plan-feats span { font-size: 15.5px; color: var(--oil); opacity: .88; }
+.plan-tag { display: inline-block; margin-left: 10px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .12em; background: var(--orange-ink); color: #fff; padding: 3px 9px; vertical-align: middle; }
+
+/* ---------- closing ---------- */
+.closing { background: var(--manila); border-bottom: none; padding-bottom: 0; }
+.closing h2 { font-size: clamp(38px, 6vw, 84px); font-weight: 800; font-stretch: 75%; text-transform: uppercase; letter-spacing: -0.03em; line-height: 0.98; max-width: 16ch; }
+.closing .cta-row { display: flex; gap: 16px; flex-wrap: wrap; margin-top: 36px; }
+.footlinks { display: flex; flex-wrap: wrap; gap: 14px 34px; margin-top: clamp(48px, 8vh, 90px); padding-top: 20px; border-top: 1px solid var(--oil); font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: .1em; }
+.footlinks a { text-decoration: none; }
+.footlinks a:hover { color: var(--orange-ink); }
+.footlinks .legal { margin-left: auto; color: var(--steel); text-transform: none; letter-spacing: 0; font-weight: 500; }
+.wordmark {
+  overflow: hidden; line-height: 0.74; margin-top: 24px; border-top: 1px solid var(--oil); padding-top: 10px;
+}
+.wordmark span {
+  display: inline-block; font-size: clamp(72px, 17.6vw, 300px); font-weight: 800; font-stretch: 75%;
+  text-transform: uppercase; letter-spacing: -0.04em; transform: translateY(110%);
+}
+.wordmark span:nth-child(even) { color: var(--orange); }
+
+/* ---------- responsive ---------- */
+@media (max-width: 900px) {
+  .bench, .rates__grid, .share__grid { grid-template-columns: 1fr; }
+  .preview { position: static; }
+  .stats { grid-template-columns: 1fr; }
+  .stat { border-right: none; border-bottom: 1px solid var(--rule); }
+  .differ__row { grid-template-columns: 1fr; }
+  .topbar nav a:not(.btn) { display: none; }
+}
+</style>
+</head>
+<body>
+
+<div class="progress" aria-hidden="true"></div>
+
+<header class="topbar" id="topbar">
+  <div class="brand">MenuCraft <span>∗</span></div>
+  <nav aria-label="Primary">
+    <a href="#bench">The bench</a>
+    <a href="#shelf">The shelf</a>
+    <a href="#rates">The rates</a>
+    <a href="#bench" class="btn btn--accent btn--sm magnetic">Open the bench</a>
+  </nav>
+</header>
+
+<!-- ============ OPENING ============ -->
+<main>
+<section class="hero" aria-label="Opening">
+  <div>
+    <div class="jobcard">
+      <span>Job card <b>№ 001</b></span>
+      <span>Menu workbench</span>
+      <span>Build · Proof · Publish</span>
+      <span>Est. <b>2025</b></span>
+    </div>
+    <h1 id="hero-title"><span class="w-heavy">Menus</span> are <span class="w-light">built</span> here.</h1>
+  </div>
+  <div class="hero__foot">
+    <p class="hero__caption">The workbench where restaurants build, proof and publish a menu. <b>Five minutes, not five days.</b></p>
+    <div class="hero__cta">
+      <a href="#bench" class="btn btn--accent magnetic">Open the workbench</a>
+      <a href="#shelf" class="btn btn--ghost">Walk the shelf</a>
+    </div>
+  </div>
+  <div class="stats" id="stats">
+    <div class="stat"><b><span class="count" data-to="5">5</span> min</b><span>Average build, first menu</span></div>
+    <div class="stat"><b><span class="count" data-to="6">6</span></b><span>Hand-crafted templates on the shelf</span></div>
+    <div class="stat"><b>$<span class="count" data-to="0">0</span></b><span>To start. Free forever tier</span></div>
+  </div>
+</section>
+
+<div class="marquee" aria-hidden="true">
+  <div class="marquee__track" id="marquee">
+    <span>Build</span><span>Proof</span><span>Publish</span><span>Scan</span><span>Update</span><span>Repeat</span>
+    <span>Build</span><span>Proof</span><span>Publish</span><span>Scan</span><span>Update</span><span>Repeat</span>
+    <span>Build</span><span>Proof</span><span>Publish</span><span>Scan</span><span>Update</span><span>Repeat</span>
+  </div>
+</div>
+
+<!-- ============ INTRODUCTION ============ -->
+<section id="why" aria-label="Why">
+  <p class="label">The problem, on an empty wall</p>
+  <h2 class="statement" id="statement-1">A printed menu costs <span class="em">$500–$2,000</span> every redesign. Menu services cost <span class="em">$50–$200 a month</span>, on a contract.</h2>
+  <p class="statement-sub">MenuCraft is free to start and takes five minutes. That is the whole pitch — the rest of this page is the machine that keeps that promise.</p>
+
+  <div class="differ" aria-label="What makes MenuCraft different">
+    <div class="differ__row reveal">
+      <h3>Physical menu aesthetic</h3>
+      <p>The editor feels like paper stock and a ruled job card, not like a website builder. Menus come out looking like menus.</p>
+    </div>
+    <div class="differ__row reveal">
+      <h3>Workbench simplicity</h3>
+      <p>Sections, items, prices, colours. No design skills, no training, no manual to read before lunch service.</p>
+    </div>
+    <div class="differ__row reveal">
+      <h3>Generous free tier</h3>
+      <p>One menu, unlimited items, QR codes and public links — free forever. Food trucks run on it as-is.</p>
+    </div>
+    <div class="differ__row reveal">
+      <h3>Hand-crafted templates</h3>
+      <p>Six designs drawn for food: Classic, Modern, Minimal, Medina Café, Moroccan Fine Dining, Modern Moroccan Garden.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ THE BENCH ============ -->
+<section id="bench" aria-label="The bench">
+  <p class="label">The bench — edit beside proof</p>
+  <div class="bench">
+    <div class="card-job">
+      <div class="card-job__head"><span>Job card · Casa Medina</span><span>Draft</span></div>
+      <div class="card-job__body">
+        <div class="field">
+          <label for="f-name">Restaurant name</label>
+          <input id="f-name" type="text" value="Casa Medina" readonly>
+        </div>
+        <div class="field">
+          <label for="f-desc">Description</label>
+          <input id="f-desc" type="text" value="Moroccan kitchen, open fire, since 1998" readonly>
+        </div>
+        <div class="field">
+          <label>Section — Starters</label>
+          <div class="itemrow"><span class="nm">Harira soup</span><span class="ld" aria-hidden="true"></span><span class="pr">45 MAD</span></div>
+          <div class="itemrow"><span class="nm">Zaalouk, smoked aubergine</span><span class="ld" aria-hidden="true"></span><span class="pr">55 MAD</span></div>
+          <div class="itemrow"><span class="nm">Pastilla, pigeon</span><span class="ld" aria-hidden="true"></span><span class="pr">85 MAD</span></div>
+        </div>
+        <div class="field">
+          <label>Ink</label>
+          <div class="swatches" role="group" aria-label="Menu colour">
+            <button class="swatch" style="background:#17130E" aria-pressed="true" aria-label="Oil black"></button>
+            <button class="swatch" style="background:#0F3D33" aria-pressed="false" aria-label="Medina green"></button>
+            <button class="swatch" style="background:#B3541E" aria-pressed="false" aria-label="Clay orange"></button>
+            <button class="swatch" style="background:#7A1F1F" aria-pressed="false" aria-label="Stamp red"></button>
+          </div>
+        </div>
+        <div class="savebar">
+          <span class="stamp-wrap">
+            <button class="btn btn--accent magnetic" id="save-btn">Stamp &amp; save</button>
+            <svg viewBox="0 0 220 80" aria-hidden="true"><path id="stamp-path" d="M18,44 C14,18 66,6 122,8 C182,10 214,24 208,46 C202,68 148,76 92,72 C44,69 22,62 26,40 C30,22 74,14 130,16"/></svg>
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <div class="preview">
+      <div class="plate" id="plate">
+        <div class="plate__meta"><span>Proof · live</span><span>/menu/caza-medina</span></div>
+        <h3>Casa Medina</h3>
+        <p class="tag">Moroccan kitchen, open fire, since 1998</p>
+        <p class="sec">Starters</p>
+        <div class="row"><span class="nm">Harira soup</span><span class="dots" aria-hidden="true"></span><span class="pr">45 MAD</span></div>
+        <p class="desc">Chickpeas, tomato, vermicelli — the way the grandmother made it</p>
+        <div class="row"><span class="nm">Zaalouk, smoked aubergine</span><span class="dots" aria-hidden="true"></span><span class="pr">55 MAD</span></div>
+        <p class="desc">Charred aubergine, garlic, cumin, olive oil</p>
+        <div class="row"><span class="nm">Pastilla, pigeon</span><span class="dots" aria-hidden="true"></span><span class="pr">85 MAD</span></div>
+        <p class="desc">Warqa pastry, almond, cinnamon — sweet and salt at once</p>
+      </div>
+    </div>
+
+    <p class="bench__note">The proof pins to the viewport while the job card scrolls past it — and before either pane gets cramped, the split collapses to a tab switch.</p>
+  </div>
+</section>
+
+<!-- ============ THE SHELF ============ -->
+<section id="shelf" aria-label="The shelf">
+  <div class="shelf__head">
+    <div>
+      <p class="label">The shelf — six templates</p>
+      <h2>Take one down,<br>try it on.</h2>
+    </div>
+    <p class="shelf__hint">Drag the shelf · arrow keys work too</p>
+  </div>
+
+  <div class="rail" id="rail" tabindex="0" role="region" aria-label="Template shelf, horizontally scrollable">
+    <article class="tcard">
+      <div class="tcard__preview tp tp--classic"><div class="tp-title">La Trattoria</div><div class="tp-line">Bruschetta <i></i> 8</div><div class="tp-line">Tagliatelle <i></i> 16</div><div class="tp-line">Tiramisù <i></i> 7</div></div>
+      <div class="tcard__body"><h3>Classic</h3><p>Centred, serif, white tablecloth.</p><p class="use">Fine dining</p></div>
+    </article>
+    <article class="tcard">
+      <div class="tcard__preview tp tp--modern"><div class="tp-title">Night Shift</div><div class="tp-line">Smash burger <i></i> 12</div><div class="tp-line">Loaded fries <i></i> 7</div><div class="tp-line">Stout <i></i> 6</div></div>
+      <div class="tcard__body"><h3>Modern</h3><p>Dark, bold, card-based.</p><p class="use">Bars, burger joints</p></div>
+    </article>
+    <article class="tcard">
+      <div class="tcard__preview tp tp--minimal"><div class="tp-title">Still</div><div class="tp-line">Filter <i></i> 3</div><div class="tp-line">Toast <i></i> 5</div><div class="tp-line">Cake <i></i> 4</div></div>
+      <div class="tcard__body"><h3>Minimal</h3><p>Quiet, content first.</p><p class="use">Cafés, galleries</p></div>
+    </article>
+    <article class="tcard">
+      <div class="tcard__preview tp tp--medina"><div class="tp-title">Medina Café</div><div class="tp-line">Mint tea <i></i> 20</div><div class="tp-line">Chebakia <i></i> 15</div><div class="tp-line">Msemen <i></i> 25</div></div>
+      <div class="tcard__body"><h3>Medina Café</h3><p>Warm plaster, terracotta ink.</p><p class="use">Moroccan cafés</p></div>
+    </article>
+    <article class="tcard">
+      <div class="tcard__preview tp tp--fine"><div class="tp-title">Dining</div><div class="tp-line">Mechoui <i></i> 140</div><div class="tp-line">Tagine kefta <i></i> 95</div><div class="tp-line">Orange blossom <i></i> 40</div></div>
+      <div class="tcard__body"><h3>Moroccan Fine Dining</h3><p>Ruled, restrained, black on white.</p><p class="use">Riads, rooftops</p></div>
+    </article>
+    <article class="tcard">
+      <div class="tcard__preview tp tp--garden"><div class="tp-title">The Garden</div><div class="tp-line">Courgette salad <i></i> 65</div><div class="tp-line">Lamb, preserved lemon <i></i> 120</div><div class="tp-line">Mint sorbet <i></i> 45</div></div>
+      <div class="tcard__body"><h3>Modern Moroccan Garden</h3><p>Leafy green, light, seasonal.</p><p class="use">Courtyards, brunch</p></div>
+    </article>
+  </div>
+  <div class="railbar" aria-hidden="true"><i id="railbar-fill"></i></div>
+</section>
+
+<!-- ============ SHARE (dark scene) ============ -->
+<section id="share" class="share" aria-label="Scan">
+  <p class="label">The counter — proof &amp; scan</p>
+  <div class="share__grid">
+    <figure class="qr-plate reveal">
+      <img src="../qr-demo.svg" alt="QR code that opens the demo menu at menucraft.app/menu/demo" width="320" height="320">
+    </figure>
+    <div>
+      <h2>One code.<br>Every table.</h2>
+      <p class="url">Scan · <b>menucraft.app/menu/demo</b></p>
+      <ul>
+        <li>The code never changes when the menu does — update the food, keep the print run.</li>
+        <li>Four modules of quiet zone, always. A real link sits beside it for anyone who cannot scan.</li>
+        <li>Printed once on the table tent; edited from the bench at 6 a.m.</li>
+      </ul>
+      <p style="margin-top:30px"><a href="#rates" class="btn btn--accent magnetic">Put it on a table</a></p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ RATES ============ -->
+<section id="rates" aria-label="The rates">
+  <div class="rates__grid">
+    <div class="rates__copy">
+      <p class="label">The rates — set like a menu</p>
+      <h2>Priced like a plate, not a contract.</h2>
+      <p>No sales call, no annual lock-in, no seat counting. Pick a line, change it later.</p>
+      <p class="fine">All tiers include unlimited items, QR codes and public links. Cancel any time — the free tier stays free.</p>
+      <p style="margin-top:26px"><a href="#" class="btn magnetic">Start on the free tier</a></p>
+    </div>
+    <ul class="menu-list">
+      <li class="reveal">
+        <div class="plan-top"><h3>Free</h3><span class="leader" aria-hidden="true"></span><span class="price">$0</span></div>
+        <div class="plan-feats"><span>One menu, unlimited items</span><span>QR codes and public links</span><span>Basic templates</span><span>MenuCraft stamp on the page</span></div>
+      </li>
+      <li class="reveal">
+        <div class="plan-top"><h3>Starter</h3><span class="leader" aria-hidden="true"></span><span class="price"><span class="from">from</span>$19 <small>/ month</small></span></div>
+        <div class="plan-feats"><span>Three menus, stamp removed</span><span>Fifty custom images</span><span>Basic analytics — views and peak times</span><span>One custom domain</span></div>
+      </li>
+      <li class="reveal">
+        <div class="plan-top"><h3>Professional <span class="plan-tag">House choice</span></h3><span class="leader" aria-hidden="true"></span><span class="price"><span class="from">from</span>$49 <small>/ month</small></span></div>
+        <div class="plan-feats"><span>Unlimited menus and images</span><span>Advanced analytics — clicks, popular items</span><span>Five custom domains, A/B tests, seasonal scheduling</span><span>Priority support and API access</span></div>
+      </li>
+      <li class="reveal">
+        <div class="plan-top"><h3>Enterprise</h3><span class="leader" aria-hidden="true"></span><span class="price">by agreement</span></div>
+        <div class="plan-feats"><span>White label and franchise controls</span><span>POS and ordering integrations</span><span>Multi-user collaboration, SLA</span></div>
+      </li>
+    </ul>
+  </div>
+</section>
+
+<!-- ============ CLOSING ============ -->
+<footer class="closing" aria-label="Closing">
+  <p class="label">Closing the job card</p>
+  <h2 id="closing-title">Build it tonight.<br>Scan it tomorrow.</h2>
+  <div class="cta-row">
+    <a href="#" class="btn btn--accent magnetic">Open the workbench</a>
+    <a href="#shelf" class="btn btn--ghost">See the six templates</a>
+  </div>
+  <nav class="footlinks" aria-label="Footer">
+    <a href="#bench">The bench</a>
+    <a href="#shelf">The shelf</a>
+    <a href="#rates">The rates</a>
+    <a href="#">Docs</a>
+    <a href="#">GitHub</a>
+    <span class="legal">MenuCraft — digital menus made simple. MIT licence.</span>
+  </nav>
+  <div class="wordmark" aria-hidden="true" id="wordmark">
+    <span>M</span><span>E</span><span>N</span><span>U</span><span>C</span><span>R</span><span>A</span><span>F</span><span>T</span>
+  </div>
+</footer>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/ScrollTrigger.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/SplitText.min.js"></script>
+<script>
+(function () {
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var hasGsap = typeof gsap !== 'undefined';
+
+  // Reduced motion / no GSAP: everything rests in its final state.
+  if (!hasGsap || reduce) {
+    document.querySelectorAll('.wordmark span').forEach(function (s) { s.style.transform = 'none'; });
+    return;
+  }
+
+  gsap.registerPlugin(ScrollTrigger, SplitText);
+  var ease = 'power3.out';
+
+  /* 1 — Progress: how far through the job card */
+  gsap.to('.progress', {
+    scaleX: 1, ease: 'none',
+    scrollTrigger: { trigger: document.body, start: 'top top', end: 'bottom bottom', scrub: 0.3 }
+  });
+
+  /* 2 — Hide header: reading room on the way down, nav back on the way up */
+  var lastY = 0, bar = document.getElementById('topbar');
+  ScrollTrigger.create({
+    start: 0, end: 'max',
+    onUpdate: function (self) {
+      var y = self.scroll();
+      if (y > 140 && y > lastY) gsap.to(bar, { yPercent: -110, duration: 0.35, ease: 'power2.out', overwrite: true });
+      else gsap.to(bar, { yPercent: 0, duration: 0.35, ease: 'power2.out', overwrite: true });
+      lastY = y;
+    }
+  });
+
+  /* 3 — Text reveal: the statement on the empty wall, line by line */
+  var split1 = SplitText.create('#statement-1', { type: 'lines', mask: 'lines' });
+  gsap.from(split1.lines, {
+    yPercent: 108, duration: 1.1, stagger: 0.12, ease: 'expo.out',
+    scrollTrigger: { trigger: '#statement-1', start: 'top 78%', once: true }
+  });
+
+  /* 4 — Mask reveal: the proof plate opens like a crop */
+  gsap.fromTo('#plate',
+    { clipPath: 'inset(0 0 100% 0)' },
+    { clipPath: 'inset(0 0 0% 0)', duration: 1.0, ease: 'power2.inOut',
+      scrollTrigger: { trigger: '#plate', start: 'top 80%', once: true } });
+
+  /* 5 — Background colour: three scenes — manila, oil, manila */
+  var scenes = [
+    { el: '#why',    color: '#E6DCC6' },
+    { el: '#share',  color: '#17130E' },
+    { el: '#rates',  color: '#E6DCC6' }
+  ];
+  scenes.forEach(function (s) {
+    ScrollTrigger.create({
+      trigger: s.el, start: 'top 55%', end: 'bottom 45%',
+      onEnter:     function () { gsap.to('body', { backgroundColor: s.color, duration: 0.6, ease: 'power1.inOut', overwrite: 'auto' }); },
+      onEnterBack: function () { gsap.to('body', { backgroundColor: s.color, duration: 0.6, ease: 'power1.inOut', overwrite: 'auto' }); }
+    });
+  });
+
+  /* 6 — Magnetic button: one quiet pull toward the pointer */
+  document.querySelectorAll('.magnetic').forEach(function (btn) {
+    var xTo = gsap.quickTo(btn, 'x', { duration: 0.4, ease: 'power3' });
+    var yTo = gsap.quickTo(btn, 'y', { duration: 0.4, ease: 'power3' });
+    btn.addEventListener('pointermove', function (e) {
+      var r = btn.getBoundingClientRect();
+      xTo((e.clientX - (r.left + r.width / 2)) * 0.3);
+      yTo((e.clientY - (r.top + r.height / 2)) * 0.3);
+    });
+    btn.addEventListener('pointerleave', function () { xTo(0); yTo(0); });
+  });
+
+  /* 7 — SVG draw path: the chalk circle around Stamp & save */
+  var stamp = document.getElementById('stamp-path');
+  if (stamp) {
+    var len = stamp.getTotalLength();
+    gsap.set(stamp, { strokeDasharray: len, strokeDashoffset: len });
+    gsap.to(stamp, {
+      strokeDashoffset: 0, duration: 1.6, ease: 'power2.inOut',
+      scrollTrigger: { trigger: '#save-btn', start: 'top 75%', once: true }
+    });
+  }
+
+  /* 8 — Infinite marquee: the ticker under the hero */
+  var track = document.getElementById('marquee');
+  if (track) {
+    var third = track.scrollWidth / 3;
+    gsap.to(track, { x: -third, duration: 18, ease: 'none', repeat: -1 });
+  }
+
+  /* 9 — Counter: the three figures tick once on entry */
+  document.querySelectorAll('.count').forEach(function (node) {
+    var to = parseInt(node.getAttribute('data-to'), 10) || 0;
+    var obj = { v: 0 };
+    gsap.to(obj, {
+      v: to, duration: 1.4, ease: 'power2.out',
+      scrollTrigger: { trigger: node, start: 'top 90%', once: true },
+      onUpdate: function () { node.textContent = Math.round(obj.v); }
+    });
+  });
+
+  /* 10 — Element reveal: ruled rows and the QR plate arrive as units */
+  gsap.utils.toArray('.reveal').forEach(function (el) {
+    gsap.from(el, {
+      autoAlpha: 0, y: 26, duration: 0.9, ease: ease,
+      scrollTrigger: { trigger: el, start: 'top 88%', once: true }
+    });
+  });
+
+  /* 11 — Wordmark rise: letters come up out of the floor, left to right */
+  var letters = document.querySelectorAll('#wordmark span');
+  gsap.fromTo(letters,
+    { yPercent: 110 },
+    { yPercent: 0, duration: 0.7, stagger: 0.06, ease: 'expo.out',
+      scrollTrigger: { trigger: '#wordmark', start: 'top 92%', once: true } });
+
+  /* Draggable shelf with snap + progress bar (no Inertia — free Draggable only) */
+  var rail = document.getElementById('rail');
+  var fill = document.getElementById('railbar-fill');
+  if (rail && fill) {
+    var updateBar = function () {
+      var max = rail.scrollWidth - rail.clientWidth;
+      var p = max > 0 ? rail.scrollLeft / max : 0;
+      gsap.to(fill, { width: (20 + p * 80) + '%', duration: 0.2, ease: 'power1.out', overwrite: true });
+    };
+    rail.addEventListener('scroll', updateBar, { passive: true });
+    updateBar();
+
+    var isDown = false, startX = 0, startScroll = 0, moved = 0;
+    rail.addEventListener('pointerdown', function (e) {
+      isDown = true; moved = 0; startX = e.clientX; startScroll = rail.scrollLeft;
+      rail.classList.add('dragging');
+    });
+    window.addEventListener('pointermove', function (e) {
+      if (!isDown) return;
+      var dx = e.clientX - startX;
+      moved = Math.max(moved, Math.abs(dx));
+      rail.scrollLeft = startScroll - dx;
+    });
+    window.addEventListener('pointerup', function () { isDown = false; rail.classList.remove('dragging'); });
+    rail.addEventListener('click', function (e) { if (moved > 6) e.preventDefault(); }, true);
+    rail.addEventListener('keydown', function (e) {
+      var step = rail.querySelector('.tcard').offsetWidth + 22;
+      if (e.key === 'ArrowRight') { rail.scrollBy({ left: step, behavior: reduce ? 'auto' : 'smooth' }); e.preventDefault(); }
+      if (e.key === 'ArrowLeft')  { rail.scrollBy({ left: -step, behavior: reduce ? 'auto' : 'smooth' }); e.preventDefault(); }
+    });
+  }
+})();
+</script>
+</body>
+</html>

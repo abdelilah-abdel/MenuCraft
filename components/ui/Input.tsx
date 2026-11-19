@@ -19,20 +19,20 @@ export const Input: React.FC<InputProps> = ({
       {label && (
         <label
           htmlFor={inputId}
-          className="block text-xs font-semibold text-menu-charcoal-700 uppercase tracking-wider mb-2"
+          className="block text-xs font-bold text-menu-ink-700 uppercase tracking-[0.14em] mb-2"
         >
           {label}
         </label>
       )}
       <input
         id={inputId}
-        className={`w-full px-4 py-3 bg-white border border-menu-charcoal-200/60 text-menu-charcoal-900 rounded-sm focus:outline-none focus:border-menu-gold-500 focus:shadow-[0_0_0_3px_rgba(212,175,55,0.1)] transition-all placeholder:text-menu-charcoal-400 ${
-          error ? 'border-red-400 focus:border-red-500 focus:shadow-[0_0_0_3px_rgba(239,68,68,0.1)]' : 'hover:border-menu-gold-400/50'
+        className={`w-full px-4 py-3 bg-menu-paper-50 border border-menu-ink-300 text-menu-ink-900 focus:outline-none focus:border-menu-stamp-500 focus:shadow-[0_0_0_3px_rgba(196,49,31,0.18)] transition-colors placeholder:text-menu-ink-400 ${
+          error ? 'border-red-500 focus:border-red-600 focus:shadow-[0_0_0_3px_rgba(239,68,68,0.18)]' : 'hover:border-menu-ink-700'
         } ${className}`}
         {...props}
       />
       {error && (
-        <p className="mt-1.5 text-sm text-red-600">{error}</p>
+        <p className="mt-1.5 text-sm text-red-600" role="alert">{error}</p>
       )}
     </div>
   );
@@ -57,20 +57,20 @@ export const Textarea: React.FC<TextareaProps> = ({
       {label && (
         <label
           htmlFor={textareaId}
-          className="block text-xs font-semibold text-menu-charcoal-900 uppercase tracking-wider mb-2"
+          className="block text-xs font-bold text-menu-ink-900 uppercase tracking-[0.14em] mb-2"
         >
           {label}
         </label>
       )}
       <textarea
         id={textareaId}
-        className={`w-full px-4 py-3 bg-white border border-menu-charcoal-200/60 text-menu-charcoal-900 rounded-sm focus:outline-none focus:border-menu-gold-500 focus:shadow-[0_0_0_3px_rgba(212,175,55,0.1)] resize-vertical transition-all placeholder:text-menu-charcoal-400 ${
-          error ? 'border-red-400 focus:border-red-500 focus:shadow-[0_0_0_3px_rgba(239,68,68,0.1)]' : 'hover:border-menu-gold-400/50'
+        className={`w-full px-4 py-3 bg-menu-paper-50 border border-menu-ink-300 text-menu-ink-900 focus:outline-none focus:border-menu-stamp-500 focus:shadow-[0_0_0_3px_rgba(196,49,31,0.18)] resize-vertical transition-colors placeholder:text-menu-ink-400 ${
+          error ? 'border-red-500 focus:border-red-600 focus:shadow-[0_0_0_3px_rgba(239,68,68,0.18)]' : 'hover:border-menu-ink-700'
         } ${className}`}
         {...props}
       />
       {error && (
-        <p className="mt-1.5 text-sm text-red-600">{error}</p>
+        <p className="mt-1.5 text-sm text-red-600" role="alert">{error}</p>
       )}
     </div>
   );

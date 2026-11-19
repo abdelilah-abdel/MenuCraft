@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MenuCraft — Design Lab · Three Directions</title>
+<style>
+  @font-face {
+    font-family: 'Bricolage';
+    src: url('fonts/bricolage-grotesque-latin.woff2') format('woff2');
+    font-weight: 200 800; font-stretch: 75% 100%; font-display: swap;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Bricolage', system-ui, sans-serif;
+    background: #101010; color: #EDEAE3;
+    padding: clamp(18px, 3vw, 40px);
+    min-height: 100vh;
+  }
+  :focus-visible { outline: 3px solid #F5C518; outline-offset: 3px; }
+  header { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 16px; align-items: baseline; margin-bottom: clamp(20px, 3vw, 36px); }
+  h1 { font-size: clamp(26px, 3.4vw, 46px); font-weight: 800; font-stretch: 75%; text-transform: uppercase; letter-spacing: -0.03em; }
+  h1 span { color: #F5C518; }
+  header p { color: #9a978f; font-size: 14.5px; max-width: 56ch; }
+  .doors { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: clamp(14px, 2vw, 26px); }
+  @media (max-width: 1000px) { .doors { grid-template-columns: 1fr; } }
+  figure.door { border: 1px solid #2c2c2c; background: #171717; display: flex; flex-direction: column; }
+  figcaption { padding: 14px 16px; border-bottom: 1px solid #2c2c2c; }
+  figcaption b { display: block; font-size: 17px; font-weight: 800; font-stretch: 75%; text-transform: uppercase; letter-spacing: -0.01em; }
+  figcaption b i { font-style: normal; color: #F5C518; }
+  figcaption span { display: block; font-size: 12.5px; color: #9a978f; margin-top: 4px; line-height: 1.45; }
+  iframe { width: 100%; height: 78vh; min-height: 560px; border: 0; background: #fff; }
+  footer { margin-top: clamp(22px, 3vw, 40px); display: flex; flex-wrap: wrap; gap: 10px 30px; font-size: 13px; color: #9a978f; }
+  footer a { color: #F5C518; text-decoration: none; }
+  footer a:hover { text-decoration: underline; }
+</style>
+</head>
+<body>
+<header>
+  <div>
+    <h1>MenuCraft <span>· Design Lab</span></h1>
+    <p>Three directions for the rebuild, side by side. Same content, same one font family
+       (Bricolage Grotesque, self-hosted, OFL), three different design systems. Click an
+       iframe and scroll — every section moves.</p>
+  </div>
+</header>
+
+<div class="doors">
+  <figure class="door">
+    <figcaption>
+      <b>A · The <i>Garage</i></b>
+      <span>Manila job card + safety orange. Ruled instrument chrome, extreme weight/width
+        contrast, printed-menu leaders. References: R1 Mobbin/Titan, R2 Oatly, R5 Vitsœ.</span>
+    </figcaption>
+    <iframe src="a-garage/index.html" title="Direction A — The Garage" loading="lazy"></iframe>
+  </figure>
+
+  <figure class="door">
+    <figcaption>
+      <b>B · The <i>Wall</i></b>
+      <span>Litho paper + stamp red. Letterpress editorial: statement type on an empty wall,
+        five-step scale, one menu card flipping through three frames. References: R3 Ragged
+        Edge, R4/R5 Mobbin scale.</span>
+    </figcaption>
+    <iframe src="b-wall/index.html" title="Direction B — The Wall" loading="lazy"></iframe>
+  </figure>
+
+  <figure class="door">
+    <figcaption>
+      <b>C · The <i>Shop Floor</i></b>
+      <span>Pegboard graphite + hazard yellow. Instrument panel: morphing tabs, filling step
+        line, draggable shelf with throw-and-snap. References: R1 Mobbin instrument nav,
+        R6 Levenium split.</span>
+    </figcaption>
+    <iframe src="c-shopfloor/index.html" title="Direction C — The Shop Floor" loading="lazy"></iframe>
+  </figure>
+</div>
+
+<footer>
+  <span>Open a direction full-screen: <a href="a-garage/index.html">A</a> · <a href="b-wall/index.html">B</a> · <a href="c-shopfloor/index.html">C</a></span>
+  <span>Read the decisions: <a href="NOTES.md">NOTES.md</a></span>
+  <span>Research: <a href="research/RESEARCH.md">RESEARCH.md</a> · <a href="research/DNA.md">DNA.md</a></span>
+</footer>
+</body>
+</html>

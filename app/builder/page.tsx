@@ -141,15 +141,15 @@ function BuilderContent() {
 
   if (isLoadingWorkspace || workspaceError) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-menu-cream-200 px-6">
+      <div className="min-h-screen flex items-center justify-center bg-menu-paper-200 px-6">
         <div className="text-center max-w-md">
           {workspaceError ? (
             <>
-              <p role="alert" className="text-menu-charcoal-700">{workspaceError}</p>
+              <p role="alert" className="text-menu-ink-700">{workspaceError}</p>
               <button
                 type="button"
                 onClick={() => window.location.reload()}
-                className="mt-4 text-sm font-semibold text-menu-gold-700 underline underline-offset-2"
+                className="mt-4 text-sm font-semibold text-menu-stamp-700 underline underline-offset-2"
               >
                 Try again
               </button>
@@ -157,7 +157,7 @@ function BuilderContent() {
           ) : (
             <>
               <div className="menu-ornament mb-6 animate-pulse"></div>
-              <p className="font-serif text-xl text-menu-charcoal-700">Loading your workspace…</p>
+              <p className="font-display text-xl text-menu-ink-700">Loading your workspace…</p>
             </>
           )}
         </div>
@@ -166,28 +166,28 @@ function BuilderContent() {
   }
 
   return (
-    <div className="min-h-screen bg-menu-cream-200 flex flex-col">
+    <div className="min-h-screen bg-menu-paper-200 flex flex-col">
       {/* Top Bar */}
-      <header className="bg-menu-cream-50 border-b-menu border-menu-gold-300 shadow-menu sticky top-0 z-50">
+      <header className="bg-menu-paper-200 border-b-[1.5px] border-menu-ink-900 sticky top-0 z-50">
         <div className="px-6 py-4">
           <div className="flex items-center justify-between">
             {/* Left: Logo & Name */}
             <div className="flex items-center gap-4">
               <Link href="/" className="flex items-center gap-2 group">
-                <span className="text-xl font-serif menu-title text-menu-charcoal-900">MenuCraft</span>
-                <span className="text-menu-gold-500 text-sm">∗</span>
+                <span className="text-xl font-display menu-title text-menu-ink-900">MenuCraft</span>
+                <span className="text-menu-stamp-500 text-sm">∗</span>
               </Link>
-              <div className="h-6 w-px bg-menu-gold-300 hidden sm:block"></div>
+              <div className="h-6 w-px bg-menu-stamp-300 hidden sm:block"></div>
               <div className="hidden sm:block">
-                <h1 className="font-serif text-lg text-menu-charcoal-900">{menu.restaurantName}</h1>
-                <p className="text-xs text-menu-charcoal-500 uppercase tracking-wide">Menu Editor</p>
+                <h1 className="font-display text-lg text-menu-ink-900">{menu.restaurantName}</h1>
+                <p className="text-xs text-menu-ink-500 uppercase tracking-wide">Menu Editor</p>
               </div>
             </div>
 
             {/* Right: Actions */}
             <div className="flex items-center gap-3">
               {isSaved && (
-                <span className="hidden sm:flex items-center gap-1.5 text-sm text-menu-gold-700 font-medium px-3 py-2 bg-menu-gold-100">
+                <span className="hidden sm:flex items-center gap-1.5 text-sm text-menu-stamp-700 font-medium px-3 py-2 bg-menu-stamp-100">
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                   </svg>
@@ -236,7 +236,7 @@ function BuilderContent() {
               </Button>
 
               <Link href={`/menu/${menu.id}`}>
-                <Button variant="gold" size="sm">
+                <Button variant="stamp" size="sm">
                   <span className="hidden sm:inline">View Live</span>
                   <svg className="w-4 h-4 sm:hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
@@ -249,15 +249,15 @@ function BuilderContent() {
       </header>
 
       {/* Navigation Tabs */}
-      <nav className="bg-white border-b-menu border-menu-charcoal-200 px-6">
+      <nav className="bg-white border-b-menu border-menu-ink-200 px-6">
         <div className="max-w-7xl mx-auto">
           <div className="flex gap-1 overflow-x-auto">
             <button
               onClick={() => { setViewMode('edit'); setMobilePane('edit'); }}
               className={`flex items-center gap-2 px-6 py-4 transition-all whitespace-nowrap ${
                 viewMode === 'edit'
-                  ? 'border-b-4 border-menu-gold-500 text-menu-charcoal-900 font-semibold'
-                  : 'border-b-4 border-transparent text-menu-charcoal-600 hover:text-menu-charcoal-900 hover:border-menu-gold-200'
+                  ? 'border-b-4 border-menu-stamp-500 text-menu-ink-900 font-semibold'
+                  : 'border-b-4 border-transparent text-menu-ink-600 hover:text-menu-ink-900 hover:border-menu-stamp-200'
               }`}
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -270,8 +270,8 @@ function BuilderContent() {
               onClick={() => setViewMode('template')}
               className={`flex items-center gap-2 px-6 py-4 transition-all whitespace-nowrap ${
                 viewMode === 'template'
-                  ? 'border-b-4 border-menu-gold-500 text-menu-charcoal-900 font-semibold'
-                  : 'border-b-4 border-transparent text-menu-charcoal-600 hover:text-menu-charcoal-900 hover:border-menu-gold-200'
+                  ? 'border-b-4 border-menu-stamp-500 text-menu-ink-900 font-semibold'
+                  : 'border-b-4 border-transparent text-menu-ink-600 hover:text-menu-ink-900 hover:border-menu-stamp-200'
               }`}
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -284,8 +284,8 @@ function BuilderContent() {
               onClick={() => setViewMode('daily')}
               className={`flex items-center gap-2 px-6 py-4 transition-all whitespace-nowrap ${
                 viewMode === 'daily'
-                  ? 'border-b-4 border-menu-gold-500 text-menu-charcoal-900 font-semibold'
-                  : 'border-b-4 border-transparent text-menu-charcoal-600 hover:text-menu-charcoal-900 hover:border-menu-gold-200'
+                  ? 'border-b-4 border-menu-stamp-500 text-menu-ink-900 font-semibold'
+                  : 'border-b-4 border-transparent text-menu-ink-600 hover:text-menu-ink-900 hover:border-menu-stamp-200'
               }`}
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -298,8 +298,8 @@ function BuilderContent() {
               onClick={() => setViewMode('share')}
               className={`flex items-center gap-2 px-6 py-4 transition-all whitespace-nowrap ${
                 viewMode === 'share'
-                  ? 'border-b-4 border-menu-gold-500 text-menu-charcoal-900 font-semibold'
-                  : 'border-b-4 border-transparent text-menu-charcoal-600 hover:text-menu-charcoal-900 hover:border-menu-gold-200'
+                  ? 'border-b-4 border-menu-stamp-500 text-menu-ink-900 font-semibold'
+                  : 'border-b-4 border-transparent text-menu-ink-600 hover:text-menu-ink-900 hover:border-menu-stamp-200'
               }`}
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -312,7 +312,7 @@ function BuilderContent() {
       </nav>
 
       {/* Main Content Area */}
-      <main className="flex-1 overflow-y-auto bg-menu-cream-200">
+      <main className="flex-1 overflow-y-auto bg-menu-paper-200">
         <div className="max-w-7xl mx-auto px-6 py-8">
           <div className={viewMode === 'edit' ? 'animate-fade-in' : 'hidden'}>
             <div className="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1.1fr)_minmax(320px,0.9fr)]">
@@ -328,10 +328,10 @@ function BuilderContent() {
                 <div className="lg:sticky lg:top-28 lg:max-h-[calc(100vh-8rem)] lg:overflow-y-auto">
                   <div className="mb-3 flex items-center justify-between gap-3">
                     <div>
-                      <h2 className="font-serif text-xl text-menu-charcoal-900">Live Preview</h2>
-                      <p className="text-xs text-menu-charcoal-500">Unsaved edits · {menu.template}</p>
+                      <h2 className="font-display text-xl text-menu-ink-900">Live Preview</h2>
+                      <p className="text-xs text-menu-ink-500">Unsaved edits · {menu.template}</p>
                     </div>
-                    <span className="border border-menu-gold-300 bg-menu-gold-50 px-2 py-1 text-[10px] font-semibold uppercase tracking-wide text-menu-gold-700">Preview only</span>
+                    <span className="border border-menu-stamp-300 bg-menu-stamp-50 px-2 py-1 text-[10px] font-semibold uppercase tracking-wide text-menu-stamp-700">Preview only</span>
                   </div>
                   <MenuPreview menu={menu} />
                 </div>
@@ -342,7 +342,7 @@ function BuilderContent() {
           {viewMode === 'template' && (
             <div className="animate-fade-in">
               <div className="mb-6">
-                <h2 className="text-2xl font-serif menu-title text-menu-charcoal-900 mb-2">Choose Template</h2>
+                <h2 className="text-2xl font-display menu-title text-menu-ink-900 mb-2">Choose Template</h2>
                 <p className="menu-description text-sm">Select the style that fits your restaurant</p>
               </div>
               <TemplateSelector
@@ -356,24 +356,24 @@ function BuilderContent() {
           {viewMode === 'daily' && (
             <div className="animate-fade-in">
               <div className="mb-6">
-                <h2 className="text-2xl font-serif menu-title text-menu-charcoal-900 mb-2">Daily Special</h2>
+                <h2 className="text-2xl font-display menu-title text-menu-ink-900 mb-2">Daily Special</h2>
                 <p className="menu-description text-sm">Create today's special menu for social media</p>
               </div>
 
               <div className="space-y-6">
                 <div className="menu-card p-6">
-                  <h3 className="font-serif text-lg text-menu-charcoal-900 mb-4">Today's Specials</h3>
+                  <h3 className="font-display text-lg text-menu-ink-900 mb-4">Today's Specials</h3>
                   <div className="space-y-4">
                     {[
                       { name: 'Chef\'s Special', price: '24', tag: 'NEW' },
                       { name: 'Seasonal Soup', price: '12', tag: 'LIMITED' },
                       { name: 'Catch of the Day', price: '32', tag: 'FRESH' }
                     ].map((item, i) => (
-                      <div key={i} className="flex justify-between items-baseline border-b border-menu-charcoal-100 pb-3">
+                      <div key={i} className="flex justify-between items-baseline border-b border-menu-ink-100 pb-3">
                         <div className="flex-1">
                           <div className="flex items-baseline gap-2">
-                            <h4 className="font-serif text-base text-menu-charcoal-900">{item.name}</h4>
-                            <span className="text-xs px-2 py-0.5 bg-menu-gold-500 text-white uppercase tracking-wide">
+                            <h4 className="font-display text-base text-menu-ink-900">{item.name}</h4>
+                            <span className="text-xs px-2 py-0.5 bg-menu-stamp-500 text-white uppercase tracking-wide">
                               {item.tag}
                             </span>
                           </div>
@@ -383,7 +383,7 @@ function BuilderContent() {
                     ))}
                   </div>
 
-                  <div className="mt-6 pt-6 border-t border-menu-gold-300 space-y-3">
+                  <div className="mt-6 pt-6 border-t border-menu-stamp-300 space-y-3">
                     <Button variant="primary" size="sm" className="w-full">
                       Download Image
                     </Button>
@@ -393,13 +393,13 @@ function BuilderContent() {
                   </div>
                 </div>
 
-                <div className="bg-menu-gold-50 border border-menu-gold-300 p-4">
+                <div className="bg-menu-stamp-50 border border-menu-stamp-300 p-4">
                   <div className="flex gap-3">
-                    <svg className="w-5 h-5 text-menu-gold-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="w-5 h-5 text-menu-stamp-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
                     <div>
-                      <h4 className="font-semibold text-menu-charcoal-900 mb-1 text-sm">Pro Tip</h4>
+                      <h4 className="font-semibold text-menu-ink-900 mb-1 text-sm">Pro Tip</h4>
                       <p className="menu-description text-xs">
                         Update daily to keep customers engaged. Share on social media with #DailySpecial
                       </p>
@@ -413,7 +413,7 @@ function BuilderContent() {
           {viewMode === 'share' && (
             <div className="animate-fade-in">
               <div className="mb-6">
-                <h2 className="text-2xl font-serif menu-title text-menu-charcoal-900 mb-2">Share Your Menu</h2>
+                <h2 className="text-2xl font-display menu-title text-menu-ink-900 mb-2">Share Your Menu</h2>
                 <p className="menu-description text-sm">Download QR codes and share links</p>
               </div>
 
@@ -424,7 +424,7 @@ function BuilderContent() {
                 />
 
                 <div className="menu-card p-6">
-                  <h4 className="font-serif text-lg text-menu-charcoal-900 mb-4">How to Use</h4>
+                  <h4 className="font-display text-lg text-menu-ink-900 mb-4">How to Use</h4>
                   <div className="space-y-3">
                     {[
                       { step: 'Download QR code above' },
@@ -433,7 +433,7 @@ function BuilderContent() {
                       { step: 'Update anytime - QR stays same' }
                     ].map((item, index) => (
                       <div key={index} className="flex gap-3 items-start">
-                        <div className="w-6 h-6 border border-menu-gold-500 flex items-center justify-center flex-shrink-0 font-serif text-sm text-menu-gold-600">
+                        <div className="w-6 h-6 border border-menu-stamp-500 flex items-center justify-center flex-shrink-0 font-display text-sm text-menu-stamp-600">
                           {index + 1}
                         </div>
                         <p className="menu-description text-sm pt-0.5">{item.step}</p>
@@ -454,10 +454,10 @@ function BuilderContent() {
 export default function BuilderPage() {
   return (
     <Suspense fallback={
-      <div className="min-h-screen flex items-center justify-center bg-menu-cream-200">
+      <div className="min-h-screen flex items-center justify-center bg-menu-paper-200">
         <div className="text-center">
           <div className="menu-ornament mb-6 animate-pulse"></div>
-          <p className="font-serif text-xl text-menu-charcoal-700">Loading Builder...</p>
+          <p className="font-display text-xl text-menu-ink-700">Loading Builder...</p>
           <p className="menu-description mt-2">Preparing your workspace</p>
         </div>
       </div>
