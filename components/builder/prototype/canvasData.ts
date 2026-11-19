@@ -38,6 +38,23 @@ export const canvasIconGroups: { name: string; icons: readonly CanvasIcon[] }[] 
   { name: 'Menu marks', icons: ['fork', 'knife', 'spoon', 'plate', 'cloche', 'star', 'heart', 'sparkle', 'arrow', 'location', 'clock', 'badge', 'check', 'menu', 'flame'] },
 ];
 
+export const canvasIllustrations = [
+  { id: 'espresso-cup', name: 'Espresso cup', group: 'Café & bakery' },
+  { id: 'croissant', name: 'Butter croissant', group: 'Café & bakery' },
+  { id: 'bread-loaf', name: 'Country loaf', group: 'Café & bakery' },
+  { id: 'chef-hat', name: 'Chef hat', group: 'Café & bakery' },
+  { id: 'taco', name: 'Taco plate', group: 'Plates & treats' },
+  { id: 'pasta-bowl', name: 'Pasta bowl', group: 'Plates & treats' },
+  { id: 'donut', name: 'Iced donut', group: 'Plates & treats' },
+  { id: 'cupcake', name: 'Cupcake', group: 'Plates & treats' },
+  { id: 'sundae', name: 'Ice cream sundae', group: 'Plates & treats' },
+  { id: 'lemon-branch', name: 'Lemon branch', group: 'Botanical accents' },
+  { id: 'olive-branch', name: 'Olive branch', group: 'Botanical accents' },
+  { id: 'flower-vase', name: 'Flowers in a vase', group: 'Botanical accents' },
+] as const;
+export type CanvasIllustrationId = typeof canvasIllustrations[number]['id'];
+export const canvasIllustrationGroups = ['Café & bakery', 'Plates & treats', 'Botanical accents'] as const;
+
 export const canvasShapeGroups = [
   { name: 'Frames & flourishes', shapes: ['rect', 'ellipse', 'line', 'burst', 'wave'] as const },
   { name: '3D objects', shapes: ['cube', 'sphere', 'cylinder', 'cone', 'pyramid', 'ring'] as const },
@@ -58,11 +75,11 @@ export const canvasFormatsLabel = (w: number, h: number) => `${w} × ${h}`;
 export const canvasFormatsOptions = canvasFormats;
 
 export interface CanvasNode {
-  id: string; kind: 'text' | 'image' | 'icon' | 'shape' | 'dish'; name: string;
+  id: string; kind: 'text' | 'image' | 'icon' | 'illustration' | 'shape' | 'dish'; name: string;
   x: number; y: number; w: number; h: number; rotation: number; opacity: number;
   text?: string; font: string; fontSize: number; bold?: boolean; italic?: boolean; align: 'left' | 'center' | 'right'; tracking: number;
   color: string; fill: string; border: string; borderWidth: number; radius: number;
-  shape?: CanvasShape; icon?: CanvasIcon; src?: string; crop?: Crop; dishId?: string;
+  shape?: CanvasShape; icon?: CanvasIcon; illustration?: CanvasIllustrationId; src?: string; crop?: Crop; dishId?: string;
   hidden?: boolean; locked?: boolean; feature?: boolean;
 }
 export interface CanvasDocument {
