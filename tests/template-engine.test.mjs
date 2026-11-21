@@ -1,0 +1,219 @@
+import assert from 'node:assert/strict';
+import { mkdtemp, rm, symlink } from 'node:fs/promises';
+import { createRequire } from 'node:module';
+import os from 'node:os';
+import path from 'node:path';
+import { after, before, test } from 'node:test';
+import React from 'react';
+import { renderToStaticMarkup } from 'react-dom/server';
+import ts from 'typescript';
+
+let outputDirectory;
+let config;
+let rendering;
+let examples;
+
+before(async () => {
+  outputDirectory = await mkdtemp(path.join(os.tmpdir(), 'menucraft-template-engine-'));
+  const program = ts.createProgram(['lib/templates/config.ts', 'lib/templates/index.tsx', 'lib/templates/examples.ts'], {
+    target: ts.ScriptTarget.ES2022,
+    module: ts.ModuleKind.CommonJS,
+    moduleResolution: ts.ModuleResolutionKind.Node10,
+    jsx: ts.JsxEmit.ReactJSX,
+    esModuleInterop: true,
+    skipLibCheck: true,
+    rootDir: process.cwd(),
+    outDir: outputDirectory,
+  });
+  assert.equal(program.emit().emitSkipped, false);
+  await symlink(path.join(process.cwd(), 'node_modules'), path.join(outputDirectory, 'node_modules'), 'dir');
+  const require = createRequire(import.meta.url);
+  config = require(path.join(outputDirectory, 'lib/templates/config.js'));
+  rendering = require(path.join(outputDirectory, 'lib/templates/index.js'));
+  examples = require(path.join(outputDirectory, 'lib/templates/examples.js'));
+});
+
+after(async () => {
+  if (outputDirectory) await rm(outputDirectory, { recursive: true, force: true });
+});
+
+const menu = {
+  id: 'menu-existing-public-id',
+  restaurantName: 'Atlas Kitchen',
+  originalLanguage: 'fr',
+  description: 'Seasonal plates',
+  template: 'atlas-simple',
+  sections: [
+    {
+      id: 'lunch',
+      name: 'Lunch',
+      order: 0,
+      subsections: [{ id: 'tagines', name: 'Tagines', order: 0 }],
+      items: [
+        {
+          id: 'dish',
+          subsectionId: 'tagines',
+          name: 'Vegetable tagine',
+          price: 72,
+          currency: 'MAD',
+          available: true,
+        },
+      ],
+    },
+  ],
+  customization: {
+    primaryColor: '#123456',
+    secondaryColor: '#654321',
+    fontFamily: 'Georgia, serif',
+    showPrices: true,
+    showDescriptions: true,
+    showImages: false,
+  },
+  createdAt: '2026-11-17T12:00:00.000Z',
+  updatedAt: '2026-11-17T12:00:00.000Z',
+};
+
+test('one template definition makes a new preset discoverable and renders its own composition', () => {
+  const registry = config.defineTemplateRegistry({
+    ...config.TEMPLATE_CONFIGS,
+    'fixture-noir': {
+      ...config.TEMPLATE_CONFIGS['atlas-simple'],
+      id: 'fixture-noir',
+      name: 'Fixture Noir',
+      category: 'Café',
+      theme: { ...config.TEMPLATE_CONFIGS['atlas-simple'].theme, backgroundColor: '#010203' },
+      composition: ['menu-sections', 'restaurant-header'],
+    },
+  });
+  const options = config.getTemplateOptions(registry);
+  assert.equal(options.length, 9);
+  assert.equal(options.find((option) => option.id === 'fixture-noir').name, 'Fixture Noir');
+  assert.equal(options.find((option) => option.id === 'fixture-noir').category, 'Café');
+  const Template = rendering.getTemplate('fixture-noir', registry);
+  const photographed = structuredClone(menu); photographed.sections[0].image = 'data:image/png;base64,c2VjdGlvbg==';
+  assert.match(renderToStaticMarkup(React.createElement(Template, { menu: { ...photographed, template: 'fixture-noir' } })), /Lunch photo/);
+  const html = renderToStaticMarkup(
+    React.createElement(Template, { menu: { ...menu, template: 'fixture-noir' } })
+  );
+  assert.match(html, /background:#010203/);
+  assert.match(html, /Vegetable tagine/);
+  assert.match(html, /MAD 72\.00/);
+  assert.match(html, /Tagines/);
+  assert.ok(
+    html.indexOf('Vegetable tagine') < html.indexOf('Atlas Kitchen'),
+    'block order follows the new composition'
+  );
+});
+
+test('invalid definitions and block or renderer references are rejected at registration', () => {
+  const atlas = config.TEMPLATE_CONFIGS['atlas-simple'];
+  const invalidDefinitions = [
+    { ...atlas, id: 'different-id' },
+    { ...atlas, theme: {} },
+    { ...atlas, formats: ['UNKNOWN'] },
+    { ...atlas, verifiedFormats: ['BOOKLET'] },
+    { ...atlas, verifiedFormats: ['WEB', 'WEB'] },
+    { ...atlas, example: { source: 'missing', restaurantName: 'Example', description: '' } },
+    { ...atlas, layout: { ...atlas.layout, columns: 9 } },
+    { ...atlas, composition: ['restaurant-header', 'unregistered-block'] },
+    { ...atlas, composition: ['restaurant-header', 'restaurant-header'] },
+    { ...atlas, composition: undefined },
+    { ...atlas, renderer: 'unregistered-renderer' },
+    { ...atlas, renderer: 'legacy', composition: undefined, legacyRenderer: 'unregistered-renderer' },
+  ];
+  for (const definition of invalidDefinitions) {
+    assert.throws(() => config.defineTemplateRegistry({ 'atlas-simple': definition }), /Invalid template/);
+  }
+  assert.throws(() => config.defineTemplateRegistry({}), /cannot be empty/);
+});
+
+test('all registered IDs render the supplied menu without changing its data', () => {
+  const original = structuredClone(menu);
+  const ids = [
+    'classic',
+    'modern',
+    'minimal',
+    'medina-cafe',
+    'moroccan-fine-dining',
+    'modern-moroccan-garden',
+    'atlas-simple',
+    'atlas-market',
+  ];
+  assert.deepEqual(
+    config.getTemplateOptions(config.TEMPLATE_CONFIGS).map((entry) => entry.id),
+    ids
+  );
+  for (const template of ids) {
+    const Template = rendering.getTemplate(template);
+    const html = renderToStaticMarkup(React.createElement(Template, { menu }));
+    for (const text of ['Atlas Kitchen', 'Lunch', 'Tagines', 'Vegetable tagine', 'MAD 72.00'])
+      assert.ok(html.includes(text), `${template}: ${text}`);
+    assert.match(html, /lang="fr"/);
+    assert.doesNotMatch(html, /data-preview-target|data-preview-image|Edit dish .* in preview/, `${template}: public menu has no editor controls`);
+  }
+  assert.deepEqual(menu, original);
+});
+
+test('unknown template IDs render a clear error instead of a substitute design', () => {
+  assert.throws(() => rendering.getTemplate('missing-template'), /Unknown menu template/);
+  assert.throws(() => config.getTemplateConfig('constructor'), /Unknown menu template/);
+  const html = renderToStaticMarkup(
+    React.createElement(rendering.MenuTemplate, { menu: { ...menu, template: 'missing-template' } })
+  );
+  assert.match(html, /role="alert"/);
+  assert.match(html, /design is unavailable/);
+  assert.doesNotMatch(html, /Vegetable tagine/);
+});
+
+
+test('all templates retain orphan dishes and complete content while honoring visibility', () => {
+  const fixture = structuredClone(menu);
+  fixture.sections[0].description = 'Section detail';
+  fixture.sections[0].subsections[0].description = 'Subsection detail';
+  fixture.sections[0].items[0].tags = ['Owner supplied'];
+  fixture.sections[0].items[0].available = false;
+  fixture.sections[0].items.push({ ...fixture.sections[0].items[0], id: 'orphan', name: 'Orphan dish', subsectionId: 'obsolete' });
+  for (const template of Object.keys(config.TEMPLATE_CONFIGS)) {
+    const Template = rendering.getTemplate(template);
+    const html = renderToStaticMarkup(React.createElement(Template,{menu:{...fixture,template}}));
+    for (const text of ['Subsection detail','Owner supplied','Orphan dish','Épuisé']) assert.ok(html.includes(text),template + ': ' + text);
+    const hidden = renderToStaticMarkup(React.createElement(Template,{menu:{...fixture,template,customization:{...fixture.customization,showDescriptions:false,showPrices:false}}}));
+    assert.doesNotMatch(hidden,/Subsection detail|Section detail|Seasonal plates|MAD 72/);
+  }
+});
+
+
+test('empty and hidden groups render truthful empty states with supplied language direction', () => {
+  for (const language of ['en','fr','ar']) for (const template of Object.keys(config.TEMPLATE_CONFIGS)) {
+    const fixture = structuredClone(menu); fixture.originalLanguage = language; fixture.template = template;
+    fixture.sections[0].subsections[0].hidden = true;
+    const html = renderToStaticMarkup(React.createElement(rendering.MenuTemplate,{menu:fixture}));
+    assert.match(html,new RegExp('dir="'+(language==='ar'?'rtl':'ltr')+'"'));
+    assert.doesNotMatch(html,/Vegetable tagine/);
+    assert.match(html,/being updated|mise à jour|تحديث/);
+  }
+});
+
+
+test('configured styles and section regions preserve content and render through the public interface', () => {
+  const fixture=structuredClone(menu); fixture.design={componentStyles:{headings:'plain',dishes:'outlined',prices:'aligned'},layout:{columns:3,spacing:'compact',alignment:'center',sectionRegions:{lunch:'column-3'}}};
+  fixture.sections[0].image='data:image/png;base64,photo';
+  const before=structuredClone(fixture);
+  const html=renderToStaticMarkup(React.createElement(rendering.MenuTemplate,{menu:fixture}));
+  for (const text of ['data-columns="3"','data-heading-treatment="plain"','data-dish-treatment="outlined"','data-price-treatment="aligned"','data-menu-region="column-3"','Vegetable tagine','Tagines','MAD 72.00','Lunch photo']) assert.ok(html.includes(text),text);
+  assert.deepEqual(fixture,before);
+});
+
+
+test('preset examples use the shared renderer and never share mutable owner content', () => {
+  const registry=config.defineTemplateRegistry({'fixture-market':{...config.TEMPLATE_CONFIGS['atlas-market'],id:'fixture-market',name:'Fixture Market',example:{source:'atlas',restaurantName:'Example Market',description:'Example only'}}});
+  const example=examples.createTemplateExample('fixture-market',registry);
+  const Template=rendering.getTemplate('fixture-market',registry);
+  const html=renderToStaticMarkup(React.createElement(Template,{menu:example}));
+  assert.match(html,/Example Market/); assert.match(html,/data-columns="2"/);
+  assert.match(html,/data-price-treatment="aligned"/); assert.match(html,/>Example</);
+  assert.doesNotMatch(html,/data-preview-target/);
+  example.sections[0].items[0].name='Changed privately';
+  assert.notEqual(examples.createTemplateExample('fixture-market',registry).sections[0].items[0].name,'Changed privately');
+  assert.throws(()=>examples.createTemplateExample('unknown'),/Unknown menu template/);
+});

@@ -109,6 +109,18 @@ body {
   color: var(--color-paper-light);
 }
 
+/* Owner-only targets are added by the Live Preview context. Public menus have no edit attributes. */
+[data-preview-target] { cursor: pointer; }
+[data-preview-target]:hover,
+[data-preview-target][data-preview-selected="true"] {
+  outline: 3px solid var(--color-stamp);
+  outline-offset: 3px;
+}
+[data-preview-target]:focus-visible {
+  outline: 3px solid var(--color-stamp);
+  outline-offset: 3px;
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
@@ -415,11 +427,8 @@ h1, h2, h3, h4, h5, h6, p {
    RESPONSIVE UTILITIES
    ============================================ */
 
-img,
-video,
-canvas {
-  max-width: 100%;
-  height: auto;
+@layer base {
+  img, video, canvas { max-width: 100%; height: auto; }
 }
 
 @media (max-width: 640px) {
@@ -547,3 +556,65 @@ canvas {
     flex-direction: column;
   }
 }
+
+/* Shared content safety across templates, including long unbroken owner text. */
+.menu-content { overflow-wrap: anywhere; }
+.menu-content :where(article,section,header,h1,h2,h3,p,div) { min-width: 0; }
+.menu-content :where(h1,h2,h3,p) { white-space: normal; }
+@layer base { .menu-content img { max-width: 100%; } }
+.menu-content article > div > div:has(> h3) { flex-wrap: wrap; }
+
+.menu-content :where(div,header):has(> img[data-section-photo]) { display: flow-root; }
+
+/* Owner appearance overrides are scoped to menu output. Template structure stays intact. */
+.menu-appearance[data-appearance-background] > main { background: var(--menu-background) !important; color: var(--menu-contrast); }
+.menu-appearance[data-appearance-background] main :is(p,[data-menu-role="dish-name"]):not(:where(main > header *)) { color: var(--menu-contrast) !important; }
+.menu-appearance[data-appearance-background] main article[data-preview-target],
+.menu-appearance[data-appearance-background] main section article { background-color: var(--menu-background); }
+.menu-appearance[data-appearance-type] :is(h1,h2,h3) { font-family: var(--menu-heading) !important; }
+.menu-appearance[data-appearance-type] :is(p,span,main) { font-family: var(--menu-body) !important; }
+.menu-appearance[data-appearance-primary] :is(h2,[data-menu-role="price"]) { color: var(--menu-primary) !important; }
+.menu-appearance[data-appearance-secondary] section p { color: var(--menu-secondary) !important; }
+/* Scale the design's existing type ramp, including responsive title sizes. */
+.menu-appearance[data-appearance-background][data-appearance-secondary] main section p { color: var(--menu-secondary) !important; }
+.menu-appearance[data-appearance-size] main { font-size: calc(1rem * var(--menu-text-scale)); }
+.menu-appearance[data-appearance-size] .text-xs { font-size: calc(.75rem * var(--menu-text-scale)) !important; }
+.menu-appearance[data-appearance-size] .text-sm { font-size: calc(.875rem * var(--menu-text-scale)) !important; }
+.menu-appearance[data-appearance-size] .text-base { font-size: calc(1rem * var(--menu-text-scale)) !important; }
+.menu-appearance[data-appearance-size] .text-lg { font-size: calc(1.125rem * var(--menu-text-scale)) !important; }
+.menu-appearance[data-appearance-size] .text-xl { font-size: calc(1.25rem * var(--menu-text-scale)) !important; }
+.menu-appearance[data-appearance-size] .text-2xl { font-size: calc(1.5rem * var(--menu-text-scale)) !important; }
+.menu-appearance[data-appearance-size] .text-3xl { font-size: calc(1.875rem * var(--menu-text-scale)) !important; }
+.menu-appearance[data-appearance-size] .text-4xl { font-size: calc(2.25rem * var(--menu-text-scale)) !important; }
+.menu-appearance[data-appearance-size] .text-5xl { font-size: calc(3rem * var(--menu-text-scale)) !important; }
+.menu-appearance[data-appearance-size] .text-6xl { font-size: calc(3.75rem * var(--menu-text-scale)) !important; }
+.menu-appearance[data-appearance-size] .text-7xl { font-size: calc(4.5rem * var(--menu-text-scale)) !important; }
+@media (min-width: 640px) {
+  .menu-appearance[data-appearance-size] .sm\:text-xs { font-size: calc(.75rem * var(--menu-text-scale)) !important; }
+  .menu-appearance[data-appearance-size] .sm\:text-sm { font-size: calc(.875rem * var(--menu-text-scale)) !important; }
+  .menu-appearance[data-appearance-size] .sm\:text-base { font-size: calc(1rem * var(--menu-text-scale)) !important; }
+  .menu-appearance[data-appearance-size] .sm\:text-lg { font-size: calc(1.125rem * var(--menu-text-scale)) !important; }
+  .menu-appearance[data-appearance-size] .sm\:text-xl { font-size: calc(1.25rem * var(--menu-text-scale)) !important; }
+  .menu-appearance[data-appearance-size] .sm\:text-2xl { font-size: calc(1.5rem * var(--menu-text-scale)) !important; }
+  .menu-appearance[data-appearance-size] .sm\:text-3xl { font-size: calc(1.875rem * var(--menu-text-scale)) !important; }
+  .menu-appearance[data-appearance-size] .sm\:text-4xl { font-size: calc(2.25rem * var(--menu-text-scale)) !important; }
+  .menu-appearance[data-appearance-size] .sm\:text-5xl { font-size: calc(3rem * var(--menu-text-scale)) !important; }
+  .menu-appearance[data-appearance-size] .sm\:text-6xl { font-size: calc(3.75rem * var(--menu-text-scale)) !important; }
+  .menu-appearance[data-appearance-size] .sm\:text-7xl { font-size: calc(4.5rem * var(--menu-text-scale)) !important; }
+}
+
+.menu-content [data-dish-treatment="outlined"] { border: 1px solid var(--menu-primary); border-radius: 8px; padding: 1rem; margin-block: .75rem; }
+
+/* Constrained regions: whole sections flow within columns; the restaurant header is outside. */
+.menu-regions { --menu-section-gap: 3rem; --menu-dish-gap: 1rem; display: grid; grid-template-columns: minmax(0,1fr); gap: var(--menu-section-gap); text-align: start; }
+.menu-regions[data-spacing="compact"] { --menu-section-gap: 1.5rem; --menu-dish-gap: .5rem; }
+.menu-regions[data-spacing="airy"] { --menu-section-gap: 4rem; --menu-dish-gap: 1.5rem; }
+.menu-regions[data-alignment="center"] { text-align: center; }
+.menu-regions > div > section + section { margin-top: var(--menu-section-gap); }
+.menu-regions [data-dish-treatment] { padding-block: var(--menu-dish-gap); }
+.menu-regions > div:empty { display: none; }
+@media (min-width: 768px) {
+  .menu-regions[data-columns="2"], .menu-regions[data-columns="3"] { grid-template-columns: repeat(2,minmax(0,1fr)); }
+  .menu-regions > div:empty { display: block; }
+}
+@media (min-width: 1100px) { .menu-regions[data-columns="3"] { grid-template-columns: repeat(3,minmax(0,1fr)); } }

@@ -235,3 +235,73 @@ test('owner menu changes persist across sign-out, device sign-in, and the public
   });
   assert.equal(badPassword.status, 401);
 });
+
+test('all registered designs preserve the owner menu and an unknown design cannot replace publication', async () => {
+  const registration = await fetch(`${appUrl}/api/auth/register`, {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email: 'templates@example.com', password: 'template-owner-password' }),
+  });
+  assert.equal(registration.status, 201);
+  const owner = (await registration.json()).owner;
+  const headers = { 'Content-Type': 'application/json', Cookie: registration.headers.get('set-cookie').split(';')[0] };
+  const original = {
+    design: { appearance: { primaryColor: '#174f54', backgroundColor: '#fff5df', fontFamily: 'Georgia, serif', textSize: 'large' }, componentStyles: { headings: 'ruled', dishes: 'outlined', prices: 'aligned' }, layout: { columns: 3, spacing: 'compact', alignment: 'center', sectionRegions: { section: 'column-3' } } },
+    id: 'stable-template-menu', restaurantName: 'Atlas Registry Kitchen', description: 'Owner-supplied menu',
+    sections: [{ id: 'section', name: 'Dinner', order: 0,
+      subsections: [{ id: 'subsection', name: 'Tagines', order: 0, hidden: false }],
+      image: 'data:image/png;base64,c2VjdGlvbg==', imagePresentation: { placement: 'heading-side', focalX: 25, focalY: 75 }, hidden: false,
+      items: [{ id: 'dish', subsectionId: 'subsection', name: 'Vegetable tagine', price: 72, currency: 'MAD', available: false, hidden: true, image: 'data:image/png;base64,ZGlzaA==', imagePresentation: { placement: 'thumbnail', fit: 'cover', focalX: 10, focalY: 90 } }],
+    }],
+    customization: { primaryColor: '#123456', secondaryColor: '#654321', fontFamily: 'Georgia, serif', logoImage: 'data:image/png;base64,ZmFrZQ==', logoSize: 80, logoPresentation: { fit: 'contain', hidden: false }, bannerImage: 'data:image/png;base64,YmFubmVy', bannerPresentation: { placement: 'below', focalY: 60 }, showImages: false, showPrices: true, showDescriptions: true },
+  };
+  let saved;
+  for (const template of ['classic', 'modern', 'minimal', 'medina-cafe', 'moroccan-fine-dining', 'modern-moroccan-garden', 'atlas-simple']) {
+    const response = await fetch(`${appUrl}/api/menus/current`, { method: 'POST', headers, body: JSON.stringify({ ...original, template }) });
+    assert.equal(response.status, 200, template);
+    const next = (await response.json()).menu;
+    assert.equal(next.id, 'stable-template-menu');
+    assert.equal(next.ownerId, owner.id);
+    assert.equal(next.originalLanguage, 'en', 'old menus without Original Language still load');
+    assert.equal(next.template, template);
+    assert.deepEqual(next.customization, original.customization);
+    assert.deepEqual(next.design, original.design);
+    assert.deepEqual(next.sections, original.sections);
+    if (saved) assert.equal(next.createdAt, saved.createdAt);
+    saved = next;
+    const restored = await fetch(`${appUrl}/api/menus/current`, { headers });
+    assert.deepEqual((await restored.json()).menu, saved);
+    const published = (await (await fetch(`${appUrl}/api/menus/${saved.id}`)).json()).menu;
+    const { ownerId: _ownerId, ...expectedPublic } = saved;
+    assert.deepEqual(published, expectedPublic);
+  }
+  const exampleResponse = await fetch(`${appUrl}/templates/atlas-market/preview`);
+  assert.equal(exampleResponse.status,200);
+  const exampleHtml = await exampleResponse.text();
+  assert.match(exampleHtml,/data-template-example="atlas-market"/);
+  assert.doesNotMatch(exampleHtml,/Atlas Registry Kitchen/);
+  assert.equal((await fetch(`${appUrl}/templates/missing/preview`)).status,404);
+  for (const design of [{ componentStyles: { prices: 'freeform' } }, { layout: { columns: 4 } }, { layout: { columns: '2' } }, { layout: { columns: 2, sectionRegions: { missing: 'column-1' } } }, { layout: { columns: 1, sectionRegions: { section: 'column-2' } } }, { layout: { spacing: '999px' } }, { layout: { position: 'absolute' } }]) {
+    const response = await fetch(`${appUrl}/api/menus/current`, { method: 'POST', headers, body: JSON.stringify({ ...saved, design }) });
+    assert.equal(response.status, 400, 'invalid styles/layout or dangling placements are rejected');
+  }
+  for (const appearance of [{ primaryColor: 'red;position:fixed' }, { backgroundColor: 'url(javascript:alert(1))' }, { fontFamily: 'arbitrary-font' }, { textSize: 100 }, { unknown: 'value' }]) {
+    const response = await fetch(`${appUrl}/api/menus/current`, { method: 'POST', headers, body: JSON.stringify({ ...saved, design: { appearance } }) });
+    assert.equal(response.status, 400, 'unsupported appearance is rejected');
+  }
+  for (const imagePresentation of [{ focalX: -1 }, { focalY: 101 }, { placement: ['thumbnail'] }, { hidden: 'true' }]) {
+    const response = await fetch(`${appUrl}/api/menus/current`, { method: 'POST', headers, body: JSON.stringify({ ...saved, sections: [{ ...saved.sections[0], imagePresentation }] }) });
+    assert.equal(response.status, 400, 'invalid image metadata is rejected');
+  }
+  for (const template of ['missing-template', 'constructor']) {
+    const response = await fetch(`${appUrl}/api/menus/current`, {
+      method: 'POST', headers, body: JSON.stringify({ ...original, template, restaurantName: 'Must not replace publication' }),
+    });
+    assert.equal(response.status, 400);
+    assert.match((await response.json()).error, /design is unavailable/);
+    const restored = await fetch(`${appUrl}/api/menus/current`, { headers });
+    assert.deepEqual((await restored.json()).menu, saved);
+  }
+  const published = (await (await fetch(`${appUrl}/api/menus/${saved.id}`)).json()).menu;
+  assert.equal(published.template, 'atlas-simple');
+  assert.equal(published.restaurantName, 'Atlas Registry Kitchen');
+});

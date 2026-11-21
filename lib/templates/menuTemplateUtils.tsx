@@ -1,24 +1,27 @@
 import React from 'react';
 import { Menu, MenuItem, MenuLanguage, MenuSection, MenuSubsection } from '../types/menu';
+import { imageStyle } from '../imagePresentation';
 import { imageService } from '../services/imageService';
+import { useIsMenuPreview, usePreviewItemTarget, usePreviewTarget } from './previewSelection';
 
 export interface MenuSectionGroup {
   subsection: MenuSubsection | null;
   items: MenuItem[];
 }
 
-export function getMenuSectionGroups(section: MenuSection): MenuSectionGroup[] {
-  const subsections = [...(section.subsections || [])].sort((left, right) => left.order - right.order);
-  const subsectionIds = new Set(subsections.map((subsection) => subsection.id));
+export function getMenuSectionGroups(section: MenuSection, includeHidden = false): MenuSectionGroup[] {
+  const allSubsections = section.subsections || [];
+  const subsections = [...allSubsections].filter(group => includeHidden || !group.hidden).sort((left, right) => left.order - right.order);
+  const subsectionIds = new Set(allSubsections.map((subsection) => subsection.id));
   const groups: MenuSectionGroup[] = [];
-  const ungroupedItems = section.items.filter((item) => !item.subsectionId || !subsectionIds.has(item.subsectionId));
+  const ungroupedItems = section.items.filter((item) => (includeHidden || !item.hidden) && (!item.subsectionId || !subsectionIds.has(item.subsectionId)));
 
   if (ungroupedItems.length > 0) {
     groups.push({ subsection: null, items: ungroupedItems });
   }
 
   for (const subsection of subsections) {
-    const items = section.items.filter((item) => item.subsectionId === subsection.id);
+    const items = section.items.filter((item) => item.subsectionId === subsection.id && (includeHidden || !item.hidden));
     if (items.length > 0) groups.push({ subsection, items });
   }
 
@@ -26,7 +29,7 @@ export function getMenuSectionGroups(section: MenuSection): MenuSectionGroup[] {
 }
 
 export function getVisibleMenuSections(menu: Menu): MenuSection[] {
-  return menu.sections.filter((section) => getMenuSectionGroups(section).some((group) => group.items.length > 0));
+  return [...menu.sections].sort((a, b) => a.order - b.order).filter((section) => !section.hidden && getMenuSectionGroups(section).some((group) => group.items.length > 0));
 }
 
 export function menuDirection(menu: Menu): 'rtl' | 'ltr' {
@@ -48,10 +51,15 @@ export function MenuItemPhoto({
   showImages: boolean;
   className: string;
 }) {
-  if (!showImages || !item.image) return null;
+  const target = usePreviewItemTarget(item);
+  const previewTarget = usePreviewTarget();
+  if (!showImages || !item.image || item.imagePresentation?.hidden) return null;
 
   return (
     <img
+      {...(target ? previewTarget(target, `Edit photo for ${item.name || 'Untitled dish'} in preview`, true) : {})}
+      key={item.image}
+      style={imageStyle(item.imagePresentation)}
       src={imageService.getImageUrl(item.image)}
       alt={item.name}
       className={className}
@@ -86,4 +94,11 @@ export function SoldOutLabel({ className = '', language = 'en' }: { className?: 
 export function formatMenuPrice(item: MenuItem): string {
   const price = Number.isFinite(item.price) ? item.price.toFixed(2) : '0.00';
   return `${item.currency}${item.currency.trim() ? ' ' : ''}${price}`;
+}
+
+export function MenuEmptyState({ language }: { language: MenuLanguage }) {
+  const preview = useIsMenuPreview();
+  return <>{preview
+    ? localizedMenuText(language, 'Add visible dishes to preview your menu.', 'Ajoutez des plats visibles pour prévisualiser votre menu.', 'أضف أطباقًا ظاهرة لمعاينة قائمتك.')
+    : localizedMenuText(language, 'This menu is being updated. Please check back soon.', 'Cette carte est en cours de mise à jour.', 'يجري تحديث هذه القائمة. يرجى العودة قريبًا.')}</>;
 }

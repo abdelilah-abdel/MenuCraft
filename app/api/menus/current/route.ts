@@ -2,6 +2,7 @@ import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
 import { getOwnerFromSessionToken, OWNER_SESSION_COOKIE } from '@/lib/server/ownerAuth';
 import { getMenuForOwner, isMenuInput, saveMenuForOwner } from '@/lib/server/menuStore';
+import { isTemplateId } from '@/lib/templates/config';
 
 async function getSignedInOwner() {
   const cookieStore = await cookies();
@@ -31,6 +32,9 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Send a valid menu to save.' }, { status: 400 });
   }
   if (!isMenuInput(input)) {
+    if (typeof input === 'object' && input !== null && 'template' in input && !isTemplateId(input.template)) {
+      return NextResponse.json({ error: 'The selected menu design is unavailable. Choose another design.' }, { status: 400 });
+    }
     return NextResponse.json({ error: 'The menu details are incomplete or invalid.' }, { status: 400 });
   }
 

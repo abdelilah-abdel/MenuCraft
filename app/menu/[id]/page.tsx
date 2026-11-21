@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import { Menu } from '@/lib/types/menu';
 import { MenuService } from '@/lib/services/menuService';
-import { getTemplate } from '@/lib/templates';
+import { MenuTemplate } from '@/lib/templates';
 
 export default function MenuPage() {
   const params = useParams();
@@ -62,11 +62,9 @@ export default function MenuPage() {
     );
   }
 
-  const TemplateComponent = getTemplate(menu.template);
-
   return (
     <div>
-      <TemplateComponent menu={menu} />
+      <MenuTemplate menu={menu} />
     </div>
   );
 }

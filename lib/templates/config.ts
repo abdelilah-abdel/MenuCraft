@@ -1,56 +1,6 @@
-import type { TemplateType } from '../types/menu';
-
-/** Formats a template is designed and tested for (idea.md §4.1). */
-export type MenuOutputFormat =
-  | 'A4'
-  | 'A5'
-  | 'A3'
-  | 'BOOKLET'
-  | 'WEB'
-  | 'MOBILE'
-  | 'TV_HORIZONTAL'
-  | 'TV_VERTICAL'
-  | 'TABLET'
-  | 'TABLE_TENT';
-
-export interface TemplateThemeConfig {
-  primaryColor: string;
-  secondaryColor: string;
-  backgroundColor: string;
-  inkColor: string;
-  headingFont: string;
-  bodyFont: string;
-}
-
-export type TemplateLayoutKind =
-  | 'editorial'   // centered header, ruled item rows
-  | 'cards'       // bold dish cards, optional images
-  | 'minimal'     // sparse list, maximum whitespace
-  | 'banded'      // full-width brand band, compact lists
-  | 'garden';     // two-column photography-forward dishes
-
-export interface TemplateLayoutConfig {
-  kind: TemplateLayoutKind;
-  columns: 1 | 2;
-  imageStyle: 'none' | 'top-band' | 'cards' | 'row-thumbs';
-  showSectionRules: boolean;
-  showPricesWithLeaders: boolean;
-  cornerRadius: 0 | 4 | 8 | 16;
-}
-
-/** Where the rendered output comes from. Legacy components are kept intact
- * while all future templates can be written as data configurations only. */
-export interface TemplateConfig {
-  id: TemplateType;
-  name: string;
-  category: 'Moroccan' | 'Fine dining' | 'Café' | 'Original';
-  description: string;
-  preview: string;
-  formats: MenuOutputFormat[];
-  renderer: 'legacy' | 'configurable';
-  theme: TemplateThemeConfig;
-  layout: TemplateLayoutConfig;
-}
+import { defineTemplateRegistry, type TemplateConfig, type TemplateRegistry, type TemplateThemeConfig } from './registry';
+export { defineTemplateRegistry, getTemplateOptions } from './registry';
+export type { TemplateConfig, TemplateRegistry, TemplateThemeConfig, TemplateLayoutConfig, TemplateLayoutKind, MenuOutputFormat } from './registry';
 
 const legacyTheme = (
   primaryColor = '#17140F',
@@ -66,15 +16,21 @@ const legacyTheme = (
   bodyFont,
 });
 
-export const TEMPLATE_CONFIGS: Record<TemplateType, TemplateConfig> = {
+export const TEMPLATE_CONFIGS = defineTemplateRegistry({
   classic: {
     id: 'classic',
+    verifiedFormats: ['WEB', 'MOBILE'],
+    example: { source: 'atlas', restaurantName: 'Atlas Kitchen', description: 'An editable example of a Moroccan kitchen menu.' },
+    sectionPhotoPlacements: ['banner', 'heading-side'],
+    headerImagePlacements: { defaultLogoSize: 96, logo: ['above'], banner: ['above', 'below'] },
+    dishPhotoPlacements: ['thumbnail'],
     name: 'Classic',
     category: 'Original',
     description: 'Traditional elegant menu with a centered header and restrained spacing.',
     preview: 'Timeless serif design with classic centered styling',
     formats: ['A4', 'A5', 'WEB', 'MOBILE'],
     renderer: 'legacy',
+    legacyRenderer: 'classic',
     theme: legacyTheme(),
     layout: {
       kind: 'editorial', columns: 1, imageStyle: 'row-thumbs',
@@ -83,13 +39,19 @@ export const TEMPLATE_CONFIGS: Record<TemplateType, TemplateConfig> = {
   },
   modern: {
     id: 'modern',
+    verifiedFormats: ['WEB', 'MOBILE'],
+    example: { source: 'modern-moroccan-garden', restaurantName: 'Garden Kitchen', description: 'An editable example of a Moroccan kitchen menu.' },
+    sectionPhotoPlacements: ['banner', 'heading-side'],
+    headerImagePlacements: { defaultLogoSize: 80, logo: ['above'], banner: ['above', 'below'] },
+    dishPhotoPlacements: ['card-top'],
     name: 'Modern',
     category: 'Original',
     description: 'Contemporary dark theme with bold typography and card-based layout.',
     preview: 'Sleek dishes, confident contrast, and a dark restaurant feel',
     formats: ['WEB', 'MOBILE', 'TV_HORIZONTAL'],
     renderer: 'legacy',
-    theme: legacyTheme('#F4F1E8', '#141414', 'system-ui, sans-serif'),
+    legacyRenderer: 'modern',
+    theme: { ...legacyTheme('#2563EB', '#0F0F0F', 'system-ui, sans-serif'), secondaryColor: '#1E40AF', inkColor: '#FFFFFF' },
     layout: {
       kind: 'cards', columns: 2, imageStyle: 'cards',
       showSectionRules: false, showPricesWithLeaders: false, cornerRadius: 8,
@@ -97,12 +59,18 @@ export const TEMPLATE_CONFIGS: Record<TemplateType, TemplateConfig> = {
   },
   minimal: {
     id: 'minimal',
+    verifiedFormats: ['WEB', 'MOBILE'],
+    example: { source: 'atlas', restaurantName: 'Atlas Kitchen', description: 'An editable example of a Moroccan kitchen menu.' },
+    sectionPhotoPlacements: ['banner', 'heading-side'],
+    headerImagePlacements: { defaultLogoSize: 64, logo: ['above'], banner: ['above', 'below'] },
+    dishPhotoPlacements: ['text-side'],
     name: 'Minimal',
     category: 'Original',
     description: 'Clean and simple design with the content doing all the talking.',
     preview: 'Minimalist spacing, quiet type, and subtle grayscale accents',
     formats: ['A4', 'A5', 'WEB', 'MOBILE'],
     renderer: 'legacy',
+    legacyRenderer: 'minimal',
     theme: legacyTheme('#242424', '#FFFFFF', 'system-ui, sans-serif'),
     layout: {
       kind: 'minimal', columns: 1, imageStyle: 'none',
@@ -111,12 +79,18 @@ export const TEMPLATE_CONFIGS: Record<TemplateType, TemplateConfig> = {
   },
   'medina-cafe': {
     id: 'medina-cafe',
+    verifiedFormats: ['WEB', 'MOBILE'],
+    example: { source: 'medina-cafe', restaurantName: 'Dar Medina', description: 'An editable example of a Moroccan kitchen menu.' },
+    sectionPhotoPlacements: ['banner', 'heading-side'],
+    headerImagePlacements: { defaultLogoSize: 64, logo: ['above'], banner: ['above', 'below'] },
+    dishPhotoPlacements: ['thumbnail'],
     name: 'Medina Café',
     category: 'Moroccan',
     description: 'A warm, ornamental all-day café menu with generous photography.',
     preview: 'Breakfast, tea time, mains, sweets, and Moroccan drinks',
     formats: ['A4', 'A5', 'WEB', 'MOBILE'],
     renderer: 'legacy',
+    legacyRenderer: 'medina-cafe',
     theme: legacyTheme('#8B4B2B', '#F5F0E3', 'Georgia, serif'),
     layout: {
       kind: 'editorial',
@@ -126,12 +100,18 @@ export const TEMPLATE_CONFIGS: Record<TemplateType, TemplateConfig> = {
   },
   'moroccan-fine-dining': {
     id: 'moroccan-fine-dining',
+    verifiedFormats: ['WEB', 'MOBILE'],
+    example: { source: 'moroccan-fine-dining', restaurantName: 'La Table Royale', description: 'An editable example of a Moroccan kitchen menu.' },
+    sectionPhotoPlacements: ['banner', 'heading-side'],
+    headerImagePlacements: { defaultLogoSize: 64, logo: ['above'], banner: ['above', 'below'] },
+    dishPhotoPlacements: ['card-top'],
     name: 'Moroccan Fine Dining',
     category: 'Moroccan',
     description: 'An editorial, print-inspired layout for detailed dishes and set courses.',
     preview: 'Rich dish descriptions, elegant rules, and fine-dining photography',
-    formats: ['A4', 'A5', 'A3', 'BOOKLET', 'WEB'],
+    formats: ['A4', 'A5', 'A3', 'BOOKLET', 'WEB', 'MOBILE'],
     renderer: 'legacy',
+    legacyRenderer: 'moroccan-fine-dining',
     theme: legacyTheme('#332323', '#F7F4EE', 'Georgia, serif'),
     layout: {
       kind: 'editorial', columns: 2, imageStyle: 'top-band',
@@ -140,12 +120,18 @@ export const TEMPLATE_CONFIGS: Record<TemplateType, TemplateConfig> = {
   },
   'modern-moroccan-garden': {
     id: 'modern-moroccan-garden',
+    verifiedFormats: ['WEB', 'MOBILE'],
+    example: { source: 'modern-moroccan-garden', restaurantName: 'Jardin d’Atlas', description: 'An editable example of a Moroccan kitchen menu.' },
+    sectionPhotoPlacements: ['banner', 'heading-side'],
+    headerImagePlacements: { defaultLogoSize: 64, logo: ['above'], banner: ['above', 'below'] },
+    dishPhotoPlacements: ['card-top'],
     name: 'Modern Moroccan Garden',
     category: 'Moroccan',
     description: 'A fresh, photo-forward layout for contemporary Moroccan restaurants.',
     preview: 'Local favorites, leafy color, shared plates, and drinks',
     formats: ['WEB', 'MOBILE', 'TV_HORIZONTAL', 'TV_VERTICAL', 'TABLET'],
     renderer: 'legacy',
+    legacyRenderer: 'modern-moroccan-garden',
     theme: legacyTheme('#526D49', '#F7F8F1', 'system-ui, sans-serif'),
     layout: {
       kind: 'garden', columns: 2, imageStyle: 'cards',
@@ -154,12 +140,20 @@ export const TEMPLATE_CONFIGS: Record<TemplateType, TemplateConfig> = {
   },
   'atlas-simple': {
     id: 'atlas-simple',
+    verifiedFormats: ['WEB', 'MOBILE'],
+    example: { source: 'atlas', restaurantName: 'Atlas Kitchen', description: 'An editable example of a Moroccan kitchen menu.' },
+    layoutOptions: { columns: [1, 2, 3], regions: ['column-1', 'column-2', 'column-3'], spacing: ['compact', 'comfortable', 'airy'], alignment: ['start', 'center'], header: 'full-width' },
+    componentStyles: { headings: ['ruled', 'plain'], dishes: ['plain', 'outlined'], prices: ['aligned', 'dotted'] },
+    sectionPhotoPlacements: ['banner', 'heading-side'],
+    headerImagePlacements: { defaultLogoSize: 64, logo: ['above'], banner: ['above', 'below'] },
+    dishPhotoPlacements: ['thumbnail', 'text-side', 'card-top'],
     name: 'Atlas Simple',
     category: 'Moroccan',
     description: 'A quiet, fully data-configured Moroccan editorial menu for kitchens that need clarity.',
     preview: 'Ruled item rows, terracotta section marks, and no photography required',
     formats: ['A4', 'A5', 'WEB', 'MOBILE'],
     renderer: 'configurable',
+    composition: ['restaurant-header', 'menu-sections'],
     theme: {
       primaryColor: '#873E25', secondaryColor: '#21484B',
       backgroundColor: '#F8F3E9', inkColor: '#25241F', headingFont: 'Georgia, serif',
@@ -170,8 +164,39 @@ export const TEMPLATE_CONFIGS: Record<TemplateType, TemplateConfig> = {
       showSectionRules: true, showPricesWithLeaders: true, cornerRadius: 0,
     },
   },
-};
+  'atlas-market': {
+    id: 'atlas-market',
+    verifiedFormats: ['WEB', 'MOBILE'],
+    example: { source: 'atlas', restaurantName: 'Atlas Kitchen', description: 'An editable example of a Moroccan kitchen menu.' },
+    layoutOptions: { columns: [1, 2, 3], regions: ['column-1', 'column-2', 'column-3'], spacing: ['compact', 'comfortable', 'airy'], alignment: ['start', 'center'], header: 'full-width' },
+    componentStyles: { headings: ['ruled', 'plain'], dishes: ['plain', 'outlined'], prices: ['aligned', 'dotted'] },
+    sectionPhotoPlacements: ['banner', 'heading-side'],
+    headerImagePlacements: { defaultLogoSize: 64, logo: ['above'], banner: ['above', 'below'] },
+    dishPhotoPlacements: ['card-top', 'thumbnail', 'text-side'],
+    name: 'Atlas Market',
+    category: 'Café',
+    description: 'A two-column café preset composed from shared blocks with photo cards and quiet headings.',
+    preview: 'Photo cards, two section columns, and aligned prices',
+    formats: ['A4', 'A5', 'WEB', 'MOBILE'],
+    renderer: 'configurable',
+    composition: ['restaurant-header', 'menu-sections'],
+    theme: {
+      primaryColor: '#21484B', secondaryColor: '#526D49',
+      backgroundColor: '#F7F8F1', inkColor: '#25241F', headingFont: 'Georgia, serif',
+      bodyFont: 'system-ui, sans-serif',
+    },
+    layout: {
+      kind: 'cards', columns: 2, imageStyle: 'cards',
+      showSectionRules: false, showPricesWithLeaders: false, cornerRadius: 8,
+    },
+  },
+});
 
-export function getTemplateConfig(template: TemplateType): TemplateConfig {
-  return TEMPLATE_CONFIGS[template] || TEMPLATE_CONFIGS.classic;
+export function isTemplateId(value: unknown): value is keyof typeof TEMPLATE_CONFIGS {
+  return typeof value === 'string' && Object.hasOwn(TEMPLATE_CONFIGS, value);
+}
+
+export function getTemplateConfig(template: string, registry: TemplateRegistry = TEMPLATE_CONFIGS): TemplateConfig {
+  if (!Object.hasOwn(registry, template)) throw new Error(`Unknown menu template "${template}".`);
+  return registry[template];
 }

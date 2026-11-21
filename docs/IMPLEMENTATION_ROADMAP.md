@@ -110,3 +110,9 @@ Core architecture rule:
 - Native Android TV application before web-based TV mode proves demand.
 - Custom domains, analytics, multi-branch/team complexity before the underlying persistence and publishing model is ready.
 - “Hundreds of templates” generated from arbitrary combinations without design QA.
+
+## Web layout constraints delivered in ticket 12
+
+Atlas Simple supports one/two/three section-column regions with compact/comfortable/airy spacing and start/center alignment. Its restaurant header stays full width. Whole-section placement is separate from canonical section/item content order. Columns stack in region order below 768px; three columns become two between 768px and 1099px. Hidden/empty sections create no headings. Legacy templates retain their own layouts until migration.
+
+These are web layout controls, not PDF pagination rules. Before qualifying print, define how regions flow across physical pages, column and section breaks, image dimensions, widows/orphans, and A4/A5 margins; compare long menus and large photos in the real PDF renderer. No print/PDF qualification is implied.
