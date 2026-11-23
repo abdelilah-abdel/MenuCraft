@@ -135,7 +135,7 @@ export function makeCanvas(starter: CanvasTemplateId | 'blank'): CanvasDocument 
   add('shape', { name: 'Brand seal', shape: 'ellipse', x: 38, y: 35, w: 145, h: 145, fill: ink, borderWidth: 3, border: accent });
   add('text', { name: 'Brand', text: 'MAISON\nATLAS', x: 51, y: 72, w: 120, h: 72, fontSize: 25, bold: true, align: 'center', color: paper });
   add('text', { name: 'Menu title', text: 'MENU', x: 233, y: 30, w: 345, h: 145, font: 'Canvas Condensed', fontSize: 131, color: accent });
-  add('text', { name: 'Tagline', text: 'Fresh flavours & slow moments', x: 220, y: 174, w: 360, h: 38, font: 'Georgia', italic: true, fontSize: 20, color: ink });
+  add('text', { name: 'Tagline', text: 'Fresh flavours & slow moments', x: 220, y: 195, w: 360, h: 26, font: 'Georgia', italic: true, fontSize: 20, color: ink });
   add('text', { name: 'Opening hours', text: 'Open daily\n8 am — 11 pm', x: 611, y: 70, w: 155, h: 110, font: 'Canvas Hand', fontSize: 35, bold: true, align: 'center', color: ink, rotation: -6 });
   add('shape', { name: 'Header rule', shape: 'line', x: 33, y: 225, w: 728, h: 5, fill: accent });
   add('shape', { name: 'Small plates label', x: 37, y: 267, w: 330, h: 54, fill: paper, border: ink, borderWidth: 1.5, radius: 30 });
