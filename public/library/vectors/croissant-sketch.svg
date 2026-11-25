@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+<svg xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns="http://www.w3.org/2000/svg" xmlns:cc="http://web.resource.org/cc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:svg="http://www.w3.org/2000/svg" xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape" xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd" xmlns:ns1="http://sozi.baierouge.fr" xmlns:xlink="http://www.w3.org/1999/xlink" id="svg2" viewBox="0 0 364.29 386.34" version="1.0" inkscape:version="0.91 r13725">
+  <g id="g3286" transform="matrix(.53073 -.84754 .84754 .53073 787.76 -438.31)">
+    <path id="path3274" style="stroke:#ce5c00;stroke-linecap:round;stroke-width:21.26;fill:none" d="m-667.21-166.55c-3-106.59-86.5-190.81-186.39-187.99-99.89 2.81-178.5 91.59-175.5 198.18 0.7 24.48 5.6 47.79 14 69.134 26.8-67.184 88.38-115.08 161.31-117.13 76.95-2.17 144.15 47.33 172.34 118.89 9.9-24.83 15.05-52.31 14.24-81.08z"/>
+    <path id="path3276" style="stroke:#ce5c00;stroke-linecap:round;stroke-width:21.26;fill:none" d="m-848.94-354.62c-1.55 0-3.09 0.04-4.65 0.09-56.64 1.59-106.44 30.83-138.41 75.28l56.72 98.22c24.26-14.12 51.94-22.51 81.5-23.35 30.52-0.85 59.5 6.42 85.12 19.97l58.57-101.4c-33.48-42.2-83.46-68.88-138.85-68.81z"/>
+    <path id="path3278" style="stroke:#ce5c00;stroke-linecap:round;stroke-width:21.26;fill:none" d="m-848.94-354.62c-1.55 0-3.09 0.04-4.65 0.09-20.86 0.59-40.8 4.91-59.25 12.37l59.9 103.75 61.38-106.31c-18.07-6.42-37.38-9.93-57.38-9.9z"/>
+  </g>
+  <metadata>
+    <rdf:RDF>
+      <cc:Work>
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
+        <cc:license rdf:resource="http://creativecommons.org/licenses/publicdomain/"/>
+        <dc:publisher>
+          <cc:Agent rdf:about="http://openclipart.org/">
+            <dc:title>Openclipart</dc:title>
+          </cc:Agent>
+        </dc:publisher>
+        <dc:title>Croissant</dc:title>
+        <dc:date>2010-04-15T15:09:49</dc:date>
+        <dc:description/>
+        <dc:source>https://openclipart.org/detail/48187/croissant-by-hextrust</dc:source>
+        <dc:creator>
+          <cc:Agent>
+            <dc:title>hextrust</dc:title>
+          </cc:Agent>
+        </dc:creator>
+        <dc:subject>
+          <rdf:Bag>
+            <rdf:li>bread</rdf:li>
+            <rdf:li>delicious</rdf:li>
+            <rdf:li>dough</rdf:li>
+            <rdf:li>kitchen</rdf:li>
+            <rdf:li>snack</rdf:li>
+          </rdf:Bag>
+        </dc:subject>
+      </cc:Work>
+      <cc:License rdf:about="http://creativecommons.org/licenses/publicdomain/">
+        <cc:permits rdf:resource="http://creativecommons.org/ns#Reproduction"/>
+        <cc:permits rdf:resource="http://creativecommons.org/ns#Distribution"/>
+        <cc:permits rdf:resource="http://creativecommons.org/ns#DerivativeWorks"/>
+      </cc:License>
+    </rdf:RDF>
+  </metadata>
+</svg>
